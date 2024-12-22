@@ -19,7 +19,7 @@ public class Login extends JFrame {
         GridBagConstraints gbc = new GridBagConstraints();
 
         // Load Lobster Font
-        Font lobsterFont = loadCustomFont("src/fonts/Lobster.ttf", 36f);
+        Font lobsterFont = loadCustomFont("src/main/Resource/Fonts/Lobster.ttf", 36f);
 
         // SugarByte Title
         JLabel titleLabel = new JLabel("SugarByte");

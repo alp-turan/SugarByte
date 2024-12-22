@@ -20,7 +20,7 @@ public class OpeningWindow extends JFrame {
         // Load the Lobster font from a file
         Font lobsterFont = null;
         try {
-            lobsterFont = Font.createFont(Font.TRUETYPE_FONT, new File("src/fonts/Lobster.ttf")).deriveFont(36f); // Set the size of the font
+            lobsterFont = Font.createFont(Font.TRUETYPE_FONT, new File("src/main/Resource/Fonts/Lobster.ttf")).deriveFont(36f); // Set the size of the font
             GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
             ge.registerFont(lobsterFont);
         } catch (IOException | FontFormatException e) {
