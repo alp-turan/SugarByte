@@ -4,7 +4,7 @@ plugins {
 }
 
 application { // Add this section – it identifies which class contains the entry point to the program which is always a method called main
-    mainClass='Profile'
+    mainClass='Home'
 }
 
 group 'org.example' // This usually identifies your company – not essential
