@@ -1,26 +1,42 @@
 plugins {
+    // Apply the Java plugin
     id 'java'
-    id 'application' // Add this line
+    // Apply the application plugin, so we can run 'gradle run'
+    id 'application'
 }
 
-application { // Add this section – it identifies which class contains the entry point to the program which is always a method called main
-    mainClass='Home'
-}
+// Basic project metadata
+group = 'com.example'
+version = '1.0-SNAPSHOT'
 
-group 'org.example' // This usually identifies your company – not essential
-version '1.0-SNAPSHOT'
-
-sourceCompatibility = 1.8 // Add this line – it sets Java version 8
+// Set the Java version you want to use
+// If you want Java 8 compatibility, set sourceCompatibility = '1.8'
+sourceCompatibility = 1.8
 
 repositories {
-    mavenCentral()	// An online repository where libraries are stored
+    // We'll fetch dependencies from Maven Central
+    mavenCentral()
 }
 
 dependencies {
-    // Libraries to use for Unit Testing
-    testImplementation platform('org.junit:junit-bom:5.10.0')
-    testImplementation 'org.junit.jupiter:junit-jupiter'
+    // Include the SQLite JDBC library
+    implementation 'org.xerial:sqlite-jdbc:3.40.1.0'
+
+    // If you need other libraries, add them here
+    // e.g., implementation 'com.google.guava:guava:31.1-jre'
 }
-test {
-    useJUnitPlatform()
+
+// Configure the application plugin
+application {
+    // The main class that contains the 'main' method
+    // This should match your package and class name
+    mainClass = 'ui.Main'
+
+    // (Optional) By default, Gradle will build a distribution with scripts
+    // that can run your app. If you want to set a custom app name, do:
+    // applicationName = 'SugarByte'
 }
+
+// (Optional) If you'd like to build a fat/uber jar with all dependencies,
+// you can use something like the 'shadow' plugin. But for a simple example,
+// the above is enough to run 'gradle run' and 'gradle build'.
