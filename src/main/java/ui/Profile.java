@@ -59,8 +59,9 @@ public class Profile extends BaseUI {
                 "Doctor’s Information",
                 poppinsBold.deriveFont(14f),
                 poppinsNormal,
-                new String[]{"Doctor Email", "Address", "Emergency Phone"},
+                new String[]{"Doctor's Name","Doctor Email", "Address", "Emergency Phone"},
                 new String[]{
+                        safeValue(currentUser, User::getDoctorName, "Name Surname"),
                         safeValue(currentUser, User::getDoctorEmail, "namesurname@gmail.com"),
                         safeValue(currentUser, User::getDoctorAddress, "City, Street, Flat, Postcode"),
                         safeValue(currentUser, User::getDoctorEmergencyPhone, "07287567281")
@@ -84,17 +85,10 @@ public class Profile extends BaseUI {
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
-            User dummyUser = new User();
+            // For testing purposes, create a dummy User
+            User dummyUser = new User(); // Ensure User has setters
             dummyUser.setName("Mark");
-            dummyUser.setEmail("mark@example.com");
-            dummyUser.setDiabetesType("Type 1");
-            dummyUser.setInsulinType("Rapid-acting");
-            dummyUser.setInsulinAdmin("Pen");
-            dummyUser.setPhone("07498375960");
-            dummyUser.setDoctorEmail("doctor@example.com");
-            dummyUser.setDoctorAddress("City, Street, Flat, Postcode");
-            dummyUser.setDoctorEmergencyPhone("07287567281");
-            new Profile(dummyUser);
+            new Calendar(dummyUser);
         });
     }
 }

@@ -32,11 +32,11 @@ public class DatabaseManager {
         try {
             // Attempt to open/create the database
             connection = DriverManager.getConnection(DB_URL);
-            System.out.println("Connection established: " + connection);
-            initDB(); // optional: create tables
+            System.out.println("Connection established to " + DB_URL);
+            initDB(); // Initialize the database schema
         } catch (SQLException e) {
             e.printStackTrace();
-            System.err.println("Failed to connect to " + DB_URL);
+            System.err.println("Failed to connect to the database: " + DB_URL);
             connection = null;
         }
     }
@@ -55,34 +55,60 @@ public class DatabaseManager {
      * Provides the active database connection (or null if something failed).
      */
     public Connection getConnection() {
+        try {
+            if (connection == null || connection.isClosed()) {
+                System.err.println("Database connection is closed. Attempting to reconnect...");
+                connection = DriverManager.getConnection(DB_URL);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            System.err.println("Failed to reconnect to the database.");
+        }
         return connection;
     }
 
     /**
-     * Example method to create a user table if it doesn't exist.
-     * Adjust or remove as needed.
+     * Close the database connection gracefully.
+     */
+    public void closeConnection() {
+        if (connection != null) {
+            try {
+                connection.close();
+                System.out.println("Database connection closed.");
+            } catch (SQLException e) {
+                e.printStackTrace();
+                System.err.println("Failed to close the database connection.");
+            }
+        }
+    }
+
+    /**
+     * Initialize the database schema.
+     * Creates necessary tables if they do not exist.
      */
     private void initDB() {
         String createUserTable = "CREATE TABLE IF NOT EXISTS user (" +
                 "id INTEGER PRIMARY KEY AUTOINCREMENT," +
-                "name TEXT," +
+                "name TEXT NOT NULL," +
                 "diabetesType TEXT," +
                 "insulinType TEXT," +
                 "insulinAdmin TEXT," +
-                "email TEXT UNIQUE," +
+                "email TEXT UNIQUE NOT NULL," +
                 "phone TEXT," +
+                "doctorName TEXT," + // Added field for doctorName
                 "doctorEmail TEXT," +
                 "doctorAddress TEXT," +
                 "doctorEmergencyPhone TEXT," +
-                "password TEXT" +
+                "logbookType TEXT," + // Added field for logbookType
+                "password TEXT NOT NULL" +
                 ");";
 
         try (Statement stmt = connection.createStatement()) {
             stmt.execute(createUserTable);
-            System.out.println("Ensured user table exists.");
+            System.out.println("Ensured 'user' table exists with updated schema.");
         } catch (SQLException e) {
             e.printStackTrace();
-            System.err.println("initDB() failed while creating tables.");
+            System.err.println("initDB() failed while creating/updating tables.");
         }
     }
 }
