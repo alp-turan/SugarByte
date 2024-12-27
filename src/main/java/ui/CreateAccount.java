@@ -35,13 +35,11 @@ public class CreateAccount extends BaseUI {
         gbc.gridx=0;
 
         // Title
-        JLabel titleLabel = createTitleLabel("Create Account",
-                loadCustomFont("/Fonts/Lobster.ttf", 32f),
-                Color.BLACK);
+        JLabel titleLabel = createTitleLabel("SugarByte", lobsterFont, Color.BLACK);
 
         gbc.gridy=0;
         gbc.gridwidth=2;
-        gbc.insets = new Insets(15,0,15,0);
+        gbc.insets = new Insets(0,0,120,0);
         mainPanel.add(titleLabel, gbc);
 
         gbc.gridwidth=1;
