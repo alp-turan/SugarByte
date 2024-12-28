@@ -13,28 +13,42 @@ import java.io.InputStream;
 import java.time.YearMonth;
 import java.time.format.TextStyle;
 import java.util.Locale;
-
+/**
+ * BaseUI is a reusable class that provides foundational UI components
+ * and the methods & logic for the application. Other screens (e.g., Login, Home, Opening Window)
+ * extend this class to inherit its features and design.
+ */
 public class BaseUI extends JFrame {
-    public YearMonth currentYearMonth = YearMonth.now();
-    public User currentUser;
-    public JTextField usernameField;
-    public JPasswordField passwordField;
-    private String icon1;
-
+    //defining BaseUI's fields:
+    public YearMonth currentYearMonth = YearMonth.now(); //current year and month for the calendar view
+    public User currentUser; //Stores the currently logged-in user
+    public JTextField usernameField; // Input fields for login Username
+    public JPasswordField passwordField; // // Input fields for login Password
+    private String icon1;   // Placeholder for an icon path
+    /**
+     * Constructor for BaseUI - which is then user by calling Super in 7 daughter classes.
+     * Initialises the basic window settings such as size, title, and behaviour.
+     * The parameter 'title' provides the title of the window (displayed in the title bar).
+     */
     public BaseUI(String title) {
         setTitle(title);
-        setSize(400, 800); // Mimic a mobile screen size
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setLocationRelativeTo(null);
-        setResizable(false);
+        setSize(400, 800); //Mimics a mobile screen size for easier future translation to an app
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); //Closes only the current window
+        setLocationRelativeTo(null); //Doesn't set a precise relative location, instead centres the window on the screen.
+        setResizable(false); //Inhibits resizing
     }
 
-    // Method to load custom fonts
+    /**
+     * Allows a custom font to be loaded from the resources folder.
+     * If the font file is not found, it defaults to the Serif font.
+     * @param size : The font size to be applied
+     * @return A Font object with the specified size and font
+     */
     protected Font loadCustomFont(float size) {
         try (InputStream is = getClass().getResourceAsStream("/Fonts/Lobster.ttf")) {
             if (is == null) {
                 System.err.println("Font not found: /Fonts/Lobster.ttf");
-                return new Font("Serif", Font.PLAIN, (int) size);
+                return new Font("Serif", Font.PLAIN, (int) size); //Default font
             }
             return Font.createFont(Font.TRUETYPE_FONT, is).deriveFont(size);
         } catch (Exception e) {
@@ -93,20 +107,16 @@ public class BaseUI extends JFrame {
         @Override
         protected void paintComponent(Graphics g) {
             Graphics2D g2 = (Graphics2D) g.create();
-
             // Enable anti-aliasing for smooth edges
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-
             // Draw the shadow
             g2.setColor(shadowColor);
             for (int i = 0; i < shadowSize; i++) {
                 g2.fillRoundRect(i, i + shadowSize / 2, getWidth() - i * 2, getHeight() - i * 2 - shadowSize / 2, arc, arc);
             }
-
             // Draw the panel
             g2.setColor(getBackground());
             g2.fillRoundRect(shadowSize / 2, shadowSize / 2, getWidth() - shadowSize, getHeight() - shadowSize, arc, arc);
-
             g2.dispose();
         }
     }
@@ -118,13 +128,11 @@ public class BaseUI extends JFrame {
                 return null;
             }
             BufferedImage sourceImage = ImageIO.read(is);
-
             BufferedImage resized = new BufferedImage(30, 30, BufferedImage.TYPE_INT_ARGB);
             Graphics2D g2 = resized.createGraphics();
             g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
             g2.drawImage(sourceImage, 0, 0, 30, 30, null);
             g2.dispose();
-
             return new ImageIcon(resized);
         } catch (Exception e) {
             e.printStackTrace();
