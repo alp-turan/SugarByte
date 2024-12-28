@@ -59,6 +59,11 @@ public class DatabaseManager {
             if (connection == null || connection.isClosed()) {
                 System.err.println("Database connection is closed. Attempting to reconnect...");
                 connection = DriverManager.getConnection(DB_URL);
+                if (connection != null) {
+                    System.out.println("Successfully reconnected to the database.");
+                } else {
+                    System.err.println("Reconnection to the database failed.");
+                }
             }
         } catch (SQLException e) {
             e.printStackTrace();

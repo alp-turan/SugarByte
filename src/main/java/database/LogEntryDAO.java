@@ -14,39 +14,79 @@ public class LogEntryDAO {
     /**
      * Insert a new log entry into the DB.
      */
+    //changed1
     public LogEntry createLogEntry(LogEntry entry) {
-        String sql = "INSERT INTO logentry(" +
-                "userId, date, timeOfDay, bloodSugar, carbsEaten, foodDetails," +
-                "exerciseType, exerciseDuration, insulinDose, otherMedications) " +
-                "VALUES(?,?,?,?,?,?,?,?,?,?)";
+        String checkSql = "SELECT id FROM logentry WHERE userId = ? AND date = ? AND timeOfDay = ?";
+
         try (Connection conn = DatabaseManager.getInstance().getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+             PreparedStatement checkPs = conn.prepareStatement(checkSql)) {
 
-            ps.setInt(1, entry.getUserId());
-            ps.setString(2, entry.getDate());
-            ps.setString(3, entry.getTimeOfDay());
-            ps.setDouble(4, entry.getBloodSugar());
-            ps.setDouble(5, entry.getCarbsEaten());
-            ps.setString(6, entry.getFoodDetails());
-            ps.setString(7, entry.getExerciseType());
-            ps.setInt(8, entry.getExerciseDuration());
-            ps.setDouble(9, entry.getInsulinDose());
-            ps.setString(10, entry.getOtherMedications());
+            // Set parameters for checking the existing entry
+            checkPs.setInt(1, entry.getUserId());
+            checkPs.setString(2, entry.getDate());
+            checkPs.setString(3, entry.getTimeOfDay());
 
+            try (ResultSet rs = checkPs.executeQuery()) {
+                if (rs.next()) {
+                    // If the entry exists, update it
+                    int existingId = rs.getInt("id");
+                    String updateSql = "UPDATE logentry SET bloodSugar = ?, carbsEaten = ?, foodDetails = ?, " +
+                            "exerciseType = ?, exerciseDuration = ?, insulinDose = ?, otherMedications = ? WHERE id = ?";
 
+                    try (PreparedStatement updatePs = conn.prepareStatement(updateSql)) {
+                        updatePs.setDouble(1, entry.getBloodSugar());
+                        updatePs.setDouble(2, entry.getCarbsEaten());
+                        updatePs.setString(3, entry.getFoodDetails());
+                        updatePs.setString(4, entry.getExerciseType());
+                        updatePs.setInt(5, entry.getExerciseDuration());
+                        updatePs.setDouble(6, entry.getInsulinDose());
+                        updatePs.setString(7, entry.getOtherMedications());
+                        updatePs.setInt(8, existingId);
 
-            ps.executeUpdate();
-            try (ResultSet keys = ps.getGeneratedKeys()) {
-                if (keys.next()) {
-                    entry.setId(keys.getInt(1));
-                    System.out.println("New log entry created with ID: " + entry.getId());
+                        // Execute the update and verify it worked
+                        int rowsUpdated = updatePs.executeUpdate();
+                        if (rowsUpdated > 0) {
+                            System.out.println("Successfully updated entry with ID: " + existingId);
+                        }
+                    }
+                } else {
+                    // If the entry doesn't exist, insert a new one
+                    String insertSql = "INSERT INTO logentry(userId, date, timeOfDay, bloodSugar, carbsEaten, foodDetails, " +
+                            "exerciseType, exerciseDuration, insulinDose, otherMedications) VALUES(?,?,?,?,?,?,?,?,?,?)";
+
+                    try (PreparedStatement insertPs = conn.prepareStatement(insertSql, Statement.RETURN_GENERATED_KEYS)) {
+                        insertPs.setInt(1, entry.getUserId());
+                        insertPs.setString(2, entry.getDate());
+                        insertPs.setString(3, entry.getTimeOfDay());
+                        insertPs.setDouble(4, entry.getBloodSugar());
+                        insertPs.setDouble(5, entry.getCarbsEaten());
+                        insertPs.setString(6, entry.getFoodDetails());
+                        insertPs.setString(7, entry.getExerciseType());
+                        insertPs.setInt(8, entry.getExerciseDuration());
+                        insertPs.setDouble(9, entry.getInsulinDose());
+                        insertPs.setString(10, entry.getOtherMedications());
+
+                        int rowsInserted = insertPs.executeUpdate();
+                        if (rowsInserted > 0) {
+                            try (ResultSet keys = insertPs.getGeneratedKeys()) {
+                                if (keys.next()) {
+                                    entry.setId(keys.getInt(1));
+                                    System.out.println("Successfully created new log entry with ID: " + entry.getId());
+                                }
+                            }
+                        }
+                    }
                 }
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
         return entry;
     }
+
+
+
 
     /**
      * Retrieve all logs for a given userId and date, ordered by timeOfDay.

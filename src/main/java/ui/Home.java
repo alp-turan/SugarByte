@@ -245,6 +245,7 @@ public class Home extends BaseUI {
         entryPre.setFoodDetails("Quick log (Pre)");
 
         // Save the "Pre" entry
+
         LogService.createEntry(entryPre, currentUser);
         JOptionPane.showMessageDialog(this, "Pre log saved!");
 
