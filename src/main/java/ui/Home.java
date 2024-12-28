@@ -263,6 +263,7 @@ public class Home extends BaseUI {
             LogService.createEntry(entryPost, currentUser);
             JOptionPane.showMessageDialog(this, "Post log saved!");
         }
+
     }
 
     /**

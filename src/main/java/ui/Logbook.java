@@ -138,6 +138,8 @@ public class Logbook extends BaseUI {
      */
     private void loadLogEntries() {
         List<LogEntry> entries = LogService.getEntriesForDate(currentUser.getId(), targetDate);
+        System.out.println("Loading entries for user " + currentUser.getId() + " on date " + targetDate + ": " + entries.size());
+
         Map<String, LogEntry> entryMap = new HashMap<>();
 
         for (LogEntry entry : entries) {

@@ -33,10 +33,13 @@ public class LogEntryDAO {
             ps.setDouble(9, entry.getInsulinDose());
             ps.setString(10, entry.getOtherMedications());
 
+
+
             ps.executeUpdate();
             try (ResultSet keys = ps.getGeneratedKeys()) {
                 if (keys.next()) {
                     entry.setId(keys.getInt(1));
+                    System.out.println("New log entry created with ID: " + entry.getId());
                 }
             }
         } catch (SQLException e) {
@@ -83,4 +86,7 @@ public class LogEntryDAO {
         e.setOtherMedications(rs.getString("otherMedications"));
         return e;
     }
+
+
+
 }

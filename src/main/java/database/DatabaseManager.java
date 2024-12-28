@@ -87,6 +87,7 @@ public class DatabaseManager {
      * Creates necessary tables if they do not exist.
      */
     private void initDB() {
+        // SQL to create the 'user' table
         String createUserTable = "CREATE TABLE IF NOT EXISTS user (" +
                 "id INTEGER PRIMARY KEY AUTOINCREMENT," +
                 "name TEXT NOT NULL," +
@@ -103,9 +104,29 @@ public class DatabaseManager {
                 "password TEXT NOT NULL" +
                 ");";
 
+        // SQL to create the 'logentry' table
+        String createLogEntryTable = "CREATE TABLE IF NOT EXISTS logentry (" +
+                "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                "userId INTEGER NOT NULL," +
+                "date TEXT NOT NULL," +
+                "timeOfDay TEXT NOT NULL," +
+                "bloodSugar REAL," +
+                "carbsEaten REAL," +
+                "foodDetails TEXT," +
+                "exerciseType TEXT," +
+                "exerciseDuration INTEGER," +
+                "insulinDose REAL," +
+                "otherMedications TEXT," +
+                "FOREIGN KEY(userId) REFERENCES user(id) ON DELETE CASCADE" + // Ensure data integrity
+                ");";
+
         try (Statement stmt = connection.createStatement()) {
+            // Execute both create table statements
             stmt.execute(createUserTable);
             System.out.println("Ensured 'user' table exists with updated schema.");
+
+            stmt.execute(createLogEntryTable);
+            System.out.println("Ensured 'logentry' table exists.");
         } catch (SQLException e) {
             e.printStackTrace();
             System.err.println("initDB() failed while creating/updating tables.");
