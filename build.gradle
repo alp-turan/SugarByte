@@ -30,7 +30,7 @@ dependencies {
 application {
     // The main class that contains the 'main' method
     // This should match your package and class name
-    mainClass = 'ui.Main'
+    mainClass = 'Main'
 
     // (Optional) By default, Gradle will build a distribution with scripts
     // that can run your app. If you want to set a custom app name, do:
