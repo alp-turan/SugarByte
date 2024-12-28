@@ -6,10 +6,13 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Data Access Object for LogEntry.
+ */
 public class LogEntryDAO {
 
     /**
-     * Create (insert) a new log entry.
+     * Insert a new log entry into the DB.
      */
     public LogEntry createLogEntry(LogEntry entry) {
         String sql = "INSERT INTO logentry(" +
@@ -31,9 +34,10 @@ public class LogEntryDAO {
             ps.setString(10, entry.getOtherMedications());
 
             ps.executeUpdate();
-            ResultSet keys = ps.getGeneratedKeys();
-            if (keys.next()) {
-                entry.setId(keys.getInt(1));
+            try (ResultSet keys = ps.getGeneratedKeys()) {
+                if (keys.next()) {
+                    entry.setId(keys.getInt(1));
+                }
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -42,18 +46,20 @@ public class LogEntryDAO {
     }
 
     /**
-     * Retrieve all logs for a given userId/date.
+     * Retrieve all logs for a given userId and date, ordered by timeOfDay.
      */
     public List<LogEntry> getEntriesByDate(int userId, String date) {
         String sql = "SELECT * FROM logentry WHERE userId = ? AND date = ? ORDER BY timeOfDay ASC";
         List<LogEntry> list = new ArrayList<>();
         try (Connection conn = DatabaseManager.getInstance().getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
+
             ps.setInt(1, userId);
             ps.setString(2, date);
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                list.add(extractLogEntry(rs));
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    list.add(extractLogEntry(rs));
+                }
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -61,6 +67,7 @@ public class LogEntryDAO {
         return list;
     }
 
+    // Helper to build a LogEntry from a ResultSet row
     private LogEntry extractLogEntry(ResultSet rs) throws SQLException {
         LogEntry e = new LogEntry();
         e.setId(rs.getInt("id"));

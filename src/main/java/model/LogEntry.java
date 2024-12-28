@@ -1,10 +1,14 @@
 package model;
 
+/**
+ * Represents a single logbook entry for a user.
+ * Includes data for blood sugar, carbs, exercise, etc.
+ */
 public class LogEntry {
     private int id;
     private int userId;
     private String date;           // e.g. "2024-12-23"
-    private String timeOfDay;      // e.g. "Morning", "Before Lunch", ...
+    private String timeOfDay;      // e.g. "Breakfast", "Lunch", ...
     private double bloodSugar;
     private double carbsEaten;
     private String foodDetails;
@@ -13,7 +17,9 @@ public class LogEntry {
     private double insulinDose;
     private String otherMedications;
 
-    public LogEntry() {}
+    public LogEntry() {
+        // No-arg constructor
+    }
 
     public LogEntry(int userId,
                     String date,
@@ -37,8 +43,7 @@ public class LogEntry {
         this.otherMedications = otherMedications;
     }
 
-    // getters & setters
-
+    // Getters & Setters
     public int getId() {
         return id;
     }

@@ -1,8 +1,5 @@
 package ui;
 
-import database.UserDAO;
-import model.User;
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -19,7 +16,7 @@ public class Login extends BaseUI {
         GridBagConstraints gbc = new GridBagConstraints();
 
         // Title: SugarByte
-        JLabel titleLabel = createTitleLabel("SugarByte",lobsterFont, java.awt.Color.BLACK);
+        JLabel titleLabel = createTitleLabel("SugarByte",lobsterFont, Color.BLACK);
 
         // Username & Password panels
         JPanel usernamePanel = createInputPanel("Username");

@@ -11,7 +11,9 @@ public class User {
     private String insulinAdmin;
     private String email;
     private String phone;
+    private String doctorName;
     private String doctorEmail;
+    private String logbookType; // Fixed naming convention
     private String doctorAddress;
     private String doctorEmergencyPhone;
     private String password;
@@ -49,4 +51,10 @@ public class User {
 
     public String getPassword() { return password; }
     public void setPassword(String password) { this.password = password; }
+
+    public String getDoctorName() { return doctorName; }
+    public void setDoctorName(String doctorName) { this.doctorName = doctorName; }
+
+    public String getLogbookType() { return logbookType; } // Fixed naming convention
+    public void setLogbookType(String logbookType) { this.logbookType = logbookType; } // Fixed naming convention
 }
