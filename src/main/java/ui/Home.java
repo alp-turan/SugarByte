@@ -236,18 +236,18 @@ public class Home extends BaseUI {
 
         String meal = getCurrentMeal();
         // Create a "Pre" log entry
-        LogEntry entryPre = new LogEntry();
-        entryPre.setUserId(currentUser.getId());
-        entryPre.setDate(LocalDate.now().toString());
-        entryPre.setTimeOfDay(meal);
-        entryPre.setBloodSugar(preBG);
-        entryPre.setCarbsEaten(preCarbs);
-        entryPre.setFoodDetails("Quick log (Pre)");
+        if (preBG > 0 || preCarbs > 0) {
+            LogEntry entryPre = new LogEntry();
+            entryPre.setUserId(currentUser.getId());
+            entryPre.setDate(LocalDate.now().toString());
+            entryPre.setTimeOfDay(meal + " Pre");  // Match "ROW_LABELS"
+            entryPre.setBloodSugar(preBG);
+            entryPre.setCarbsEaten(preCarbs);
+            entryPre.setFoodDetails("Quick log (Pre)");
 
-        // Save the "Pre" entry
-
-        LogService.createEntry(entryPre, currentUser);
-        JOptionPane.showMessageDialog(this, "Pre log saved!");
+            // Save the "Pre" entry
+            LogService.createEntry(entryPre, currentUser);
+        }
 
         // Check if "Post" fields have data
         double postBG = parseDoubleSafe(postBloodSugarField.getText());
@@ -256,16 +256,18 @@ public class Home extends BaseUI {
             LogEntry entryPost = new LogEntry();
             entryPost.setUserId(currentUser.getId());
             entryPost.setDate(LocalDate.now().toString());
-            entryPost.setTimeOfDay(meal + " (Post)");
+            entryPost.setTimeOfDay(meal + " Post");  // Match "ROW_LABELS"
             entryPost.setBloodSugar(postBG);
             entryPost.setCarbsEaten(postCarbs);
             entryPost.setFoodDetails("Quick log (Post)");
 
+            // Save the "Post" entry
             LogService.createEntry(entryPost, currentUser);
-            JOptionPane.showMessageDialog(this, "Post log saved!");
         }
 
+        JOptionPane.showMessageDialog(this, "Quick log saved!");
     }
+
 
     /**
      * Safe parse for double fields.

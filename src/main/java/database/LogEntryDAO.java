@@ -126,7 +126,4 @@ public class LogEntryDAO {
         e.setOtherMedications(rs.getString("otherMedications"));
         return e;
     }
-
-
-
 }
