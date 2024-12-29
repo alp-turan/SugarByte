@@ -67,15 +67,33 @@ public class Calendar extends BaseUI {
                 dayCircle.setForeground(Color.BLACK);
             }
 
-            // Make it clickable
             dayCircle.addMouseListener(new MouseAdapter() {
                 @Override
                 public void mouseClicked(MouseEvent e) {
-                    // Open Logbook for that day
-                    dispose();
-                    new Logbook(currentUser, date.toString());
+                    dispose(); // Close the calendar window
+                    String logbookType = currentUser.getLogbookType();
+
+                    // Open the appropriate logbook based on the type
+                    switch (logbookType) {
+                        case "Simple":
+                            new Logbook(currentUser, date.toString());
+                            break;
+                        case "Comprehensive":
+                            new ComprehensiveLogbook(currentUser, date.toString());
+                            break;
+                        case "Intensive":
+                            new IntensiveLogbook(currentUser, date.toString());
+                            break;
+                        default:
+                            JOptionPane.showMessageDialog(null,
+                                    "Unknown logbook type. Please contact support.",
+                                    "Error",
+                                    JOptionPane.ERROR_MESSAGE);
+                    }
                 }
             });
+
+
 
             // Put DayCircle in a small panel
             JPanel dayPanel = new JPanel(new BorderLayout());

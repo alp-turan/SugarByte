@@ -10,24 +10,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * A simple Logbook page with 7 rows (Breakfast Pre/Post,
- * Lunch Pre/Post, Dinner Pre/Post, Bedtime),
- * each row having 2 fields: Blood Sugar, Carbs Eaten.
- *
- * This page allows users to log data, save, and load existing entries.
- */
-public class Logbook extends BaseUI {
+public class ComprehensiveLogbook extends BaseUI {
+    private final User currentUser;
+    private final String targetDate;
 
-    protected final User currentUser;
-    protected final String targetDate;
+    // Fields for blood sugar, carbs, and exercise details
+    private JTextField[] bloodSugarFields = new JTextField[7];
+    private JTextField[] carbsFields = new JTextField[7];
+    private JTextField[] exerciseTypeFields = new JTextField[7];
+    private JTextField[] exerciseDurationFields = new JTextField[7];
 
-    // 7 Rows × 2 columns = 14 text fields
-    protected JTextField[] bloodSugarFields = new JTextField[7];
-    protected JTextField[] carbsFields = new JTextField[7];
-
-    // Row labels for clarity
-    protected static final String[] ROW_LABELS = {
+    private static final String[] ROW_LABELS = {
             "Breakfast Pre",
             "Breakfast Post",
             "Lunch Pre",
@@ -37,44 +30,38 @@ public class Logbook extends BaseUI {
             "Bedtime"
     };
 
-    public Logbook(User user, String date) {
-        super("Logbook for " + date);
+    public ComprehensiveLogbook(User user, String date) {
+        super("Comprehensive Logbook for " + date);
         this.currentUser = user;
         this.targetDate = date;
 
         buildUI();
-        loadLogEntries(); // Load existing entries, if any
+        loadLogEntries();
         setVisible(true);
     }
 
-    protected void buildUI() {
-        // Main gradient background from BaseUI
+    private void buildUI() {
         JPanel mainPanel = createGradientPanel(Color.WHITE, Color.WHITE);
         mainPanel.setLayout(new BorderLayout());
         setContentPane(mainPanel);
 
-        // Top: SugarByte + "Logbook for (date)"
         JPanel topPanel = new JPanel();
         topPanel.setOpaque(false);
         topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.Y_AXIS));
         topPanel.setBorder(BorderFactory.createEmptyBorder(20, 0, 20, 0));
 
-        // SugarByte title
-        JLabel titleLabel = createTitleLabel("SugarByte", lobsterFont, Color.BLACK);
+        JLabel titleLabel = createTitleLabel("Comprehensive Logbook", lobsterFont, Color.BLACK);
         titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         topPanel.add(titleLabel);
 
-        // Logbook for (date)
         JLabel dateLabel = new JLabel("Logbook for " + targetDate, SwingConstants.CENTER);
         dateLabel.setFont(new Font("SansSerif", Font.PLAIN, 16));
         dateLabel.setForeground(Color.BLACK);
-        dateLabel.setBorder(BorderFactory.createEmptyBorder(5, 0, 5, 0));
         dateLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         topPanel.add(dateLabel);
 
         mainPanel.add(topPanel, BorderLayout.NORTH);
 
-        // Center panel: table of 7 rows × 2 columns
         JPanel centerPanel = new JPanel(new GridBagLayout());
         centerPanel.setOpaque(false);
         GridBagConstraints gbc = new GridBagConstraints();
@@ -83,36 +70,39 @@ public class Logbook extends BaseUI {
         gbc.gridx = 0;
         gbc.gridy = 0;
 
-        // Build the 7 rows
         for (int i = 0; i < ROW_LABELS.length; i++) {
-            // Label for the row
             JLabel rowLabel = new JLabel(ROW_LABELS[i] + ":");
             rowLabel.setFont(new Font("SansSerif", Font.BOLD, 14));
             rowLabel.setForeground(Color.BLACK);
 
-            // Blood Sugar field
             bloodSugarFields[i] = new JTextField(5);
-
-            // Carbs field
             carbsFields[i] = new JTextField(5);
+            exerciseTypeFields[i] = new JTextField(10);
+            exerciseDurationFields[i] = new JTextField(5);
 
-            // Layout: Row label in col 0
             gbc.gridx = 0;
             gbc.gridy = i;
             centerPanel.add(rowLabel, gbc);
 
-            // Blood sugar in col 1
             gbc.gridx = 1;
             centerPanel.add(bloodSugarFields[i], gbc);
 
-            // Carbs in col 2
             gbc.gridx = 2;
             centerPanel.add(carbsFields[i], gbc);
+
+            gbc.gridx = 3;
+            centerPanel.add(new JLabel("Exercise Type:"), gbc);
+            gbc.gridx = 4;
+            centerPanel.add(exerciseTypeFields[i], gbc);
+
+            gbc.gridx = 5;
+            centerPanel.add(new JLabel("Duration (min):"), gbc);
+            gbc.gridx = 6;
+            centerPanel.add(exerciseDurationFields[i], gbc);
         }
 
         mainPanel.add(centerPanel, BorderLayout.CENTER);
 
-        // "Save All" button at bottom
         JPanel bottomPanel = new JPanel();
         bottomPanel.setOpaque(false);
         JButton saveAllBtn = new JButton("Save All");
@@ -132,10 +122,6 @@ public class Logbook extends BaseUI {
         mainPanel.add(wrapperPanel, BorderLayout.SOUTH);
     }
 
-    /**
-     * Loads previously saved entries for the specified date
-     * and populates the fields.
-     */
     private void loadLogEntries() {
         List<LogEntry> entries = LogService.getEntriesForDate(currentUser.getId(), targetDate);
         System.out.println("Loading entries for user " + currentUser.getId() + " on date " + targetDate + ": " + entries.size());
@@ -151,27 +137,29 @@ public class Logbook extends BaseUI {
             if (entry != null) {
                 bloodSugarFields[i].setText(String.valueOf(entry.getBloodSugar()));
                 carbsFields[i].setText(String.valueOf(entry.getCarbsEaten()));
+                exerciseTypeFields[i].setText(entry.getExerciseType());
+                exerciseDurationFields[i].setText(String.valueOf(entry.getExerciseDuration()));
             }
         }
     }
 
-    /**
-     * Called when the user clicks "Save All".
-     * Creates or updates LogEntry objects for each row.
-     */
-    protected void handleSaveAll() {
+    private void handleSaveAll() {
         for (int i = 0; i < ROW_LABELS.length; i++) {
             double bg = parseDoubleSafe(bloodSugarFields[i].getText());
             double carbs = parseDoubleSafe(carbsFields[i].getText());
+            String exerciseType = exerciseTypeFields[i].getText();
+            int exerciseDuration = parseIntSafe(exerciseDurationFields[i].getText());
 
-            if (bg > 0 || carbs > 0) {
+            if (bg > 0 || carbs > 0 || !exerciseType.isEmpty() || exerciseDuration > 0) {
                 LogEntry entry = new LogEntry();
                 entry.setUserId(currentUser.getId());
                 entry.setDate(targetDate);
                 entry.setTimeOfDay(ROW_LABELS[i]);
                 entry.setBloodSugar(bg);
                 entry.setCarbsEaten(carbs);
-                entry.setFoodDetails("Logbook entry - " + ROW_LABELS[i]);
+                entry.setExerciseType(exerciseType);
+                entry.setExerciseDuration(exerciseDuration);
+                entry.setFoodDetails("Comprehensive Logbook - " + ROW_LABELS[i]);
 
                 LogService.createEntry(entry, currentUser);
             }
@@ -183,11 +171,19 @@ public class Logbook extends BaseUI {
                 JOptionPane.INFORMATION_MESSAGE);
     }
 
-    protected double parseDoubleSafe(String text) {
+    private double parseDoubleSafe(String text) {
         try {
             return Double.parseDouble(text);
         } catch (NumberFormatException e) {
             return 0.0;
+        }
+    }
+
+    private int parseIntSafe(String text) {
+        try {
+            return Integer.parseInt(text);
+        } catch (NumberFormatException e) {
+            return 0;
         }
     }
 }

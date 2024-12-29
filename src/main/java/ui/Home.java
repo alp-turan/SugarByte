@@ -9,6 +9,8 @@ import java.awt.*;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Home extends BaseUI {
 
@@ -19,6 +21,11 @@ public class Home extends BaseUI {
     private JTextField preCarbsField;
     private JTextField postBloodSugarField;
     private JTextField postCarbsField;
+    private JTextField exerciseTypeField;
+    private JTextField exerciseDurationField;
+    private JTextField insulinDoseField;
+    private JTextField otherMedicationsField;
+    private JTextField foodDetailsField;
 
     public Home(User user) {
         super("Home");
@@ -106,7 +113,7 @@ public class Home extends BaseUI {
         centerPanel.add(reminderLabel, gbc);
 
         // Quick Log panel
-        JPanel quickLogPanel = createActualQuickLogPanel();
+        JPanel quickLogPanel = createActualQuickLogPanel(today);
         gbc.gridy = 4;
         gbc.insets = new Insets(0, 20, 0, 20);
         centerPanel.add(quickLogPanel, gbc);
@@ -118,11 +125,8 @@ public class Home extends BaseUI {
         logbookButton.setFont(new Font("Poppins", Font.BOLD, 14));
         logbookButton.setPreferredSize(new Dimension(200, 40));
 
-        // NEW: Open the Logbook page for "today"
-        logbookButton.addActionListener(e -> {
-            dispose();
-            new Logbook(currentUser, today.toString());
-        });
+        // NEW: Open the Correct Logbook for "today"
+        logbookButton.addActionListener(e -> openCorrectLogbook(today.toString()));
 
         gbc.gridy = 5;
         gbc.insets = new Insets(50, 20, 20, 20);
@@ -137,19 +141,36 @@ public class Home extends BaseUI {
     }
 
     /**
-     * Creates a Quick Log panel with Pre/Post BG + Carbs.
-     * (unchanged from your code)
+     * Opens the correct logbook type based on user preferences.
      */
-    private JPanel createActualQuickLogPanel() {
+    private void openCorrectLogbook(String date) {
+        String logbookType = currentUser.getLogbookType();
+        dispose();
+        switch (logbookType) {
+            case "Comprehensive":
+                new ComprehensiveLogbook(currentUser, date);
+                break;
+            case "Intensive":
+                new IntensiveLogbook(currentUser, date);
+                break;
+            default:  // Default is Simple
+                new Logbook(currentUser, date);
+        }
+    }
+
+    /**
+     * Creates a Quick Log panel with categories for the current meal (Breakfast/Lunch/Dinner/Bedtime).
+     */
+    private JPanel createActualQuickLogPanel(LocalDate today) {
         JPanel panel = new JPanel();
         panel.setOpaque(false);
         panel.setBorder(BorderFactory.createTitledBorder("Quick Log"));
         panel.setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(5,5,5,5);
+        gbc.insets = new Insets(5, 5, 5, 5);
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
-        // Meal label
+        // Meal label (depending on current time)
         JLabel mealLabel = new JLabel("Meal: " + getCurrentMeal());
         mealLabel.setFont(new Font("SansSerif", Font.BOLD, 16));
         mealLabel.setForeground(new Color(200, 40, 40));
@@ -161,17 +182,26 @@ public class Home extends BaseUI {
 
         gbc.gridwidth = 1;
 
-        // Table Headers
-        gbc.gridy = 1;
+        // Categories based on the logbook type
+        String logbookType = currentUser.getLogbookType();
+        List<String> categories = getLogCategoriesForMeal(logbookType);
+
+        // Add category input fields dynamically
+        int row = 1;
+        for (String category : categories) {
+            addCategoryInput(panel, gbc, category, row++);
+        }
+
+        // Table Headers for Glucose and Carbs
+        gbc.gridy = row++;
         gbc.gridx = 0;
-        panel.add(new JLabel(""), gbc);
-        gbc.gridx = 1;
         panel.add(new JLabel("Blood Glucose"), gbc);
-        gbc.gridx = 2;
+
+        gbc.gridx = 1;
         panel.add(new JLabel("Carbs"), gbc);
 
         // Pre row
-        gbc.gridy = 2;
+        gbc.gridy = row++;
         gbc.gridx = 0;
         panel.add(new JLabel("Pre:"), gbc);
 
@@ -184,7 +214,7 @@ public class Home extends BaseUI {
         panel.add(preCarbsField, gbc);
 
         // Post row
-        gbc.gridy = 3;
+        gbc.gridy = row++;
         gbc.gridx = 0;
         panel.add(new JLabel("Post:"), gbc);
 
@@ -197,16 +227,71 @@ public class Home extends BaseUI {
         panel.add(postCarbsField, gbc);
 
         // Save button
-        gbc.gridy = 4;
+        gbc.gridy = row++;
         gbc.gridx = 0;
         gbc.gridwidth = 3;
         JButton saveBtn = new JButton("Save Log");
         saveBtn.setBackground(new Color(237, 165, 170));
         saveBtn.setForeground(Color.BLACK);
-        saveBtn.addActionListener(e -> saveQuickLog());
+        saveBtn.addActionListener(e -> {
+            saveQuickLog();
+            openCorrectLogbook(today.toString()); // Open the logbook after saving
+        });
         panel.add(saveBtn, gbc);
 
         return panel;
+    }
+
+    /**
+     * Returns the categories for the current meal based on the user's logbook type.
+     */
+    private List<String> getLogCategoriesForMeal(String logbookType) {
+        List<String> categories = new ArrayList<>();
+
+        // Add categories based on logbook type
+        if (logbookType.equals("Comprehensive")) {
+            categories.add("Exercise Type");
+            categories.add("Exercise Duration");
+            categories.add("Food Details");
+        } else if (logbookType.equals("Intensive")) {
+            categories.add("Exercise Type");
+            categories.add("Exercise Duration");
+            categories.add("Food Details");
+            categories.add("Insulin Dose");
+            categories.add("Other Medications");
+        }
+
+        // Add common categories for all logbook types
+        categories.add("Blood Glucose");
+        categories.add("Carbs");
+
+        return categories;
+    }
+
+    /**
+     * Adds input fields for a specified category (Exercise, Food, Insulin Dose, etc.).
+     */
+    private void addCategoryInput(JPanel panel, GridBagConstraints gbc, String categoryName, int row) {
+        gbc.gridy = row;
+        gbc.gridx = 0;
+        panel.add(new JLabel(categoryName + ":"), gbc);
+
+        gbc.gridx = 1;
+        JTextField categoryField = new JTextField(5);
+        panel.add(categoryField, gbc);
+
+        // Assign specific category fields to instance variables
+        if (categoryName.equals("Exercise Type")) {
+            exerciseTypeField = categoryField;
+        } else if (categoryName.equals("Exercise Duration")) {
+            exerciseDurationField = categoryField;
+        } else if (categoryName.equals("Food Details")) {
+            foodDetailsField = categoryField;
+        } else if (categoryName.equals("Insulin Dose")) {
+            insulinDoseField = categoryField;
+        } else if (categoryName.equals("Other Medications")) {
+            otherMedicationsField = categoryField;
+        }
     }
 
     /**
@@ -227,65 +312,81 @@ public class Home extends BaseUI {
 
     /**
      * Saves the quick log(s) to DB.
-     * By default, it saves "Pre" as one LogEntry,
-     * and if the "Post" fields have data, it saves a second LogEntry.
      */
     private void saveQuickLog() {
         double preBG = parseDoubleSafe(preBloodSugarField.getText());
         double preCarbs = parseDoubleSafe(preCarbsField.getText());
-
         String meal = getCurrentMeal();
+
         // Create a "Pre" log entry
         if (preBG > 0 || preCarbs > 0) {
             LogEntry entryPre = new LogEntry();
             entryPre.setUserId(currentUser.getId());
             entryPre.setDate(LocalDate.now().toString());
-            entryPre.setTimeOfDay(meal + " Pre");  // Match "ROW_LABELS"
+            entryPre.setTimeOfDay(meal + " Pre");
             entryPre.setBloodSugar(preBG);
             entryPre.setCarbsEaten(preCarbs);
-            entryPre.setFoodDetails("Quick log (Pre)");
-
-            // Save the "Pre" entry
+            entryPre.setFoodDetails(foodDetailsField.getText());
             LogService.createEntry(entryPre, currentUser);
         }
 
-        // Check if "Post" fields have data
         double postBG = parseDoubleSafe(postBloodSugarField.getText());
         double postCarbs = parseDoubleSafe(postCarbsField.getText());
         if (postBG > 0 || postCarbs > 0) {
             LogEntry entryPost = new LogEntry();
             entryPost.setUserId(currentUser.getId());
             entryPost.setDate(LocalDate.now().toString());
-            entryPost.setTimeOfDay(meal + " Post");  // Match "ROW_LABELS"
+            entryPost.setTimeOfDay(meal + " Post");
             entryPost.setBloodSugar(postBG);
             entryPost.setCarbsEaten(postCarbs);
-            entryPost.setFoodDetails("Quick log (Post)");
-
-            // Save the "Post" entry
+            entryPost.setFoodDetails(foodDetailsField.getText());
             LogService.createEntry(entryPost, currentUser);
         }
 
-        JOptionPane.showMessageDialog(this, "Quick log saved!");
-    }
+        // Log additional details for comprehensive or intensive
+        if (exerciseTypeField != null && !exerciseTypeField.getText().isEmpty()) {
+            LogEntry exerciseEntry = new LogEntry();
+            exerciseEntry.setUserId(currentUser.getId());
+            exerciseEntry.setDate(LocalDate.now().toString());
+            exerciseEntry.setTimeOfDay(meal + " Exercise");
+            exerciseEntry.setFoodDetails(exerciseTypeField.getText());
+            LogService.createEntry(exerciseEntry, currentUser);
+        }
 
+        if (exerciseDurationField != null && !exerciseDurationField.getText().isEmpty()) {
+            LogEntry exerciseDurationEntry = new LogEntry();
+            exerciseDurationEntry.setUserId(currentUser.getId());
+            exerciseDurationEntry.setDate(LocalDate.now().toString());
+            exerciseDurationEntry.setTimeOfDay(meal + " Exercise Duration");
+            exerciseDurationEntry.setFoodDetails(exerciseDurationField.getText());
+            LogService.createEntry(exerciseDurationEntry, currentUser);
+        }
 
-    /**
-     * Safe parse for double fields.
-     */
-    private double parseDoubleSafe(String text) {
-        try {
-            return Double.parseDouble(text);
-        } catch (NumberFormatException e) {
-            return 0.0;
+        if (insulinDoseField != null && !insulinDoseField.getText().isEmpty()) {
+            LogEntry insulinDoseEntry = new LogEntry();
+            insulinDoseEntry.setUserId(currentUser.getId());
+            insulinDoseEntry.setDate(LocalDate.now().toString());
+            insulinDoseEntry.setTimeOfDay(meal + " Insulin Dose");
+            insulinDoseEntry.setFoodDetails(insulinDoseField.getText());
+            LogService.createEntry(insulinDoseEntry, currentUser);
+        }
+
+        if (otherMedicationsField != null && !otherMedicationsField.getText().isEmpty()) {
+            LogEntry otherMedicationsEntry = new LogEntry();
+            otherMedicationsEntry.setUserId(currentUser.getId());
+            otherMedicationsEntry.setDate(LocalDate.now().toString());
+            otherMedicationsEntry.setTimeOfDay(meal + " Other Medications");
+            otherMedicationsEntry.setFoodDetails(otherMedicationsField.getText());
+            LogService.createEntry(otherMedicationsEntry, currentUser);
         }
     }
 
-    // For quick testing
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            User dummyUser = new User();
-            dummyUser.setName("Mark");
-            new Home(dummyUser);
-        });
+    // Safe parse double
+    private double parseDoubleSafe(String value) {
+        try {
+            return Double.parseDouble(value);
+        } catch (NumberFormatException e) {
+            return 0.0;
+        }
     }
 }
