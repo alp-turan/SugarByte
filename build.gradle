@@ -11,7 +11,7 @@ version = '1.0-SNAPSHOT'
 
 // Set the Java version you want to use
 // If you want Java 8 compatibility, set sourceCompatibility = '1.8'
-sourceCompatibility = 1.8
+sourceCompatibility = 16
 
 repositories {
     // We'll fetch dependencies from Maven Central
@@ -21,7 +21,9 @@ repositories {
 dependencies {
     // Include the SQLite JDBC library
     implementation 'org.xerial:sqlite-jdbc:3.40.1.0'
-
+    // JavaMail dependencies
+    implementation 'javax.mail:javax.mail-api:1.6.2'
+    implementation 'com.sun.mail:javax.mail:1.6.2'
     // If you need other libraries, add them here
     // e.g., implementation 'com.google.guava:guava:31.1-jre'
 }
