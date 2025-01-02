@@ -12,19 +12,27 @@ import java.util.Map;
 
 /**
  * A simple Logbook page with 7 rows (Breakfast Pre/Post,
- * Lunch Pre/Post, Dinner Pre/Post, Bedtime),
- * each row having 2 fields: Blood Sugar, Carbs Eaten.
+ * Lunch Pre/Post, Dinner Pre/Post, Bedtime).
+ * Now uses two-line headers for each column:
  *
- * This page allows users to log data, save, and load existing entries.
+ *   1) Time  / of Day
+ *   2) Blood / Glucose
+ *   3) Carbs / Eaten
+ *   4) Hours Since / Last Meal
+ *
+ * The last column shows a textfield only for "Pre" rows.
  */
 public class Logbook extends BaseUI {
 
     private final User currentUser;
     private final String targetDate;
 
-    // 7 Rows × 2 columns = 14 text fields
+    // Existing columns
     private JTextField[] bloodSugarFields = new JTextField[7];
-    private JTextField[] carbsFields = new JTextField[7];
+    private JTextField[] carbsFields      = new JTextField[7];
+
+    // Newly added column (only used for "Pre" rows)
+    private JTextField[] hoursSinceMealFields = new JTextField[7];
 
     // Row labels for clarity
     private static final String[] ROW_LABELS = {
@@ -40,10 +48,10 @@ public class Logbook extends BaseUI {
     public Logbook(User user, String date) {
         super("Logbook for " + date);
         this.currentUser = user;
-        this.targetDate = date;
+        this.targetDate  = date;
 
         buildUI();
-        loadLogEntries(); // Load existing entries, if any
+        loadLogEntries(); // Load existing blood-sugar/carb data
         setVisible(true);
     }
 
@@ -74,40 +82,98 @@ public class Logbook extends BaseUI {
 
         mainPanel.add(topPanel, BorderLayout.NORTH);
 
-        // Center panel: table of 7 rows × 2 columns
+        // Center panel: table with multiple rows
         JPanel centerPanel = new JPanel(new GridBagLayout());
         centerPanel.setOpaque(false);
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(8, 8, 8, 8);
+        gbc.insets = new Insets(5, 5, 5, 5);
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.gridx = 0;
         gbc.gridy = 0;
 
-        // Build the 7 rows
+        // =====================
+        // HEADER ROW - FIRST LINE
+        // =====================
+        // "Time"
+        JLabel timeOfDayHeaderLine1 = new JLabel("Time");
+        timeOfDayHeaderLine1.setFont(new Font("SansSerif", Font.BOLD, 12));
+        centerPanel.add(timeOfDayHeaderLine1, gbc);
+
+        // "Blood"
+        gbc.gridx = 1;
+        JLabel bloodHeaderLine1 = new JLabel("Blood");
+        bloodHeaderLine1.setFont(new Font("SansSerif", Font.BOLD, 12));
+        centerPanel.add(bloodHeaderLine1, gbc);
+
+        // "Carbs"
+        gbc.gridx = 2;
+        JLabel carbsHeaderLine1 = new JLabel("Carbs");
+        carbsHeaderLine1.setFont(new Font("SansSerif", Font.BOLD, 12));
+        centerPanel.add(carbsHeaderLine1, gbc);
+
+        // "Hours Since"
+        gbc.gridx = 3;
+        JLabel hoursHeaderLine1 = new JLabel("Hours Since");
+        hoursHeaderLine1.setFont(new Font("SansSerif", Font.BOLD, 12));
+        centerPanel.add(hoursHeaderLine1, gbc);
+
+        // =====================
+        // HEADER ROW - SECOND LINE
+        // =====================
+        // Move to next row
+        gbc.gridy = 1;
+        gbc.gridx = 0;
+        JLabel timeOfDayHeaderLine2 = new JLabel("of Day");
+        timeOfDayHeaderLine2.setFont(new Font("SansSerif", Font.BOLD, 12));
+        centerPanel.add(timeOfDayHeaderLine2, gbc);
+
+        gbc.gridx = 1;
+        JLabel bloodHeaderLine2 = new JLabel("Glucose");
+        bloodHeaderLine2.setFont(new Font("SansSerif", Font.BOLD, 12));
+        centerPanel.add(bloodHeaderLine2, gbc);
+
+        gbc.gridx = 2;
+        JLabel carbsHeaderLine2 = new JLabel("Eaten");
+        carbsHeaderLine2.setFont(new Font("SansSerif", Font.BOLD, 12));
+        centerPanel.add(carbsHeaderLine2, gbc);
+
+        gbc.gridx = 3;
+        JLabel hoursHeaderLine2 = new JLabel("Last Meal");
+        hoursHeaderLine2.setFont(new Font("SansSerif", Font.BOLD, 12));
+        centerPanel.add(hoursHeaderLine2, gbc);
+
+        // =====================
+        // DATA ROWS START AT gbc.gridy = 2
+        // =====================
         for (int i = 0; i < ROW_LABELS.length; i++) {
-            // Label for the row
-            JLabel rowLabel = new JLabel(ROW_LABELS[i] + ":");
-            rowLabel.setFont(new Font("SansSerif", Font.BOLD, 14));
-            rowLabel.setForeground(Color.BLACK);
+            gbc.gridy = i + 2; // shift down by 2 rows (header lines used 0 and 1)
 
-            // Blood Sugar field
-            bloodSugarFields[i] = new JTextField(5);
-
-            // Carbs field
-            carbsFields[i] = new JTextField(5);
-
-            // Layout: Row label in col 0
+            // 1) Time-of-day label in col 0
             gbc.gridx = 0;
-            gbc.gridy = i;
+            JLabel rowLabel = new JLabel(ROW_LABELS[i] + ":");
+            rowLabel.setFont(new Font("SansSerif", Font.BOLD, 12));
             centerPanel.add(rowLabel, gbc);
 
-            // Blood sugar in col 1
+            // 2) Blood sugar field in col 1
+            bloodSugarFields[i] = new JTextField(5);
             gbc.gridx = 1;
             centerPanel.add(bloodSugarFields[i], gbc);
 
-            // Carbs in col 2
+            // 3) Carbs field in col 2
+            carbsFields[i] = new JTextField(5);
             gbc.gridx = 2;
             centerPanel.add(carbsFields[i], gbc);
+
+            // 4) Hours Since Last Meal field in col 3
+            gbc.gridx = 3;
+            if (ROW_LABELS[i].endsWith("Pre")) {
+                // Only show textfield for "Breakfast Pre", "Lunch Pre", "Dinner Pre"
+                hoursSinceMealFields[i] = new JTextField(5);
+                centerPanel.add(hoursSinceMealFields[i], gbc);
+            } else {
+                // For Post or Bedtime, just show a dash
+                centerPanel.add(new JLabel("—"), gbc);
+            }
         }
 
         mainPanel.add(centerPanel, BorderLayout.CENTER);
@@ -121,6 +187,7 @@ public class Logbook extends BaseUI {
         saveAllBtn.addActionListener(e -> handleSaveAll());
         bottomPanel.add(saveAllBtn);
 
+        // Bottom Nav Bar
         JPanel navBar = createBottomNavBar("Logbook", currentUser,
                 "/Icons/home.png", "/Icons/logbookfull.png", "/Icons/profile.png");
 
@@ -133,25 +200,27 @@ public class Logbook extends BaseUI {
     }
 
     /**
-     * Loads previously saved entries for the specified date
-     * and populates the fields.
+     * Loads previously saved blood sugar/carbs for the specified date
+     * and populates the fields. (No DB interaction for Hours Since Last Meal.)
      */
     private void loadLogEntries() {
         List<LogEntry> entries = LogService.getEntriesForDate(currentUser.getId(), targetDate);
-        System.out.println("Loading entries for user " + currentUser.getId() + " on date " + targetDate + ": " + entries.size());
+        System.out.println("Loading entries for user " + currentUser.getId() + " on date " + targetDate
+                + ": " + entries.size());
 
         Map<String, LogEntry> entryMap = new HashMap<>();
-
         for (LogEntry entry : entries) {
             entryMap.put(entry.getTimeOfDay(), entry);
         }
 
+        // Fill the text fields with existing data
         for (int i = 0; i < ROW_LABELS.length; i++) {
             LogEntry entry = entryMap.get(ROW_LABELS[i]);
             if (entry != null) {
                 bloodSugarFields[i].setText(String.valueOf(entry.getBloodSugar()));
                 carbsFields[i].setText(String.valueOf(entry.getCarbsEaten()));
             }
+            // Hours Since Last Meal is not stored in DB, so we skip it here
         }
     }
 
@@ -161,9 +230,10 @@ public class Logbook extends BaseUI {
      */
     private void handleSaveAll() {
         for (int i = 0; i < ROW_LABELS.length; i++) {
-            double bg = parseDoubleSafe(bloodSugarFields[i].getText());
+            double bg    = parseDoubleSafe(bloodSugarFields[i].getText());
             double carbs = parseDoubleSafe(carbsFields[i].getText());
 
+            // Only create/update if there's some content
             if (bg > 0 || carbs > 0) {
                 LogEntry entry = new LogEntry();
                 entry.setUserId(currentUser.getId());
@@ -172,6 +242,7 @@ public class Logbook extends BaseUI {
                 entry.setBloodSugar(bg);
                 entry.setCarbsEaten(carbs);
                 entry.setFoodDetails("Logbook entry - " + ROW_LABELS[i]);
+                // We do NOT store hoursSinceMealFields in DB in this version
 
                 LogService.createEntry(entry, currentUser);
             }
