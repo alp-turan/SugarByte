@@ -89,7 +89,7 @@ public class LogEntry {
         this.carbsEaten = carbsEaten;
     }
 
-    public double getHoursSinceMeal() {
+    public int getHoursSinceMeal() {
         return hoursSinceMeal;
     }
     public void setHoursSinceMeal(int hoursSinceMeal) {

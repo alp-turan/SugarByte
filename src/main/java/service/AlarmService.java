@@ -26,7 +26,7 @@ public class AlarmService {
         // Retrieve the blood sugar value and time of the log entry
         double bloodSugar = entry.getBloodSugar();
         // Retrieve hours since last meal (this should now be part of the LogEntry)
-        double hoursSinceMeal = entry.getHoursSinceMeal();
+        int hoursSinceMeal = entry.getHoursSinceMeal();
 
         // Determine the maximum threshold based on hours since last meal
         double maxThreshold = 0.0;
@@ -60,7 +60,7 @@ public class AlarmService {
      * @param bloodSugar  The blood sugar value triggering the alarm.
      * @param hoursSinceMeal The number of hours since the user's last meal.
      */
-    private static void sendEmailAlarm(String doctorName, String doctorEmail, String userName, double bloodSugar, double hoursSinceMeal) {
+    private static void sendEmailAlarm(String doctorName, String doctorEmail, String userName, double bloodSugar, int hoursSinceMeal) {
         // SugarByte's Gmail credentials:
         final String fromEmail = "sugarbyte.app@gmail.com"; // SugarByte's email address
         final String appPassword = "twym wigt ytak botd"; // SugarByte's app password for IntelliJ (new one may need to be generated if different code manager is used)
