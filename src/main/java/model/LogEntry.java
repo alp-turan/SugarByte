@@ -11,7 +11,7 @@ public class LogEntry {
     private String timeOfDay;      // e.g. "Breakfast", "Lunch", ...
     private double bloodSugar;
     private double carbsEaten;
-    private double hoursSinceMeal;
+    private int hoursSinceMeal;
     private String foodDetails;
     private String exerciseType;
     private int exerciseDuration;  // in minutes
@@ -27,7 +27,7 @@ public class LogEntry {
                     String timeOfDay,
                     double bloodSugar,
                     double carbsEaten,
-                    double hoursSinceMeal,
+                    int hoursSinceMeal,
                     String foodDetails,
                     String exerciseType,
                     int exerciseDuration,
@@ -92,7 +92,7 @@ public class LogEntry {
     public double getHoursSinceMeal() {
         return hoursSinceMeal;
     }
-    public void setHoursSinceMeal(double hoursSinceMeal) {
+    public void setHoursSinceMeal(int hoursSinceMeal) {
         this.hoursSinceMeal = hoursSinceMeal;
     }
 

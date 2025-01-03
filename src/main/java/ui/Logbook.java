@@ -215,7 +215,7 @@ public class Logbook extends BaseUI {
                 carbsFields[i].setText(String.valueOf(entry.getCarbsEaten()));
 
                 if (ROW_LABELS[i].endsWith("Pre")) {
-                    hoursSinceMealFields[preRowIndex].setText(String.valueOf(entry.getHoursSinceMeal()));
+                    hoursSinceMealFields[preRowIndex].setText(String.valueOf((int) entry.getHoursSinceMeal()));
                     preRowIndex++;
                 }
             }
@@ -227,10 +227,10 @@ public class Logbook extends BaseUI {
         for (int i = 0; i < ROW_LABELS.length; i++) {
             double bg = parseDoubleSafe(bloodSugarFields[i].getText());
             double carbs = parseDoubleSafe(carbsFields[i].getText());
-            double hours = 0.0;
+            int hours = 0;
 
             if (ROW_LABELS[i].endsWith("Pre")) {
-                hours = parseDoubleSafe(hoursSinceMealFields[preRowIndex].getText());
+                hours = parseIntSafe(hoursSinceMealFields[preRowIndex].getText());
                 preRowIndex++;
             }
 
@@ -259,6 +259,14 @@ public class Logbook extends BaseUI {
             return Double.parseDouble(text);
         } catch (NumberFormatException e) {
             return 0.0;
+        }
+    }
+
+    private int parseIntSafe(String text) {
+        try {
+            return Integer.parseInt(text);
+        } catch (NumberFormatException e) {
+            return 0;
         }
     }
 }

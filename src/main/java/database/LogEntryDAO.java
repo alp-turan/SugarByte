@@ -117,7 +117,7 @@ public class LogEntryDAO {
         e.setTimeOfDay(rs.getString("timeOfDay"));
         e.setBloodSugar(rs.getDouble("bloodSugar"));
         e.setCarbsEaten(rs.getDouble("carbsEaten"));
-        e.setHoursSinceMeal(rs.getDouble("hoursSinceMeal"));  // This will be correctly retrieved
+        e.setHoursSinceMeal(rs.getInt("hoursSinceMeal"));  // This will be correctly retrieved
         e.setFoodDetails(rs.getString("foodDetails"));
         e.setExerciseType(rs.getString("exerciseType"));
         e.setExerciseDuration(rs.getInt("exerciseDuration"));
