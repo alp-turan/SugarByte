@@ -24,8 +24,8 @@ import java.util.Map;
  */
 public class Logbook extends BaseUI {
 
-    private final User currentUser;
-    private final String targetDate;
+    protected final User currentUser;
+    protected final String targetDate;
 
     // Existing columns
     private JTextField[] bloodSugarFields = new JTextField[7];
@@ -35,7 +35,7 @@ public class Logbook extends BaseUI {
     private JTextField[] hoursSinceMealFields = new JTextField[3]; // 3 "Pre" rows
 
     // Row labels for clarity
-    private static final String[] ROW_LABELS = {
+    protected static final String[] ROW_LABELS = {
             "Breakfast Pre",
             "Breakfast Post",
             "Lunch Pre",
@@ -55,7 +55,7 @@ public class Logbook extends BaseUI {
         setVisible(true);
     }
 
-    private void buildUI() {
+    protected void buildUI() {
         // Main gradient background from BaseUI
         JPanel mainPanel = createGradientPanel(Color.WHITE, Color.WHITE);
         mainPanel.setLayout(new BorderLayout());
@@ -199,7 +199,7 @@ public class Logbook extends BaseUI {
         mainPanel.add(wrapperPanel, BorderLayout.SOUTH);
     }
 
-    private void loadLogEntries() {
+    protected void loadLogEntries() {
         List<LogEntry> entries = LogService.getEntriesForDate(currentUser.getId(), targetDate);
 
         Map<String, LogEntry> entryMap = new HashMap<>();
@@ -222,7 +222,7 @@ public class Logbook extends BaseUI {
         }
     }
 
-    private void handleSaveAll() {
+    protected void handleSaveAll() {
         int preRowIndex = 0; // Index for "Pre" rows
         for (int i = 0; i < ROW_LABELS.length; i++) {
             double bg = parseDoubleSafe(bloodSugarFields[i].getText());
@@ -254,7 +254,7 @@ public class Logbook extends BaseUI {
                 JOptionPane.INFORMATION_MESSAGE);
     }
 
-    private double parseDoubleSafe(String text) {
+    protected double parseDoubleSafe(String text) {
         try {
             return Double.parseDouble(text);
         } catch (NumberFormatException e) {

@@ -108,23 +108,5 @@ public class AlarmService {
         }
     }
 
-    /**
-     * Temporary main method for testing AlarmService with dummy User and Log entries.
-     * For cleanliness, can be deleted. However, doesn't affect flow of the code when running the global Main script
-     */
-    public static void main(String[] args) {
-        System.out.println("Running AlarmService main method"); // to confirm execution
-        // Create a dummy user
-        User user = new User();
-        user.setDoctorEmail("xvickywalkerx@gmail.com");
-        user.setName("John Doe");
 
-        // Create a dummy log entry with hoursSinceMeal
-        LogEntry logEntry = new LogEntry();
-        logEntry.setBloodSugar(12); // Example out-of-range value
-        logEntry.setHoursSinceMeal(11); // Example fasting condition
-
-        // Test the AlarmService
-        checkAndSendAlarm(logEntry, user);
-    }
 }
