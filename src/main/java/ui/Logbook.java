@@ -32,7 +32,7 @@ public class Logbook extends BaseUI {
     private JTextField[] carbsFields      = new JTextField[7];
 
     // Newly added column (only used for "Pre" rows)
-    private JTextField[] hoursSinceMealFields = new JTextField[7];
+    private JTextField[] hoursSinceMealFields = new JTextField[3]; // 3 "Pre" rows
 
     // Row labels for clarity
     private static final String[] ROW_LABELS = {
@@ -145,6 +145,7 @@ public class Logbook extends BaseUI {
         // =====================
         // DATA ROWS START AT gbc.gridy = 2
         // =====================
+        int preRowIndex = 0; // Index for "Pre" rows
         for (int i = 0; i < ROW_LABELS.length; i++) {
             gbc.gridy = i + 2; // shift down by 2 rows (header lines used 0 and 1)
 
@@ -167,11 +168,10 @@ public class Logbook extends BaseUI {
             // 4) Hours Since Last Meal field in col 3
             gbc.gridx = 3;
             if (ROW_LABELS[i].endsWith("Pre")) {
-                // Only show textfield for "Breakfast Pre", "Lunch Pre", "Dinner Pre"
-                hoursSinceMealFields[i] = new JTextField(5);
-                centerPanel.add(hoursSinceMealFields[i], gbc);
+                hoursSinceMealFields[preRowIndex] = new JTextField(5);
+                centerPanel.add(hoursSinceMealFields[preRowIndex], gbc);
+                preRowIndex++; // Increment for next "Pre" row
             } else {
-                // For Post or Bedtime, just show a dash
                 centerPanel.add(new JLabel("—"), gbc);
             }
         }
@@ -199,41 +199,41 @@ public class Logbook extends BaseUI {
         mainPanel.add(wrapperPanel, BorderLayout.SOUTH);
     }
 
-    /**
-     * Loads previously saved blood sugar/carbs for the specified date
-     * and populates the fields. (No DB interaction for Hours Since Last Meal.)
-     */
     private void loadLogEntries() {
         List<LogEntry> entries = LogService.getEntriesForDate(currentUser.getId(), targetDate);
-        System.out.println("Loading entries for user " + currentUser.getId() + " on date " + targetDate
-                + ": " + entries.size());
 
         Map<String, LogEntry> entryMap = new HashMap<>();
         for (LogEntry entry : entries) {
             entryMap.put(entry.getTimeOfDay(), entry);
         }
 
-        // Fill the text fields with existing data
+        int preRowIndex = 0; // Index for "Pre" rows
         for (int i = 0; i < ROW_LABELS.length; i++) {
             LogEntry entry = entryMap.get(ROW_LABELS[i]);
             if (entry != null) {
                 bloodSugarFields[i].setText(String.valueOf(entry.getBloodSugar()));
                 carbsFields[i].setText(String.valueOf(entry.getCarbsEaten()));
+
+                if (ROW_LABELS[i].endsWith("Pre")) {
+                    hoursSinceMealFields[preRowIndex].setText(String.valueOf(entry.getHoursSinceMeal()));
+                    preRowIndex++;
+                }
             }
-            // Hours Since Last Meal is not stored in DB, so we skip it here
         }
     }
 
-    /**
-     * Called when the user clicks "Save All".
-     * Creates or updates LogEntry objects for each row.
-     */
     private void handleSaveAll() {
+        int preRowIndex = 0; // Index for "Pre" rows
         for (int i = 0; i < ROW_LABELS.length; i++) {
-            double bg    = parseDoubleSafe(bloodSugarFields[i].getText());
+            double bg = parseDoubleSafe(bloodSugarFields[i].getText());
             double carbs = parseDoubleSafe(carbsFields[i].getText());
+            double hours = 0.0;
 
-            // Only create/update if there's some content
+            if (ROW_LABELS[i].endsWith("Pre")) {
+                hours = parseDoubleSafe(hoursSinceMealFields[preRowIndex].getText());
+                preRowIndex++;
+            }
+
             if (bg > 0 || carbs > 0) {
                 LogEntry entry = new LogEntry();
                 entry.setUserId(currentUser.getId());
@@ -241,8 +241,8 @@ public class Logbook extends BaseUI {
                 entry.setTimeOfDay(ROW_LABELS[i]);
                 entry.setBloodSugar(bg);
                 entry.setCarbsEaten(carbs);
+                entry.setHoursSinceMeal(hours);
                 entry.setFoodDetails("Logbook entry - " + ROW_LABELS[i]);
-                // We do NOT store hoursSinceMealFields in DB in this version
 
                 LogService.createEntry(entry, currentUser);
             }

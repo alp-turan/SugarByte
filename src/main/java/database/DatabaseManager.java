@@ -117,6 +117,7 @@ public class DatabaseManager {
                 "timeOfDay TEXT NOT NULL," +
                 "bloodSugar REAL," +
                 "carbsEaten REAL," +
+                "hoursSinceMeal INTEGER," +
                 "foodDetails TEXT," +
                 "exerciseType TEXT," +
                 "exerciseDuration INTEGER," +

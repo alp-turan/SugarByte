@@ -6,8 +6,6 @@ import model.User;
 import javax.mail.*;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
-import java.time.Duration;
-import java.time.LocalTime;
 import java.util.Properties;
 
 /**
@@ -27,30 +25,15 @@ public class AlarmService {
     public static void checkAndSendAlarm(LogEntry entry, User user) {
         // Retrieve the blood sugar value and time of the log entry
         double bloodSugar = entry.getBloodSugar();
-        //commented this all out for now as it doesnt work with current log entry times
-        // String logTime = entry.getTimeOfDay(); // Time of the log entry - but gives string breakfast/lunch/dinner
-        //String logDate = entry.getDate(); // commented this out for now as we dont have acc time
-        //String lastMealTime = entry.getTimeOfDay();
-        LocalTime currentTime = LocalTime.now();
-        String lastMealTimeString = "07:00"; //hard-coded for now (must be in "HH:mm" format)
-        LocalTime lastMealTime;
-        try {
-            lastMealTime = LocalTime.parse(lastMealTimeString); // Parse to LocalTime, so 15:00 gets transformed into an object of type time
-        } catch (Exception e) {
-            System.err.println("Error parsing lastMealTime: " + e.getMessage());
-            return; // Exit if parsing fails
-        }
-        // Calculate the time difference from the last meal
-        // timeSinceLastMeal is defined in minutes
-        long timeSinceLastMeal = calculateTimeDifference(currentTime, lastMealTime);
+        // Retrieve hours since last meal (this should now be part of the LogEntry)
+        double hoursSinceMeal = entry.getHoursSinceMeal();
 
-        //Determine the maximum threshold based on the time since the last meal
+        // Determine the maximum threshold based on hours since last meal
         double maxThreshold = 0.0;
-        if (timeSinceLastMeal >= 10 * 60) { // 10+ hours = fasting (chose 10 as the range of hours for 'fasting'
-            // found in reputable health journals was 8-12, hence the midpoint of 10 hours was selected)
+        if (hoursSinceMeal >= 10) { // 10+ hours = fasting
             maxThreshold = 7.0;
             System.out.println("Fasting detected. Applying threshold of 7.0 mmol/L.");
-        } else if (timeSinceLastMeal >= 2 * 60) { // 2–10 hours = post-meal
+        } else if (hoursSinceMeal >= 2) { // 2–10 hours = post-meal
             maxThreshold = 11.0;
             System.out.println("Post-meal detected. Applying threshold of 11.0 mmol/L.");
         } else {
@@ -61,37 +44,26 @@ public class AlarmService {
         // Check if blood sugar is below minimum threshold
         if (bloodSugar < MIN_THRESHOLD) {
             System.out.println(user.getName() + ":" + " Blood sugar below 3.9 mmol/L. Triggering alarm.");
-            sendEmailAlarm(user.getDoctorName(),user.getDoctorEmail(), user.getName(), bloodSugar, lastMealTime);
+            sendEmailAlarm(user.getDoctorName(), user.getDoctorEmail(), user.getName(), bloodSugar, hoursSinceMeal);
         } else if (bloodSugar > maxThreshold) {
             System.out.println(user.getName() + ":" + " Blood sugar exceeds " + maxThreshold + " mmol/L. Triggering alarm.");
-            sendEmailAlarm(user.getDoctorName(),user.getDoctorEmail(), user.getName(), bloodSugar, lastMealTime);
+            sendEmailAlarm(user.getDoctorName(), user.getDoctorEmail(), user.getName(), bloodSugar, hoursSinceMeal);
         }
     }
 
     /**
-     * Helper method to calculate the time difference in minutes.
-     *
-     * @param currentTime       The date of the log entry.
-     * @param lastMealTime  Time of last meal (currently stored as a string: eg "breakfast pre", which throws parsing error)
-     * @return The time difference in minutes.
-     */
-    //commented this out for now as I'd have to correct the logDate & lastMealTime times
-    private static long calculateTimeDifference(LocalTime currentTime, LocalTime lastMealTime) {
-        return Duration.between(lastMealTime, currentTime).toMinutes();
-    }
-
-    /**
      * Sends an alarm email to the user's doctor using Gmail's SMTP server.
+     *
      * @param doctorEmail The doctor's email address.
-     * @param doctorName The doctor's name.
+     * @param doctorName  The doctor's name.
      * @param userName    The name of the user.
      * @param bloodSugar  The blood sugar value triggering the alarm.
-     * @param lastMealTime   The time of day of the log entry.
+     * @param hoursSinceMeal The number of hours since the user's last meal.
      */
-    private static void sendEmailAlarm(String doctorName, String doctorEmail, String userName, double bloodSugar, LocalTime lastMealTime) {
+    private static void sendEmailAlarm(String doctorName, String doctorEmail, String userName, double bloodSugar, double hoursSinceMeal) {
         // SugarByte's Gmail credentials:
         final String fromEmail = "sugarbyte.app@gmail.com"; // SugarByte's email address
-        final String appPassword = "twym wigt ytak botd"; // SugarByte's app password for IntelliJ (new one may need to generated if different code manager is used)
+        final String appPassword = "twym wigt ytak botd"; // SugarByte's app password for IntelliJ (new one may need to be generated if different code manager is used)
 
         // SMTP server properties
         Properties props = new Properties();
@@ -119,11 +91,11 @@ public class AlarmService {
             String emailBody = String.format( // by using .format, we can avoid concatenating alternating strings of
                     // text & values, eg 'userName', can instead be passed at the end of the string & have placeholders
                     // inside the message to be replaced with the corresponding values
-                    "Dear Doctor %s,\n\nYour patient %s recorded a blood sugar level of %.2f mmol/L at %s. "
-                            + "This level is outside the safe range.\n\n"
+                    "Dear Doctor %s,\n\nYour patient %s recorded a blood sugar level of %.2f mmol/L, which is %s the safe range.\n"
+                            + "This level was recorded %d hours after their last meal at %s.\n\n"
                             + "Please review and advise.\n\n"
                             + "Best regards,\nSugarByte - The Comprehensive Diabetes Monitoring App",
-                    doctorName, userName, bloodSugar, lastMealTime);
+                    doctorName, userName, bloodSugar, (bloodSugar < MIN_THRESHOLD || bloodSugar > (hoursSinceMeal >= 10 ? 7.0 : 11.0)) ? "outside" : "within", hoursSinceMeal, "the time of day or specific log time here");
 
             message.setText(emailBody);
 
@@ -135,6 +107,7 @@ public class AlarmService {
             System.err.println("Failed to send email to " + userName + "'s doctor's email " + doctorEmail);
         }
     }
+
     /**
      * Temporary main method for testing AlarmService with dummy User and Log entries.
      * For cleanliness, can be deleted. However, doesn't affect flow of the code when running the global Main script
@@ -146,14 +119,12 @@ public class AlarmService {
         user.setDoctorEmail("xvickywalkerx@gmail.com");
         user.setName("John Doe");
 
-        // Create a dummy log entry
+        // Create a dummy log entry with hoursSinceMeal
         LogEntry logEntry = new LogEntry();
         logEntry.setBloodSugar(12); // Example out-of-range value
-        //logEntry.setTimeOfDay("10:00");
-        //logEntry.setDate("14:00"); // Dummy same time for simplicity
+        logEntry.setHoursSinceMeal(11); // Example fasting condition
 
         // Test the AlarmService
         checkAndSendAlarm(logEntry, user);
     }
 }
-

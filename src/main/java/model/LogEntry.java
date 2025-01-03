@@ -11,6 +11,7 @@ public class LogEntry {
     private String timeOfDay;      // e.g. "Breakfast", "Lunch", ...
     private double bloodSugar;
     private double carbsEaten;
+    private double hoursSinceMeal;
     private String foodDetails;
     private String exerciseType;
     private int exerciseDuration;  // in minutes
@@ -26,6 +27,7 @@ public class LogEntry {
                     String timeOfDay,
                     double bloodSugar,
                     double carbsEaten,
+                    double hoursSinceMeal,
                     String foodDetails,
                     String exerciseType,
                     int exerciseDuration,
@@ -36,6 +38,7 @@ public class LogEntry {
         this.timeOfDay = timeOfDay;
         this.bloodSugar = bloodSugar;
         this.carbsEaten = carbsEaten;
+        this.hoursSinceMeal = hoursSinceMeal;
         this.foodDetails = foodDetails;
         this.exerciseType = exerciseType;
         this.exerciseDuration = exerciseDuration;
@@ -84,6 +87,13 @@ public class LogEntry {
     }
     public void setCarbsEaten(double carbsEaten) {
         this.carbsEaten = carbsEaten;
+    }
+
+    public double getHoursSinceMeal() {
+        return hoursSinceMeal;
+    }
+    public void setHoursSinceMeal(double hoursSinceMeal) {
+        this.hoursSinceMeal = hoursSinceMeal;
     }
 
     public String getFoodDetails() {

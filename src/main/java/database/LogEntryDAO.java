@@ -14,7 +14,6 @@ public class LogEntryDAO {
     /**
      * Insert a new log entry into the DB.
      */
-    //changed1
     public LogEntry createLogEntry(LogEntry entry) {
         String checkSql = "SELECT id FROM logentry WHERE userId = ? AND date = ? AND timeOfDay = ?";
 
@@ -30,18 +29,19 @@ public class LogEntryDAO {
                 if (rs.next()) {
                     // If the entry exists, update it
                     int existingId = rs.getInt("id");
-                    String updateSql = "UPDATE logentry SET bloodSugar = ?, carbsEaten = ?, foodDetails = ?, " +
+                    String updateSql = "UPDATE logentry SET bloodSugar = ?, carbsEaten = ?, hoursSinceMeal = ?, foodDetails = ?, " +
                             "exerciseType = ?, exerciseDuration = ?, insulinDose = ?, otherMedications = ? WHERE id = ?";
 
                     try (PreparedStatement updatePs = conn.prepareStatement(updateSql)) {
                         updatePs.setDouble(1, entry.getBloodSugar());
                         updatePs.setDouble(2, entry.getCarbsEaten());
-                        updatePs.setString(3, entry.getFoodDetails());
-                        updatePs.setString(4, entry.getExerciseType());
-                        updatePs.setInt(5, entry.getExerciseDuration());
-                        updatePs.setDouble(6, entry.getInsulinDose());
-                        updatePs.setString(7, entry.getOtherMedications());
-                        updatePs.setInt(8, existingId);
+                        updatePs.setDouble(3, entry.getHoursSinceMeal());  // Corrected the index to 3
+                        updatePs.setString(4, entry.getFoodDetails());
+                        updatePs.setString(5, entry.getExerciseType());
+                        updatePs.setInt(6, entry.getExerciseDuration());
+                        updatePs.setDouble(7, entry.getInsulinDose());
+                        updatePs.setString(8, entry.getOtherMedications());
+                        updatePs.setInt(9, existingId);
 
                         // Execute the update and verify it worked
                         int rowsUpdated = updatePs.executeUpdate();
@@ -51,8 +51,8 @@ public class LogEntryDAO {
                     }
                 } else {
                     // If the entry doesn't exist, insert a new one
-                    String insertSql = "INSERT INTO logentry(userId, date, timeOfDay, bloodSugar, carbsEaten, foodDetails, " +
-                            "exerciseType, exerciseDuration, insulinDose, otherMedications) VALUES(?,?,?,?,?,?,?,?,?,?)";
+                    String insertSql = "INSERT INTO logentry(userId, date, timeOfDay, bloodSugar, carbsEaten, hoursSinceMeal, foodDetails, " +
+                            "exerciseType, exerciseDuration, insulinDose, otherMedications) VALUES(?,?,?,?,?,?,?,?,?,?,?)";
 
                     try (PreparedStatement insertPs = conn.prepareStatement(insertSql, Statement.RETURN_GENERATED_KEYS)) {
                         insertPs.setInt(1, entry.getUserId());
@@ -60,11 +60,12 @@ public class LogEntryDAO {
                         insertPs.setString(3, entry.getTimeOfDay());
                         insertPs.setDouble(4, entry.getBloodSugar());
                         insertPs.setDouble(5, entry.getCarbsEaten());
-                        insertPs.setString(6, entry.getFoodDetails());
-                        insertPs.setString(7, entry.getExerciseType());
-                        insertPs.setInt(8, entry.getExerciseDuration());
-                        insertPs.setDouble(9, entry.getInsulinDose());
-                        insertPs.setString(10, entry.getOtherMedications());
+                        insertPs.setDouble(6, entry.getHoursSinceMeal());  // Corrected the index to 6
+                        insertPs.setString(7, entry.getFoodDetails());
+                        insertPs.setString(8, entry.getExerciseType());
+                        insertPs.setInt(9, entry.getExerciseDuration());
+                        insertPs.setDouble(10, entry.getInsulinDose());
+                        insertPs.setString(11, entry.getOtherMedications());
 
                         int rowsInserted = insertPs.executeUpdate();
                         if (rowsInserted > 0) {
@@ -84,9 +85,6 @@ public class LogEntryDAO {
 
         return entry;
     }
-
-
-
 
     /**
      * Retrieve all logs for a given userId and date, ordered by timeOfDay.
@@ -119,6 +117,7 @@ public class LogEntryDAO {
         e.setTimeOfDay(rs.getString("timeOfDay"));
         e.setBloodSugar(rs.getDouble("bloodSugar"));
         e.setCarbsEaten(rs.getDouble("carbsEaten"));
+        e.setHoursSinceMeal(rs.getDouble("hoursSinceMeal"));  // This will be correctly retrieved
         e.setFoodDetails(rs.getString("foodDetails"));
         e.setExerciseType(rs.getString("exerciseType"));
         e.setExerciseDuration(rs.getInt("exerciseDuration"));
