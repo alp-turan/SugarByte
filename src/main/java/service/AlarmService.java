@@ -26,7 +26,7 @@ public class AlarmService {
         // Retrieve the blood sugar value and time of the log entry
         double bloodSugar = entry.getBloodSugar();
         // Retrieve hours since last meal (this should now be part of the LogEntry)
-        double hoursSinceMeal = entry.getHoursSinceMeal();
+        int hoursSinceMeal = entry.getHoursSinceMeal();
 
         // Determine the maximum threshold based on hours since last meal
         double maxThreshold = 0.0;
@@ -60,10 +60,10 @@ public class AlarmService {
      * @param bloodSugar  The blood sugar value triggering the alarm.
      * @param hoursSinceMeal The number of hours since the user's last meal.
      */
-    private static void sendEmailAlarm(String doctorName, String doctorEmail, String userName, double bloodSugar, double hoursSinceMeal) {
+    private static void sendEmailAlarm(String doctorName, String doctorEmail, String userName, double bloodSugar, int hoursSinceMeal) {
         // SugarByte's Gmail credentials:
         final String fromEmail = "sugarbyte.app@gmail.com"; // SugarByte's email address
-        final String appPassword = "twym wigt ytak botd"; // SugarByte's app password for IntelliJ (new one may need to be generated if different code manager is used)
+        final String appPassword = "qdss cngk oxhq kzvq"; // SugarByte's app password for IntelliJ (new one may need to be generated if different code manager is used)
 
         // SMTP server properties
         Properties props = new Properties();
@@ -71,7 +71,7 @@ public class AlarmService {
         props.put("mail.smtp.port", "587");
         props.put("mail.smtp.auth", "true");
         props.put("mail.smtp.starttls.enable", "true"); // enables encryption of the emails (safer)
-        props.put("mail.smtp.ssl.trust", "smtp.gmail.com"); // Disable SSL certificate validation   TEMPORARY FIX
+        //props.put("mail.smtp.ssl.trust", "smtp.gmail.com"); // Disable SSL certificate validation   TEMPORARY FIX
 
         // Create a mail session with authentication
         Session session = Session.getInstance(props, new Authenticator() {
@@ -92,10 +92,10 @@ public class AlarmService {
                     // text & values, eg 'userName', can instead be passed at the end of the string & have placeholders
                     // inside the message to be replaced with the corresponding values
                     "Dear Doctor %s,\n\nYour patient %s recorded a blood sugar level of %.2f mmol/L, which is %s the safe range.\n"
-                            + "This level was recorded %d hours after their last meal at %s.\n\n"
+                            + "This level was recorded %d hours after their last meal.\n\n"
                             + "Please review and advise.\n\n"
                             + "Best regards,\nSugarByte - The Comprehensive Diabetes Monitoring App",
-                    doctorName, userName, bloodSugar, (bloodSugar < MIN_THRESHOLD || bloodSugar > (hoursSinceMeal >= 10 ? 7.0 : 11.0)) ? "outside" : "within", hoursSinceMeal, "the time of day or specific log time here");
+                    doctorName, userName, bloodSugar, (bloodSugar < MIN_THRESHOLD || bloodSugar > (hoursSinceMeal >= 10 ? 7.0 : 11.0)) ? "outside" : "within", hoursSinceMeal);
 
             message.setText(emailBody);
 
@@ -103,8 +103,8 @@ public class AlarmService {
             Transport.send(message);
             System.out.println("Alarm email sent to " + userName + "'s doctor's email " + doctorEmail);
         } catch (MessagingException e) {
-            e.printStackTrace();
             System.err.println("Failed to send email to " + userName + "'s doctor's email " + doctorEmail);
+            e.printStackTrace();
         }
     }
 
@@ -113,18 +113,25 @@ public class AlarmService {
      * For cleanliness, can be deleted. However, doesn't affect flow of the code when running the global Main script
      */
     public static void main(String[] args) {
-        System.out.println("Running AlarmService main method"); // to confirm execution
-        // Create a dummy user
-        User user = new User();
-        user.setDoctorEmail("xvickywalkerx@gmail.com");
-        user.setName("John Doe");
+        System.out.println("Running AlarmService main method");
+        try { // to confirm execution
+            // Create a dummy user
+            User user = new User();
+            user.setDoctorEmail("vmw122@ic.ac.uk");
+            user.setName("John Doe");
+            user.setDoctorName("Dr. Smith");
 
-        // Create a dummy log entry with hoursSinceMeal
-        LogEntry logEntry = new LogEntry();
-        logEntry.setBloodSugar(12); // Example out-of-range value
-        logEntry.setHoursSinceMeal(11); // Example fasting condition
+            // Create a dummy log entry with hoursSinceMeal
+            LogEntry logEntry = new LogEntry();
+            logEntry.setBloodSugar(12); // Example out-of-range value
+            logEntry.setHoursSinceMeal(11); // Example fasting condition
 
-        // Test the AlarmService
-        checkAndSendAlarm(logEntry, user);
+            // Test the AlarmService
+            checkAndSendAlarm(logEntry, user);
+        }
+        catch (Exception e) {
+            System.err.println("Error occurred during execution:");
+            e.printStackTrace();
+        }
     }
 }
