@@ -141,13 +141,33 @@ public class Logbook extends BaseUI {
         JLabel hoursHeaderLine2 = new JLabel("Last Meal");
         hoursHeaderLine2.setFont(new Font("SansSerif", Font.BOLD, 12));
         centerPanel.add(hoursHeaderLine2, gbc);
-
         // =====================
-        // DATA ROWS START AT gbc.gridy = 2
+        // HEADER ROW - THIRD LINE (relevant for hours since last meal)
+        // =====================
+        // Move to next row
+        gbc.gridy = 2;
+        gbc.gridx = 1;
+        JLabel bloodHeaderLine3 = new JLabel("(mmol/L)");
+        bloodHeaderLine3.setFont(new Font("SansSerif", Font.BOLD, 10));
+        centerPanel.add(bloodHeaderLine3, gbc);
+
+        gbc.gridx = 2;
+        JLabel carbsHeaderLine3 = new JLabel("(grams)");
+        carbsHeaderLine3.setFont(new Font("SansSerif", Font.BOLD, 10));
+        centerPanel.add(carbsHeaderLine3, gbc);
+
+        gbc.gridx = 3;
+        JLabel hoursHeaderLine3 = new JLabel("(to the closest hour)");
+        hoursHeaderLine3.setFont(new Font("SansSerif", Font.BOLD, 10));
+        centerPanel.add(hoursHeaderLine3, gbc);
+
+
+        // ====================
+        // DATA ROWS START AT gbc.gridy = 3
         // =====================
         int preRowIndex = 0; // Index for "Pre" rows
         for (int i = 0; i < ROW_LABELS.length; i++) {
-            gbc.gridy = i + 2; // shift down by 2 rows (header lines used 0 and 1)
+            gbc.gridy = i + 3; // shift down by 2 rows (header lines used 0,1 & 2)
 
             // 1) Time-of-day label in col 0
             gbc.gridx = 0;

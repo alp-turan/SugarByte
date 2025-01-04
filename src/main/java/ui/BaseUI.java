@@ -460,7 +460,7 @@ public class BaseUI extends JFrame {
         roundedPanel.setBackground(new Color(240, 240, 240));
         roundedPanel.setLayout(new BorderLayout());
 
-        if (labelText.equalsIgnoreCase("Username")) {
+        if (labelText.equalsIgnoreCase("Username (email)")) {
             usernameField = new JTextField();
             usernameField.setBorder(BorderFactory.createEmptyBorder(5, 15, 5, 10));
             usernameField.setBackground(new Color(240, 240, 240));

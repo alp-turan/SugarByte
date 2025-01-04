@@ -162,16 +162,19 @@ public class Home extends BaseUI {
         gbc.gridwidth = 1;
 
         // Table Headers
+        //Line/Row 1:
         gbc.gridy = 1;
         gbc.gridx = 0;
         panel.add(new JLabel(""), gbc);
         gbc.gridx = 1;
         panel.add(new JLabel("Blood Glucose"), gbc);
-        gbc.gridx = 2;
-        panel.add(new JLabel("Carbs"), gbc);
+        gbc.gridx = 3;
+        panel.add(new JLabel("Carbs eaten"), gbc);
+
+
 
         // Pre row
-        gbc.gridy = 2;
+        gbc.gridy = 3;
         gbc.gridx = 0;
         panel.add(new JLabel("Pre:"), gbc);
 
@@ -179,7 +182,7 @@ public class Home extends BaseUI {
         preBloodSugarField = new JTextField(5);
         panel.add(preBloodSugarField, gbc);
 
-        gbc.gridx = 2;
+        gbc.gridx = 3;
         preCarbsField = new JTextField(5);
         panel.add(preCarbsField, gbc);
 
@@ -192,7 +195,7 @@ public class Home extends BaseUI {
         postBloodSugarField = new JTextField(5);
         panel.add(postBloodSugarField, gbc);
 
-        gbc.gridx = 2;
+        gbc.gridx = 3;
         postCarbsField = new JTextField(5);
         panel.add(postCarbsField, gbc);
 

@@ -93,8 +93,8 @@ public class AlarmService {
                     // inside the message to be replaced with the corresponding values
                     "Dear Doctor %s,\n\nYour patient %s recorded a blood sugar level of %.2f mmol/L, which is %s the safe range.\n"
                             + "This level was recorded %d hours after their last meal.\n\n"
-                            + "Please review and advise.\n\n"
-                            + "Best regards,\nSugarByte - The Comprehensive Diabetes Monitoring App",
+                            + "Please review and advise accordingly.\n\n"
+                            + "Best regards,\nSugarByte - The Quick and Easy Diabetes Monitoring App",
                     doctorName, userName, bloodSugar, (bloodSugar < MIN_THRESHOLD || bloodSugar > (hoursSinceMeal >= 10 ? 7.0 : 11.0)) ? "outside" : "within", hoursSinceMeal);
 
             message.setText(emailBody);

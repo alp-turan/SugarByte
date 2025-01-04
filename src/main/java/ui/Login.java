@@ -19,7 +19,7 @@ public class Login extends BaseUI {
         JLabel titleLabel = createTitleLabel("SugarByte",lobsterFont, Color.BLACK);
 
         // Username & Password panels
-        JPanel usernamePanel = createInputPanel("Username");
+        JPanel usernamePanel = createInputPanel("Username (email)");
         JPanel passwordPanel = createInputPanel("Password");
 
         // Sign In Button
@@ -41,7 +41,7 @@ public class Login extends BaseUI {
         gbc.gridy = 0;
         mainPanel.add(titleLabel, gbc);
 
-        gbc.insets = new Insets(5, 0, 0, 0);
+        gbc.insets = new Insets(0, 20, 0, 12);
         gbc.gridy = 1;
         mainPanel.add(usernamePanel, gbc);
 
