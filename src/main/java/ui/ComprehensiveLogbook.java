@@ -5,6 +5,7 @@ import model.User;
 import service.LogService;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.util.HashMap;
 import java.util.List;
@@ -14,12 +15,13 @@ public class ComprehensiveLogbook extends BaseUI {
     private final User currentUser;
     private final String targetDate;
 
-    // Fields for blood sugar, carbs, and exercise details
-    private JTextField[] bloodSugarFields = new JTextField[7];
-    private JTextField[] carbsFields = new JTextField[7];
-    private JTextField[] exerciseTypeFields = new JTextField[7];
-    private JTextField[] exerciseDurationFields = new JTextField[7];
+    // Arrays to hold our input fields
+    private final JTextField[] bloodSugarFields = new JTextField[7];
+    private final JTextField[] carbsFields = new JTextField[7];
+    private final JTextField[] exerciseTypeFields = new JTextField[7];
+    private final JTextField[] exerciseDurationFields = new JTextField[7];
 
+    // Define our time periods for readings
     private static final String[] ROW_LABELS = {
             "Breakfast Pre",
             "Breakfast Post",
@@ -30,96 +32,172 @@ public class ComprehensiveLogbook extends BaseUI {
             "Bedtime"
     };
 
+    // Colors for better visual organization
+    private static final Color SECTION_HEADER_COLOR = new Color(70, 70, 70);
+    private static final Color LABEL_COLOR = new Color(100, 100, 100);
+    private static final int STANDARD_PADDING = 15;
+
     public ComprehensiveLogbook(User user, String date) {
         super("Comprehensive Logbook for " + date);
         this.currentUser = user;
         this.targetDate = date;
-
         buildUI();
         loadLogEntries();
         setVisible(true);
     }
 
     private void buildUI() {
+        // Create main panel with gradient background
         JPanel mainPanel = createGradientPanel(Color.WHITE, Color.WHITE);
-        mainPanel.setLayout(new BorderLayout());
+        mainPanel.setLayout(new BorderLayout(STANDARD_PADDING, STANDARD_PADDING));
+        mainPanel.setBorder(new EmptyBorder(STANDARD_PADDING, STANDARD_PADDING,
+                STANDARD_PADDING, STANDARD_PADDING));
         setContentPane(mainPanel);
 
-        JPanel topPanel = new JPanel();
-        topPanel.setOpaque(false);
-        topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.Y_AXIS));
-        topPanel.setBorder(BorderFactory.createEmptyBorder(20, 0, 20, 0));
+        // Create and add the header section
+        mainPanel.add(createHeaderPanel(), BorderLayout.NORTH);
 
-        JLabel titleLabel = createTitleLabel("Comprehensive Logbook", lobsterFont, Color.BLACK);
-        titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        topPanel.add(titleLabel);
+        // Create and add the main content section
+        JScrollPane scrollPane = new JScrollPane(createLogEntryPanel());
+        scrollPane.setOpaque(false);
+        scrollPane.getViewport().setOpaque(false);
+        scrollPane.setBorder(null);
+        mainPanel.add(scrollPane, BorderLayout.CENTER);
 
-        JLabel dateLabel = new JLabel("Logbook for " + targetDate, SwingConstants.CENTER);
-        dateLabel.setFont(new Font("SansSerif", Font.PLAIN, 16));
-        dateLabel.setForeground(Color.BLACK);
-        dateLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        topPanel.add(dateLabel);
-
-        mainPanel.add(topPanel, BorderLayout.NORTH);
-
-        JPanel centerPanel = new JPanel(new GridBagLayout());
-        centerPanel.setOpaque(false);
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(8, 8, 8, 8);
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-
-        for (int i = 0; i < ROW_LABELS.length; i++) {
-            JLabel rowLabel = new JLabel(ROW_LABELS[i] + ":");
-            rowLabel.setFont(new Font("SansSerif", Font.BOLD, 14));
-            rowLabel.setForeground(Color.BLACK);
-
-            bloodSugarFields[i] = new JTextField(5);
-            carbsFields[i] = new JTextField(5);
-            exerciseTypeFields[i] = new JTextField(10);
-            exerciseDurationFields[i] = new JTextField(5);
-
-            gbc.gridx = 0;
-            gbc.gridy = i;
-            centerPanel.add(rowLabel, gbc);
-
-            gbc.gridx = 1;
-            centerPanel.add(bloodSugarFields[i], gbc);
-
-            gbc.gridx = 2;
-            centerPanel.add(carbsFields[i], gbc);
-
-            gbc.gridx = 3;
-            centerPanel.add(new JLabel("Exercise Type:"), gbc);
-            gbc.gridx = 4;
-            centerPanel.add(exerciseTypeFields[i], gbc);
-
-            gbc.gridx = 5;
-            centerPanel.add(new JLabel("Duration (min):"), gbc);
-            gbc.gridx = 6;
-            centerPanel.add(exerciseDurationFields[i], gbc);
-        }
-
-        mainPanel.add(centerPanel, BorderLayout.CENTER);
-
-        JPanel bottomPanel = new JPanel();
+        // Create and add the bottom section with save button and navigation
+        mainPanel.add(createBottomPanel(), BorderLayout.SOUTH);
+    }
+    private JPanel createBottomPanel() {
+        JPanel bottomPanel = new JPanel(new BorderLayout());
         bottomPanel.setOpaque(false);
+
+        // Create panel for the save button
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        buttonPanel.setOpaque(false);
+
+        // Create and style the save button
         JButton saveAllBtn = new JButton("Save All");
         saveAllBtn.setBackground(new Color(237, 165, 170));
         saveAllBtn.setForeground(Color.BLACK);
+        saveAllBtn.setFont(new Font("SansSerif", Font.BOLD, 14));
+        saveAllBtn.setPreferredSize(new Dimension(120, 40));
         saveAllBtn.addActionListener(e -> handleSaveAll());
-        bottomPanel.add(saveAllBtn);
+        buttonPanel.add(saveAllBtn);
 
+        // Create the navigation bar
         JPanel navBar = createBottomNavBar("Logbook", currentUser,
                 "/Icons/home.png", "/Icons/logbookfull.png", "/Icons/profile.png");
 
+        // Add both panels to the bottom panel
+        bottomPanel.add(buttonPanel, BorderLayout.NORTH);
+        bottomPanel.add(navBar, BorderLayout.SOUTH);
+
+        return bottomPanel;
+    }
+    private JPanel createHeaderPanel() {
+        JPanel headerPanel = new JPanel();
+        headerPanel.setOpaque(false);
+        headerPanel.setLayout(new BoxLayout(headerPanel, BoxLayout.Y_AXIS));
+        headerPanel.setBorder(new EmptyBorder(0, 0, STANDARD_PADDING, 0));
+
+        // Add title
+        JLabel titleLabel = createTitleLabel("Comprehensive Logbook", lobsterFont, Color.BLACK);
+        titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        // Add date subtitle
+        JLabel dateLabel = new JLabel("Logbook for " + targetDate);
+        dateLabel.setFont(new Font("SansSerif", Font.PLAIN, 16));
+        dateLabel.setForeground(LABEL_COLOR);
+        dateLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        headerPanel.add(titleLabel);
+        headerPanel.add(Box.createVerticalStrut(5));
+        headerPanel.add(dateLabel);
+
+        return headerPanel;
+    }
+
+    private JPanel createLogEntryPanel() {
+        JPanel entryPanel = new JPanel();
+        entryPanel.setOpaque(false);
+        entryPanel.setLayout(new GridBagLayout());
+
+        // Create constraints for our grid
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(8, 12, 8, 12);  // Add more padding between elements
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.anchor = GridBagConstraints.WEST;
+
+        // Add column headers
+        addColumnHeaders(entryPanel, gbc);
+
+        // Add entry rows
+        for (int i = 0; i < ROW_LABELS.length; i++) {
+            addLogEntryRow(entryPanel, gbc, i);
+        }
+
+        // Wrap the panel to allow for proper scrolling
         JPanel wrapperPanel = new JPanel(new BorderLayout());
         wrapperPanel.setOpaque(false);
-        wrapperPanel.add(bottomPanel, BorderLayout.NORTH);
-        wrapperPanel.add(navBar, BorderLayout.SOUTH);
+        wrapperPanel.add(entryPanel, BorderLayout.NORTH);
+        wrapperPanel.add(Box.createVerticalGlue(), BorderLayout.CENTER);
 
-        mainPanel.add(wrapperPanel, BorderLayout.SOUTH);
+        return wrapperPanel;
+    }
+
+    private void addColumnHeaders(JPanel panel, GridBagConstraints gbc) {
+        String[] headers = {"Time", "Blood Sugar", "Carbs", "Exercise Type", "Duration"};
+        gbc.gridy = 0;
+        gbc.gridx = 0;
+
+        for (String header : headers) {
+            JLabel headerLabel = new JLabel(header);
+            headerLabel.setFont(new Font("SansSerif", Font.BOLD, 14));
+            headerLabel.setForeground(SECTION_HEADER_COLOR);
+            panel.add(headerLabel, gbc);
+            gbc.gridx++;
+        }
+    }
+
+    private void addLogEntryRow(JPanel panel, GridBagConstraints gbc, int rowIndex) {
+        gbc.gridy = rowIndex + 1;  // +1 because row 0 is headers
+        gbc.gridx = 0;
+
+        // Time label
+        JLabel timeLabel = new JLabel(ROW_LABELS[rowIndex]);
+        timeLabel.setFont(new Font("SansSerif", Font.BOLD, 14));
+        timeLabel.setForeground(LABEL_COLOR);
+        panel.add(timeLabel, gbc);
+
+        // Blood sugar field
+        gbc.gridx++;
+        bloodSugarFields[rowIndex] = createStyledTextField(5);
+        panel.add(bloodSugarFields[rowIndex], gbc);
+
+        // Carbs field
+        gbc.gridx++;
+        carbsFields[rowIndex] = createStyledTextField(5);
+        panel.add(carbsFields[rowIndex], gbc);
+
+        // Exercise type field
+        gbc.gridx++;
+        exerciseTypeFields[rowIndex] = createStyledTextField(15);
+        panel.add(exerciseTypeFields[rowIndex], gbc);
+
+        // Exercise duration field
+        gbc.gridx++;
+        exerciseDurationFields[rowIndex] = createStyledTextField(5);
+        panel.add(exerciseDurationFields[rowIndex], gbc);
+    }
+
+    private JTextField createStyledTextField(int columns) {
+        JTextField field = new JTextField(columns);
+        field.setFont(new Font("SansSerif", Font.PLAIN, 14));
+        field.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(new Color(200, 200, 200)),
+                BorderFactory.createEmptyBorder(5, 8, 5, 8)
+        ));
+        return field;
     }
 
     private void loadLogEntries() {
