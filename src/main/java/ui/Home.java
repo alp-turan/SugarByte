@@ -10,11 +10,6 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
-/**
- * The "Home" screen for the user after logging in.
- * Displays greeting, quick log fields, and a button to open today's logbook.
- * Now uses the user's 'logbookType' to open the correct logbook class.
- */
 public class Home extends BaseUI {
 
     private JLabel greetingLabel;
@@ -116,6 +111,21 @@ public class Home extends BaseUI {
         gbc.insets = new Insets(0, 20, 0, 20);
         centerPanel.add(quickLogPanel, gbc);
 
+        // ============ LAST WEEK'S TREND BUTTON ============
+        JButton trendButton = new RoundedButton("Last Week's Glucose Trend", new Color(240, 240, 240));
+        trendButton.setForeground(Color.BLACK);
+        trendButton.setFont(new Font("Poppins", Font.BOLD, 14));
+        trendButton.setPreferredSize(new Dimension(250, 40));
+
+        trendButton.addActionListener(e -> {
+            dispose(); // Close Home
+            new GlucoseGraph(currentUser); // Open the new graph page
+        });
+
+        gbc.gridy = 5;
+        gbc.insets = new Insets(20, 20, 10, 20);
+        centerPanel.add(trendButton, gbc);
+
         // "Logbook for (date)" button
         String logbookLabel = "Logbook for " + today.format(DateTimeFormatter.ofPattern("d MMM"));
         RoundedButton logbookButton = new RoundedButton(logbookLabel, new Color(240, 240, 240));
@@ -125,7 +135,7 @@ public class Home extends BaseUI {
 
         // Now open the CORRECT logbook based on user.getLogbookType()
         logbookButton.addActionListener(e -> {
-            dispose(); // Close the Home window
+            dispose();
             String logbookType = currentUser.getLogbookType(); // "Simple", "Comprehensive", or "Intensive"
 
             switch (logbookType) {
@@ -149,8 +159,8 @@ public class Home extends BaseUI {
             }
         });
 
-        gbc.gridy = 5;
-        gbc.insets = new Insets(50, 20, 20, 20);
+        gbc.gridy = 6;
+        gbc.insets = new Insets(15, 20, 20, 20);
         centerPanel.add(logbookButton, gbc);
 
         mainPanel.add(centerPanel);
@@ -258,18 +268,18 @@ public class Home extends BaseUI {
         double preBG = parseDoubleSafe(preBloodSugarField.getText());
         double preCarbs = parseDoubleSafe(preCarbsField.getText());
 
+        LocalDate today = LocalDate.now();
         String meal = getCurrentMeal();
+
         // Create a "Pre" log entry
         if (preBG > 0 || preCarbs > 0) {
             LogEntry entryPre = new LogEntry();
             entryPre.setUserId(currentUser.getId());
-            entryPre.setDate(LocalDate.now().toString());
+            entryPre.setDate(today.toString());
             entryPre.setTimeOfDay(meal + " Pre");
             entryPre.setBloodSugar(preBG);
             entryPre.setCarbsEaten(preCarbs);
             entryPre.setFoodDetails("Quick log (Pre)");
-
-            // Save the "Pre" entry
             LogService.createEntry(entryPre, currentUser);
         }
 
@@ -279,37 +289,22 @@ public class Home extends BaseUI {
         if (postBG > 0 || postCarbs > 0) {
             LogEntry entryPost = new LogEntry();
             entryPost.setUserId(currentUser.getId());
-            entryPost.setDate(LocalDate.now().toString());
+            entryPost.setDate(today.toString());
             entryPost.setTimeOfDay(meal + " Post");
             entryPost.setBloodSugar(postBG);
             entryPost.setCarbsEaten(postCarbs);
             entryPost.setFoodDetails("Quick log (Post)");
-
-            // Save the "Post" entry
             LogService.createEntry(entryPost, currentUser);
         }
 
         JOptionPane.showMessageDialog(this, "Quick log saved!");
     }
 
-    /**
-     * Safe parse for double fields.
-     */
     private double parseDoubleSafe(String text) {
         try {
             return Double.parseDouble(text);
         } catch (NumberFormatException e) {
             return 0.0;
         }
-    }
-
-    // For quick testing
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            User dummyUser = new User();
-            dummyUser.setName("Mark");
-            dummyUser.setLogbookType("Simple"); // or "Comprehensive" or "Intensive"
-            new Home(dummyUser);
-        });
     }
 }

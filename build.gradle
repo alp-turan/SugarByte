@@ -24,6 +24,8 @@ dependencies {
     // JavaMail dependencies
     implementation 'javax.mail:javax.mail-api:1.6.2'
     implementation 'com.sun.mail:javax.mail:1.6.2'
+    implementation 'org.jfree:jfreechart:1.5.3'
+    implementation 'org.jfree:jcommon:1.0.24'
     // If you need other libraries, add them here
     // e.g., implementation 'com.google.guava:guava:31.1-jre'
 }
