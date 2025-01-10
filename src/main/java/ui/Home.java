@@ -174,7 +174,7 @@ public class Home extends BaseUI {
 
 
         // Pre row
-        gbc.gridy = 3;
+        gbc.gridy = 2;
         gbc.gridx = 0;
         panel.add(new JLabel("Pre:"), gbc);
 
