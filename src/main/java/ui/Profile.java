@@ -27,10 +27,13 @@ public class Profile extends BaseUI {
     private JPasswordField passwordField;
 
     // Fields for doctor’s information
-    private JTextField doctorNameField;     // from first version
+    private JTextField doctorNameField;
     private JTextField doctorEmailField;
     private JTextField doctorAddressField;
     private JTextField doctorEmergencyField;
+
+    // Field for logbook type
+    private JComboBox<String> logbookTypeCombo;
 
     public Profile(User user) {
         super("Profile");
@@ -44,7 +47,6 @@ public class Profile extends BaseUI {
         // Fonts
         Font lobsterFont = loadCustomFont(38f);
         Font poppinsBold = new Font("SansSerif", Font.BOLD, 16);
-        Font poppinsNormal = new Font("SansSerif", Font.PLAIN, 14);
 
         // Title
         JLabel titleLabel = createTitleLabel("SugarByte", lobsterFont, Color.BLACK);
@@ -75,7 +77,7 @@ public class Profile extends BaseUI {
         nameField.setText(safeValue(currentUser.getName(), "Name"));
         userPanel.add(nameField, gbc);
 
-        // Next row
+        // Next row: Email
         gbc.gridy++;
         gbc.gridx = 0;
         userPanel.add(new JLabel("Email:"), gbc);
@@ -90,7 +92,6 @@ public class Profile extends BaseUI {
         userPanel.add(new JLabel("Type of Diabetes:"), gbc);
         gbc.gridx = 1;
         diabetesCombo = new JComboBox<>(new String[]{"Type 1", "Type 2"});
-        // pre-select user’s current value if not null
         if (currentUser.getDiabetesType() != null) {
             diabetesCombo.setSelectedItem(currentUser.getDiabetesType());
         }
@@ -138,9 +139,20 @@ public class Profile extends BaseUI {
         if (currentUser.getPassword() != null) {
             passwordField.setText(currentUser.getPassword());
         } else {
-            passwordField.setText("password123");  // placeholder
+            passwordField.setText("password123");
         }
         userPanel.add(passwordField, gbc);
+
+        // Next row: Logbook Type
+        gbc.gridy++;
+        gbc.gridx = 0;
+        userPanel.add(new JLabel("Logbook Type:"), gbc);
+        gbc.gridx = 1;
+        logbookTypeCombo = new JComboBox<>(new String[]{"Simple", "Comprehensive", "Intensive"});
+        if (currentUser.getLogbookType() != null) {
+            logbookTypeCombo.setSelectedItem(currentUser.getLogbookType());
+        }
+        userPanel.add(logbookTypeCombo, gbc);
 
         centerPanel.add(userPanel);
 
@@ -214,7 +226,6 @@ public class Profile extends BaseUI {
 
         setVisible(true);
         addLogoutButton();
-
     }
 
     /**
@@ -222,7 +233,6 @@ public class Profile extends BaseUI {
      * then calls UserDAO.updateUser(...) to persist changes.
      */
     private void handleSaveChanges() {
-        // Basic validations (optional)
         if (nameField.getText().trim().isEmpty() ||
                 emailField.getText().trim().isEmpty() ||
                 passwordField.getPassword().length == 0) {
@@ -232,7 +242,6 @@ public class Profile extends BaseUI {
             return;
         }
 
-        // Update user object
         currentUser.setName(nameField.getText().trim());
         currentUser.setEmail(emailField.getText().trim());
         currentUser.setDiabetesType((String) diabetesCombo.getSelectedItem());
@@ -246,7 +255,8 @@ public class Profile extends BaseUI {
         currentUser.setDoctorAddress(doctorAddressField.getText().trim());
         currentUser.setDoctorEmergencyPhone(doctorEmergencyField.getText().trim());
 
-        // Now persist to DB
+        currentUser.setLogbookType((String) logbookTypeCombo.getSelectedItem());
+
         try {
             UserDAO dao = new UserDAO();
             dao.updateUser(currentUser);
@@ -261,32 +271,7 @@ public class Profile extends BaseUI {
         }
     }
 
-    /**
-     * Safely returns the user’s existing field or a default placeholder.
-     */
-    private String safeValue(String fieldValue, String defaultValue) {
-        return (fieldValue != null && !fieldValue.trim().isEmpty())
-                ? fieldValue
-                : defaultValue;
-    }
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            User dummyUser = new User();
-            dummyUser.setId(1);  // For testing updates
-            dummyUser.setName("Mark");
-            dummyUser.setEmail("mark@example.com");
-            dummyUser.setDiabetesType("Type 1");
-            dummyUser.setInsulinType("Rapid-acting");
-            dummyUser.setInsulinAdmin("Pen");
-            dummyUser.setPhone("07498375960");
-            dummyUser.setPassword("password123");
-            dummyUser.setDoctorName("Dr. Roberts");
-            dummyUser.setDoctorEmail("doctor@hospital.com");
-            dummyUser.setDoctorAddress("123 Clinic Rd, City, XYZ");
-            dummyUser.setDoctorEmergencyPhone("07123456789");
-
-            new Profile(dummyUser);
-        });
+    private String safeValue(String value, String defaultValue) {
+        return value != null && !value.isEmpty() ? value : defaultValue;
     }
 }
