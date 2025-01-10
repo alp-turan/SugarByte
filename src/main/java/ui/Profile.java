@@ -35,6 +35,108 @@ public class Profile extends BaseUI {
     // Field for logbook type
     private JComboBox<String> logbookTypeCombo;
 
+    // In Profile class
+    private void buildUI() {
+        // Add padding around the main content
+        ((JPanel)getContentPane()).setBorder(
+                BorderFactory.createEmptyBorder(20, 20, 20, 20)
+        );
+
+        // Create a scrollable panel for the content
+        JPanel contentPanel = new JPanel();
+        contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
+        contentPanel.setOpaque(false);
+
+        // Add spacing between title and content
+        contentPanel.add(Box.createVerticalStrut(60));  // Space for title and logout
+
+        // Add the panels with proper spacing
+        contentPanel.add(createUserInfoPanel());
+        contentPanel.add(Box.createVerticalStrut(20));
+        contentPanel.add(createDoctorInfoPanel());
+        contentPanel.add(Box.createVerticalStrut(20));
+
+        // Wrap in scroll pane
+        JScrollPane scrollPane = new JScrollPane(contentPanel);
+        scrollPane.setBorder(null);
+        scrollPane.setOpaque(false);
+        scrollPane.getViewport().setOpaque(false);
+
+        add(scrollPane, BorderLayout.CENTER);
+    }
+    private JPanel createUserInfoPanel() {
+        JPanel panel = new RoundedPanel(20, 5);  // Rounded corners with slight shadow
+        panel.setLayout(new GridBagLayout());
+        panel.setBackground(new Color(245, 245, 245));  // Light gray background
+        panel.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createTitledBorder("User's Information"),
+                BorderFactory.createEmptyBorder(10, 10, 10, 10)
+        ));
+
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.insets = new Insets(5, 5, 5, 15);  // Add space between label and field
+
+        // Add full name field
+        addFormField(panel, gbc, "Full Name:", nameField);
+        gbc.gridy++;
+        addFormField(panel, gbc, "Email:", emailField);
+        gbc.gridy++;
+        addFormField(panel, gbc, "Type of Diabetes:", diabetesCombo);
+        gbc.gridy++;
+        addFormField(panel, gbc, "Type of Insulin:", insulinTypeCombo);
+        gbc.gridy++;
+        addFormField(panel, gbc, "Insulin Administration:", insulinAdminCombo);
+        gbc.gridy++;
+        addFormField(panel, gbc, "Phone Number:", phoneField);
+        gbc.gridy++;
+        addFormField(panel, gbc, "Password:", passwordField);
+        gbc.gridy++;
+        addFormField(panel, gbc, "Logbook Type:", logbookTypeCombo);
+
+        return panel;
+    }
+
+    private JPanel createDoctorInfoPanel() {
+        JPanel panel = new RoundedPanel(20, 5);
+        panel.setLayout(new GridBagLayout());
+        panel.setBackground(new Color(245, 245, 245));
+        panel.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createTitledBorder("Doctor's Information"),
+                BorderFactory.createEmptyBorder(10, 10, 10, 10)
+        ));
+
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.insets = new Insets(5, 5, 5, 15);
+
+        addFormField(panel, gbc, "Doctor's Name:", doctorNameField);
+        gbc.gridy++;
+        addFormField(panel, gbc, "Doctor Email:", doctorEmailField);
+        gbc.gridy++;
+        addFormField(panel, gbc, "Address:", doctorAddressField);
+        gbc.gridy++;
+        addFormField(panel, gbc, "Emergency Phone:", doctorEmergencyField);
+
+        return panel;
+    }
+
+    private void addFormField(JPanel panel, GridBagConstraints gbc, String labelText, JComponent field) {
+        JLabel label = new JLabel(labelText);
+        label.setFont(new Font("SansSerif", Font.BOLD, 14));
+        panel.add(label, gbc);
+
+        GridBagConstraints fieldGbc = (GridBagConstraints) gbc.clone();
+        fieldGbc.gridx = 1;
+        fieldGbc.fill = GridBagConstraints.HORIZONTAL;
+        fieldGbc.weightx = 1.0;
+        panel.add(field, fieldGbc);
+    }
+
     public Profile(User user) {
         super("Profile");
         this.currentUser = user;

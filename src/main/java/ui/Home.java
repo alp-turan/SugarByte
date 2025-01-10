@@ -10,6 +10,8 @@ import java.awt.*;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.ArrayList;
 
 public class Home extends BaseUI {
 
@@ -20,6 +22,7 @@ public class Home extends BaseUI {
     private JTextField preCarbsField;
     private JTextField postBloodSugarField;
     private JTextField postCarbsField;
+    private GlucoseIndicator glucoseIndicator;
 
     public Home(User user) {
         super("Home");
@@ -77,23 +80,22 @@ public class Home extends BaseUI {
         gbc.weightx = 1.0;
         gbc.gridx = 0;
 
-        // Greeting + Green Circle row
-        JPanel greetingPanel = new JPanel(new BorderLayout());
+        // Greeting + Glucose Indicator row
+        JPanel greetingPanel = new JPanel(new BorderLayout(20, 0));
         greetingPanel.setOpaque(false);
 
-        greetingLabel = new JLabel("Hi, Name");
+        // Greeting on the left
+        greetingLabel = new JLabel("Hi, " + currentUser.getName());
         greetingLabel.setFont(new Font("SansSerif", Font.BOLD, 22));
         greetingLabel.setForeground(Color.BLACK);
 
-        // Decorative green circle
-        JLabel greenCircle = new JLabel();
-        greenCircle.setOpaque(true);
-        greenCircle.setBackground(new Color(0, 128, 0));
-        greenCircle.setPreferredSize(new Dimension(10, 10));
-        greenCircle.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
+        // Glucose indicator on the right
+        glucoseIndicator = new GlucoseIndicator();
+        double latestGlucose = getLatestGlucoseReading();
+        glucoseIndicator.updateGlucoseLevel(latestGlucose);
 
         greetingPanel.add(greetingLabel, BorderLayout.WEST);
-        greetingPanel.add(greenCircle, BorderLayout.EAST);
+        greetingPanel.add(glucoseIndicator, BorderLayout.EAST);
 
         gbc.gridy = 2;
         gbc.insets = new Insets(5, 20, 0, 20);
@@ -128,9 +130,8 @@ public class Home extends BaseUI {
         gbc.insets = new Insets(20, 20, 10, 20);
         centerPanel.add(trendButton, gbc);
 
-        // "Logbook for (date)" button
-        String logbookLabel = "Logbook for " + today.format(DateTimeFormatter.ofPattern("d MMM"));
-        RoundedButton logbookButton = new RoundedButton(logbookLabel, new Color(240, 240, 240));
+        // "View Today's Logbook" button
+        RoundedButton logbookButton = new RoundedButton("View Today's Logbook", new Color(240, 240, 240));
         logbookButton.setForeground(Color.BLACK);
         logbookButton.setFont(new Font("Poppins", Font.BOLD, 14));
         logbookButton.setPreferredSize(new Dimension(200, 40));
@@ -172,6 +173,17 @@ public class Home extends BaseUI {
                 "/Icons/homefull.png", "/Icons/logbook.png", "/Icons/profile.png");
         mainPanel.add(navBar);
     }
+    private double getLatestGlucoseReading() {
+        List<LogEntry> todaysLogs = LogService.getEntriesForDate(
+                currentUser.getId(),
+                LocalDate.now().toString()
+        );
+
+        if (!todaysLogs.isEmpty()) {
+            return todaysLogs.get(0).getBloodSugar();
+        }
+        return 6.0; // Default "normal" value if no readings today
+    }
 
     /**
      * Creates a Quick Log panel with Pre/Post BG + Carbs.
@@ -202,9 +214,9 @@ public class Home extends BaseUI {
         gbc.gridx = 0;
         panel.add(new JLabel(""), gbc);
         gbc.gridx = 1;
-        panel.add(new JLabel("Blood Glucose"), gbc);
+        panel.add(new JLabel("Blood Glucose (mmol/L)"), gbc);
         gbc.gridx = 2;
-        panel.add(new JLabel("Carbs"), gbc);
+        panel.add(new JLabel("Carbs Eaten (g)"), gbc);
 
         // Pre row
         gbc.gridy = 2;

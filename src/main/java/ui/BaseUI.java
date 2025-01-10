@@ -64,39 +64,84 @@ public class BaseUI extends JFrame {
 
 
     protected void addLogoutButton() {
-        JButton logoutButton = new JButton("Logout");
-        logoutButton.setFont(new Font("SansSerif", Font.BOLD, 16));
-        logoutButton.setFocusPainted(false);
-        logoutButton.setBorderPainted(false);
-        logoutButton.setContentAreaFilled(false);
-        logoutButton.setForeground(Color.RED);
-
-        logoutButton.addActionListener(new ActionListener() {
+        // Create a styled button using our RoundedButton class for consistency
+        RoundedButton logoutButton = new RoundedButton("Logout", new Color(220, 53, 69)) {
+            // Override the preferred size to maintain consistent button dimensions
             @Override
-            public void actionPerformed(ActionEvent e) {
-                handleLogout();
+            public Dimension getPreferredSize() {
+                return new Dimension(100, 35);
+            }
+        };
+
+        // Style the button
+        logoutButton.setForeground(Color.WHITE);
+        logoutButton.setFont(new Font("SansSerif", Font.BOLD, 14));
+
+        // Add hover effect
+        logoutButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                logoutButton.setBackground(new Color(200, 35, 51)); // Darker red on hover
+            }
+
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                logoutButton.setBackground(new Color(220, 53, 69)); // Return to original color
             }
         });
 
+        // Create a container panel for proper positioning
+        JPanel headerPanel = new JPanel(new BorderLayout());
+        headerPanel.setOpaque(false);
+
+        // Create right-aligned panel for logout button with proper padding
         JPanel logoutPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         logoutPanel.setOpaque(false);
+        logoutPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 15)); // Add padding
         logoutPanel.add(logoutButton);
 
-        // Add the logout button to the frame
-        getContentPane().add(logoutPanel, BorderLayout.NORTH);
+        // Add logout panel to the header
+        headerPanel.add(logoutPanel, BorderLayout.EAST);
+
+        // Add action listener for logout functionality
+        logoutButton.addActionListener(e -> handleLogout());
+
+        // Add the header panel to the frame
+        getContentPane().add(headerPanel, BorderLayout.NORTH);
     }
 
-    // Method to handle logout logic
     private void handleLogout() {
-        int result = JOptionPane.showConfirmDialog(this, "Are you sure you want to log out?", "Logout", JOptionPane.YES_NO_OPTION);
-        if (result == JOptionPane.YES_OPTION) {
-            // Clear user session or perform any other necessary action
-            // currentUser = null;
+        // Create a custom confirmation dialog with styled buttons
+        int result = createCustomConfirmDialog(
+                "Logout Confirmation",
+                "Are you sure you want to log out?",
+                new Color(220, 53, 69)  // Match logout button color
+        );
 
-            // Example of logging out: Close current window and open the login screen
-            dispose(); // Close the current screen
-            new Login(); // Open the login screen (you should have a Login class)
+        if (result == JOptionPane.YES_OPTION) {
+            dispose();
+            new Login();
         }
+    }
+
+    // Helper method to create consistently styled confirmation dialogs
+    private int createCustomConfirmDialog(String title, String message, Color accentColor) {
+        // Create custom buttons with consistent styling
+        RoundedButton yesButton = new RoundedButton("Yes", accentColor);
+        RoundedButton noButton = new RoundedButton("No", Color.GRAY);
+        yesButton.setForeground(Color.WHITE);
+        noButton.setForeground(Color.WHITE);
+
+        // Create the dialog with custom options
+        Object[] options = {yesButton, noButton};
+        return JOptionPane.showOptionDialog(
+                this,
+                message,
+                title,
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.QUESTION_MESSAGE,
+                null,
+                options,
+                noButton  // Default to 'No'
+        );
     }
 
     // Method to load custom fonts
