@@ -10,6 +10,11 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
+/**
+ * The "Home" screen for the user after logging in.
+ * Displays greeting, quick log fields, and a button to open today's logbook.
+ * Now uses the user's 'logbookType' to open the correct logbook class.
+ */
 public class Home extends BaseUI {
 
     private JLabel greetingLabel;
@@ -118,10 +123,30 @@ public class Home extends BaseUI {
         logbookButton.setFont(new Font("Poppins", Font.BOLD, 14));
         logbookButton.setPreferredSize(new Dimension(200, 40));
 
-        // NEW: Open the Logbook page for "today"
+        // Now open the CORRECT logbook based on user.getLogbookType()
         logbookButton.addActionListener(e -> {
-            dispose();
-            new Logbook(currentUser, today.toString());
+            dispose(); // Close the Home window
+            String logbookType = currentUser.getLogbookType(); // "Simple", "Comprehensive", or "Intensive"
+
+            switch (logbookType) {
+                case "Simple":
+                    new Logbook(currentUser, today.toString());
+                    break;
+                case "Comprehensive":
+                    new ComprehensiveLogbook(currentUser, today.toString());
+                    break;
+                case "Intensive":
+                    new IntensiveLogbook(currentUser, today.toString());
+                    break;
+                default:
+                    JOptionPane.showMessageDialog(
+                            this,
+                            "Unknown logbook type: " + logbookType,
+                            "Error",
+                            JOptionPane.ERROR_MESSAGE
+                    );
+                    break;
+            }
         });
 
         gbc.gridy = 5;
@@ -138,7 +163,6 @@ public class Home extends BaseUI {
 
     /**
      * Creates a Quick Log panel with Pre/Post BG + Carbs.
-     * (unchanged from your code)
      */
     private JPanel createActualQuickLogPanel() {
         JPanel panel = new JPanel();
@@ -240,7 +264,7 @@ public class Home extends BaseUI {
             LogEntry entryPre = new LogEntry();
             entryPre.setUserId(currentUser.getId());
             entryPre.setDate(LocalDate.now().toString());
-            entryPre.setTimeOfDay(meal + " Pre");  // Match "ROW_LABELS"
+            entryPre.setTimeOfDay(meal + " Pre");
             entryPre.setBloodSugar(preBG);
             entryPre.setCarbsEaten(preCarbs);
             entryPre.setFoodDetails("Quick log (Pre)");
@@ -256,7 +280,7 @@ public class Home extends BaseUI {
             LogEntry entryPost = new LogEntry();
             entryPost.setUserId(currentUser.getId());
             entryPost.setDate(LocalDate.now().toString());
-            entryPost.setTimeOfDay(meal + " Post");  // Match "ROW_LABELS"
+            entryPost.setTimeOfDay(meal + " Post");
             entryPost.setBloodSugar(postBG);
             entryPost.setCarbsEaten(postCarbs);
             entryPost.setFoodDetails("Quick log (Post)");
@@ -267,7 +291,6 @@ public class Home extends BaseUI {
 
         JOptionPane.showMessageDialog(this, "Quick log saved!");
     }
-
 
     /**
      * Safe parse for double fields.
@@ -285,6 +308,7 @@ public class Home extends BaseUI {
         SwingUtilities.invokeLater(() -> {
             User dummyUser = new User();
             dummyUser.setName("Mark");
+            dummyUser.setLogbookType("Simple"); // or "Comprehensive" or "Intensive"
             new Home(dummyUser);
         });
     }

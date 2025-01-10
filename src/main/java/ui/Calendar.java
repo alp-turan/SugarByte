@@ -6,6 +6,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.time.YearMonth;
 
 public class Calendar extends BaseUI {
 
@@ -36,7 +37,7 @@ public class Calendar extends BaseUI {
         daysGrid.setOpaque(false);
 
         // We’ll build out the days for the current month
-        java.time.YearMonth yearMonth = currentYearMonth;
+        YearMonth yearMonth = currentYearMonth;
         int lengthOfMonth = yearMonth.lengthOfMonth();
 
         // Get the first day of the month and its day of the week
@@ -54,7 +55,7 @@ public class Calendar extends BaseUI {
         for (int day = 1; day <= lengthOfMonth; day++) {
             java.time.LocalDate date = yearMonth.atDay(day);
 
-            // Custom DayCircle
+            // Create a clickable day circle
             DayCircle dayCircle = new DayCircle(day);
             dayCircle.setHorizontalAlignment(SwingConstants.CENTER);
             dayCircle.setFont(new Font("SansSerif", Font.BOLD, 14));
@@ -67,37 +68,32 @@ public class Calendar extends BaseUI {
                 dayCircle.setForeground(Color.BLACK);
             }
 
+            // On click -> open the corresponding logbook
             dayCircle.addMouseListener(new MouseAdapter() {
                 @Override
                 public void mouseClicked(MouseEvent e) {
                     dispose(); // Close the calendar window
                     String logbookType = currentUser.getLogbookType();
+                    System.out.println("User logbook type: " + logbookType);
 
-                    // Open the appropriate logbook based on the type
                     switch (logbookType) {
                         case "Simple":
-                            System.out.println("User logbook type: " + logbookType);
                             new Logbook(currentUser, date.toString());
-
                             break;
                         case "Comprehensive":
-                            System.out.println("User logbook type: " + logbookType);
                             new ComprehensiveLogbook(currentUser, date.toString());
                             break;
                         case "Intensive":
-                            System.out.println("User logbook type: " + logbookType);
                             new IntensiveLogbook(currentUser, date.toString());
                             break;
                         default:
                             JOptionPane.showMessageDialog(null,
-                                    "Unknown logbook type. Please contact support.",
+                                    "Unknown logbook type: " + logbookType,
                                     "Error",
                                     JOptionPane.ERROR_MESSAGE);
                     }
                 }
             });
-
-
 
             // Put DayCircle in a small panel
             JPanel dayPanel = new JPanel(new BorderLayout());

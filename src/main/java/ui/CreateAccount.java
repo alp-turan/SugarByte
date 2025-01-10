@@ -143,7 +143,6 @@ public class CreateAccount extends BaseUI {
 
     /**
      * The main logic for creating an account when the user hits "Create Account".
-     * Includes advanced validations (email, password) from the first version.
      */
     private void handleCreate() {
         String name         = nameField.getText().trim();
@@ -158,7 +157,7 @@ public class CreateAccount extends BaseUI {
         String docEmail     = doctorEmailField.getText().trim();
         String docAddress   = doctorAddressField.getText().trim();
         String docEmerg     = doctorEmergencyField.getText().trim();
-        String logbookType  = (String) logbookTypeCombo.getSelectedItem();
+        String logbookType  = (String) logbookTypeCombo.getSelectedItem(); // "Simple", "Comprehensive", "Intensive"
 
         String pass         = new String(passwordField.getPassword());
 
@@ -203,12 +202,13 @@ public class CreateAccount extends BaseUI {
         u.setEmail(email);
         u.setPhone(phone);
 
-        // If your User model doesn't have these fields yet,
-        // you'll need to add them to both the User class & DB schema:
+        // Doctor info
         u.setDoctorName(doctorName);
         u.setDoctorEmail(docEmail);
         u.setDoctorAddress(docAddress);
         u.setDoctorEmergencyPhone(docEmerg);
+
+        // *** Save logbook choice in DB ***
         u.setLogbookType(logbookType);
 
         u.setPassword(pass);
