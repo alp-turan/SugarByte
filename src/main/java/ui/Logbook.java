@@ -28,11 +28,15 @@ public class Logbook extends BaseUI {
     protected final String targetDate;
 
     // Existing columns
-    private JTextField[] bloodSugarFields = new JTextField[7];
-    private JTextField[] carbsFields      = new JTextField[7];
+    protected JTextField[] bloodSugarFields = new JTextField[7];
+    protected JTextField[] carbsFields      = new JTextField[7];
 
     // Newly added column (only used for "Pre" rows)
-    private JTextField[] hoursSinceMealFields = new JTextField[3]; // 3 "Pre" rows
+    protected JTextField[] hoursSinceMealFields = new JTextField[3]; // 3 "Pre" rows
+
+    protected JTextField[] exerciseFields = new JTextField[7];  // Initialize the exerciseFields array
+    protected JTextField[] insulinDoseFields = new JTextField[7];  // Initialize the insulinDoseFields array
+
 
     // Row labels for clarity
     protected static final String[] ROW_LABELS = {
@@ -49,6 +53,7 @@ public class Logbook extends BaseUI {
         super("Logbook for " + date);
         this.currentUser = user;
         this.targetDate  = date;
+        System.out.println("Logbook Constructor called");
 
         buildUI();
         loadLogEntries(); // Load existing blood-sugar/carb data
@@ -171,8 +176,6 @@ public class Logbook extends BaseUI {
                 hoursSinceMealFields[preRowIndex] = new JTextField(5);
                 centerPanel.add(hoursSinceMealFields[preRowIndex], gbc);
                 preRowIndex++; // Increment for next "Pre" row
-            } else {
-                centerPanel.add(new JLabel("—"), gbc);
             }
         }
 
@@ -252,6 +255,13 @@ public class Logbook extends BaseUI {
                 "All entered values have been saved.",
                 "Logbook Saved",
                 JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    public void initializeUI() {
+        buildUI();
+        loadLogEntries(); // Load existing data
+        setVisible(true); // Make the frame visible
+        System.out.println("Logbook UI initialized");
     }
 
     protected double parseDoubleSafe(String text) {
