@@ -130,12 +130,12 @@ public class ComprehensiveLogbook extends BaseUI {
         centerPanel.add(timeHeaderLine2, gbc);
 
         gbc.gridx = 1;
-        JLabel bloodHeaderLine2 = new JLabel("Glucose");
+        JLabel bloodHeaderLine2 = new JLabel("Glucose (mmol/L)");
         bloodHeaderLine2.setFont(new Font("SansSerif", Font.BOLD, 12));
         centerPanel.add(bloodHeaderLine2, gbc);
 
         gbc.gridx = 2;
-        JLabel carbsHeaderLine2 = new JLabel("Eaten");
+        JLabel carbsHeaderLine2 = new JLabel("Eaten (g)");
         carbsHeaderLine2.setFont(new Font("SansSerif", Font.BOLD, 12));
         centerPanel.add(carbsHeaderLine2, gbc);
 

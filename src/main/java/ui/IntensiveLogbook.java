@@ -145,12 +145,12 @@ public class IntensiveLogbook extends BaseUI {
         centerPanel.add(timeHeader2, gbc);
 
         gbc.gridx = 1;
-        JLabel bloodHeader2 = new JLabel("Glucose");
+        JLabel bloodHeader2 = new JLabel("Glucose (mmol/L)");
         bloodHeader2.setFont(new Font("SansSerif", Font.BOLD, 12));
         centerPanel.add(bloodHeader2, gbc);
 
         gbc.gridx = 2;
-        JLabel carbsHeader2 = new JLabel("Eaten");
+        JLabel carbsHeader2 = new JLabel("Eaten (g)");
         carbsHeader2.setFont(new Font("SansSerif", Font.BOLD, 12));
         centerPanel.add(carbsHeader2, gbc);
 
