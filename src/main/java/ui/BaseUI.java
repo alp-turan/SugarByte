@@ -27,6 +27,42 @@ public class BaseUI extends JFrame {
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
         setResizable(false);
+
+
+    }
+
+
+    protected void addBackButton() {
+        JButton backButton = new JButton("Back");
+        backButton.setFont(new Font("SansSerif", Font.BOLD, 16));
+        backButton.setFocusPainted(false);
+        backButton.setBorderPainted(false);
+        backButton.setContentAreaFilled(false);
+        backButton.setForeground(Color.BLUE);
+
+        backButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                handleBack();
+            }
+        });
+
+        // Use GridBagConstraints to add the Back button
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 0; // Adjust this if you want to change the position of the button
+        gbc.anchor = GridBagConstraints.WEST;
+
+        // Add the button to the layout
+        add(backButton, gbc);
+    }
+
+    // Method to handle back action
+    private void handleBack() {
+        // Close current window and go back to the previous screen
+        dispose(); // Close the current screen
+        // Example: You can show the previous screen or the main screen
+        new Login(); // Or another class like Profile or Calendar based on your flow
     }
 
 

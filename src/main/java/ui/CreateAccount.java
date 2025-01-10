@@ -92,7 +92,11 @@ public class CreateAccount extends BaseUI {
             }
         });
 
+
         setVisible(true);
+        addBackButton();
+
+
     }
 
     /**
