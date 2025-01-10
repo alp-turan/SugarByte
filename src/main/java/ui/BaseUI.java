@@ -6,6 +6,8 @@ import model.User;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
+import java.io.*;
+import java.util.Properties;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
@@ -19,6 +21,7 @@ public class BaseUI extends JFrame {
     public User currentUser;
     public JTextField usernameField;
     public JPasswordField passwordField;
+    private JCheckBox rememberMeCheckBox;
     private String icon1;
 
     public BaseUI(String title) {
@@ -548,10 +551,20 @@ public class BaseUI extends JFrame {
 
         containerPanel.add(label);
         containerPanel.add(roundedPanel);
+
+        if (labelText.equalsIgnoreCase("Password")) {
+            rememberMeCheckBox = new JCheckBox("Remember Me");
+            rememberMeCheckBox.setOpaque(false);
+            rememberMeCheckBox.setFont(new Font("SansSerif", Font.PLAIN, 12));
+            rememberMeCheckBox.setForeground(Color.GRAY);
+            containerPanel.add(rememberMeCheckBox);
+            loadCredentials(); // Load saved credentials if available
+        }
+
         return containerPanel;
     }
 
-    public void handleSignIn() {
+    protected void handleSignIn() {
         String email = (usernameField != null) ? usernameField.getText() : "";
         String pass = (passwordField != null) ? new String(passwordField.getPassword()) : "";
 
@@ -569,6 +582,14 @@ public class BaseUI extends JFrame {
             User user = maybeUser.get();
             if (user.getPassword() != null && user.getPassword().equals(pass)) {
                 JOptionPane.showMessageDialog(this, "Login successful!");
+
+                // Handle "Remember Me" functionality
+                if (rememberMeCheckBox.isSelected()) {
+                    saveCredentials(email, pass);
+                } else {
+                    clearCredentials();
+                }
+
                 dispose();
                 new Home(user);
             } else {
@@ -582,6 +603,41 @@ public class BaseUI extends JFrame {
                     "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
+
+    private void saveCredentials(String email, String password) {
+        try (FileWriter writer = new FileWriter("credentials.properties")) {
+            Properties props = new Properties();
+            props.setProperty("username", email);
+            props.setProperty("password", password);
+            props.store(writer, "User Credentials");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void loadCredentials() {
+        try (FileReader reader = new FileReader("credentials.properties")) {
+            Properties props = new Properties();
+            props.load(reader);
+            String savedUsername = props.getProperty("username");
+            String savedPassword = props.getProperty("password");
+            if (savedUsername != null && savedPassword != null) {
+                usernameField.setText(savedUsername);
+                passwordField.setText(savedPassword);
+                rememberMeCheckBox.setSelected(true);
+            }
+        } catch (IOException e) {
+            // File might not exist, which is okay
+        }
+    }
+
+    private void clearCredentials() {
+        File file = new File("credentials.properties");
+        if (file.exists()) {
+            file.delete();
+        }
+    }
+
 
     public JPanel createInfoSection(
             String sectionTitle,

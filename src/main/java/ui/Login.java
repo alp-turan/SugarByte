@@ -16,11 +16,11 @@ public class Login extends BaseUI {
         GridBagConstraints gbc = new GridBagConstraints();
 
         // Title: SugarByte
-        JLabel titleLabel = createTitleLabel("SugarByte",lobsterFont, Color.BLACK);
+        JLabel titleLabel = createTitleLabel("SugarByte", lobsterFont, Color.BLACK);
 
-        // Username & Password panels
+        // Username & Password panels (includes "Remember Me" checkbox in password panel)
         JPanel usernamePanel = createInputPanel("Username");
-        JPanel passwordPanel = createInputPanel("Password");
+        JPanel passwordPanel = createInputPanel("Password"); // Remember Me is handled in BaseUI
 
         // Sign In Button
         RoundedButtonLogin signInButton = new RoundedButtonLogin("Sign In", new Color(237, 165, 170));
@@ -64,7 +64,7 @@ public class Login extends BaseUI {
         signInButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                handleSignIn();
+                handleSignIn(); // Handles Remember Me in BaseUI
             }
         });
 
