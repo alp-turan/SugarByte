@@ -36,6 +36,7 @@ public class Profile extends BaseUI {
         super("Profile");
         this.currentUser = user;
 
+
         // Main gradient background
         JPanel mainPanel = createGradientPanel(Color.WHITE, Color.WHITE);
         mainPanel.setLayout(new BorderLayout());
@@ -213,6 +214,8 @@ public class Profile extends BaseUI {
         mainPanel.add(navBar, BorderLayout.SOUTH);
 
         setVisible(true);
+        addLogoutButton();
+
     }
 
     /**

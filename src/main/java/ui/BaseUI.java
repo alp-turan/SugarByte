@@ -29,6 +29,45 @@ public class BaseUI extends JFrame {
         setResizable(false);
     }
 
+
+    protected void addLogoutButton() {
+        JButton logoutButton = new JButton("Logout");
+        logoutButton.setFont(new Font("SansSerif", Font.BOLD, 16));
+        logoutButton.setFocusPainted(false);
+        logoutButton.setBorderPainted(false);
+        logoutButton.setContentAreaFilled(false);
+        logoutButton.setForeground(Color.RED);
+
+        logoutButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                handleLogout();
+            }
+        });
+
+        JPanel logoutPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        logoutPanel.setOpaque(false);
+        logoutPanel.add(logoutButton);
+
+        // Add the logout button to the frame
+        getContentPane().add(logoutPanel, BorderLayout.NORTH);
+    }
+
+    // Method to handle logout logic
+    private void handleLogout() {
+        int result = JOptionPane.showConfirmDialog(this, "Are you sure you want to log out?", "Logout", JOptionPane.YES_NO_OPTION);
+        if (result == JOptionPane.YES_OPTION) {
+            // Clear user session or perform any other necessary action
+            // currentUser = null;
+
+            // Example of logging out: Close current window and open the login screen
+            dispose(); // Close the current screen
+            new Login(); // Open the login screen (you should have a Login class)
+        }
+    }
+
+
+
     // Method to load custom fonts
     protected Font loadCustomFont(float size) {
         try (InputStream is = getClass().getResourceAsStream("/Fonts/Lobster.ttf")) {
