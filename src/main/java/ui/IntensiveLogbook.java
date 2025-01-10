@@ -20,6 +20,8 @@ import java.util.Map;
  *   - Other Events
  *   - Hours Since Last Meal (for Pre rows)
  * Also triggers alarms via LogService (like the Simple version).
+ *
+ * Now scrollable if needed via JScrollPane.
  */
 public class IntensiveLogbook extends BaseUI {
 
@@ -44,7 +46,6 @@ public class IntensiveLogbook extends BaseUI {
     protected JTextField[] insulinDoseFields = new JTextField[7];
     protected JTextField[] foodDiaryFields   = new JTextField[7];
     protected JTextField[] otherEventsFields = new JTextField[7];
-
     // Hours Since Last Meal for "Pre" rows
     protected JTextField[] hoursSinceMealFields = new JTextField[3];
 
@@ -61,6 +62,7 @@ public class IntensiveLogbook extends BaseUI {
     /**
      * Build the "Intensive" UI with columns:
      * Time of Day | Blood Glucose | Carbs Eaten | Exercise | Insulin | Food | Other | Hours Since Last Meal
+     * and place in a JScrollPane.
      */
     protected void buildUIIntensive() {
         JPanel mainPanel = createGradientPanel(Color.WHITE, Color.WHITE);
@@ -73,7 +75,7 @@ public class IntensiveLogbook extends BaseUI {
         topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.Y_AXIS));
         topPanel.setBorder(BorderFactory.createEmptyBorder(20, 0, 20, 0));
 
-        JLabel titleLabel = createTitleLabel("Intensive Logbook", lobsterFont, Color.BLACK);
+        JLabel titleLabel = createTitleLabel("SugarByte", lobsterFont, Color.BLACK);
         titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         topPanel.add(titleLabel);
 
@@ -188,37 +190,30 @@ public class IntensiveLogbook extends BaseUI {
             rowLabel.setFont(new Font("SansSerif", Font.BOLD, 12));
             centerPanel.add(rowLabel, gbc);
 
-            // Blood Sugar
             gbc.gridx = 1;
             bloodSugarFields[i] = new JTextField(5);
             centerPanel.add(bloodSugarFields[i], gbc);
 
-            // Carbs
             gbc.gridx = 2;
             carbsFields[i] = new JTextField(5);
             centerPanel.add(carbsFields[i], gbc);
 
-            // Exercise
             gbc.gridx = 3;
             exerciseFields[i] = new JTextField(5);
             centerPanel.add(exerciseFields[i], gbc);
 
-            // Insulin
             gbc.gridx = 4;
             insulinDoseFields[i] = new JTextField(5);
             centerPanel.add(insulinDoseFields[i], gbc);
 
-            // Food
             gbc.gridx = 5;
             foodDiaryFields[i] = new JTextField(5);
             centerPanel.add(foodDiaryFields[i], gbc);
 
-            // Other
             gbc.gridx = 6;
             otherEventsFields[i] = new JTextField(5);
             centerPanel.add(otherEventsFields[i], gbc);
 
-            // Hours Since Last Meal
             gbc.gridx = 7;
             if (ROW_LABELS[i].endsWith("Pre")) {
                 hoursSinceMealFields[preIndex] = new JTextField(5);
@@ -229,7 +224,15 @@ public class IntensiveLogbook extends BaseUI {
             }
         }
 
-        mainPanel.add(centerPanel, BorderLayout.CENTER);
+        // Wrap centerPanel in a JScrollPane
+        JScrollPane scrollPane = new JScrollPane(
+                centerPanel,
+                JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+                JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED
+        );
+        scrollPane.setOpaque(false);
+
+        mainPanel.add(scrollPane, BorderLayout.CENTER);
 
         // ==== BOTTOM (Save + Nav) ====
         JPanel bottomPanel = new JPanel();

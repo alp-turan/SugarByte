@@ -40,9 +40,8 @@ public class ComprehensiveLogbook extends BaseUI {
     protected JTextField[] carbsFields        = new JTextField[7];
     protected JTextField[] exerciseFields     = new JTextField[7];
     protected JTextField[] insulinDoseFields  = new JTextField[7];
-
     // Hours Since Last Meal is only relevant for "Pre" rows
-    protected JTextField[] hoursSinceMealFields = new JTextField[3]; // We have exactly 3 "Pre" rows.
+    protected JTextField[] hoursSinceMealFields = new JTextField[3];
 
     public ComprehensiveLogbook(User user, String date) {
         super("Comprehensive Logbook for " + date);
@@ -57,6 +56,7 @@ public class ComprehensiveLogbook extends BaseUI {
     /**
      * Build the "Comprehensive" UI with columns:
      * Time of Day | Blood Glucose | Carbs Eaten | Exercise Type | Insulin Dose | Hours Since Last Meal
+     * and place it in a JScrollPane for scrolling.
      */
     protected void buildUIComprehensive() {
         // Main gradient background
@@ -70,7 +70,7 @@ public class ComprehensiveLogbook extends BaseUI {
         topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.Y_AXIS));
         topPanel.setBorder(BorderFactory.createEmptyBorder(20, 0, 20, 0));
 
-        JLabel titleLabel = createTitleLabel("Comprehensive Logbook", lobsterFont, Color.BLACK);
+        JLabel titleLabel = createTitleLabel("SugarByte", lobsterFont, Color.BLACK);
         titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         topPanel.add(titleLabel);
 
@@ -196,7 +196,17 @@ public class ComprehensiveLogbook extends BaseUI {
             }
         }
 
-        mainPanel.add(centerPanel, BorderLayout.CENTER);
+        // Put centerPanel in a JScrollPane for scrollable UI
+        JScrollPane scrollPane = new JScrollPane(
+                centerPanel,
+                JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+                JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED
+        );
+        scrollPane.setOpaque(false);
+        // Note: the panel inside won't be transparent by default;
+        // you can customize if you want a gradient behind the scrollpane or not
+
+        mainPanel.add(scrollPane, BorderLayout.CENTER);
 
         // ===== BOTTOM PANEL (Save + Nav) =====
         JPanel bottomPanel = new JPanel();
