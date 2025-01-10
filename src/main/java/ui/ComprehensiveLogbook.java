@@ -9,6 +9,8 @@ import java.awt.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.awt.event.KeyEvent;
+
 
 /**
  * ComprehensiveLogbook includes columns for:
@@ -167,28 +169,28 @@ public class ComprehensiveLogbook extends BaseUI {
 
             // Column 1: BloodSugar
             gbc.gridx = 1;
-            bloodSugarFields[i] = new JTextField(5);
+            bloodSugarFields[i] = createNumberOnlyField();
             centerPanel.add(bloodSugarFields[i], gbc);
 
             // Column 2: Carbs
             gbc.gridx = 2;
-            carbsFields[i] = new JTextField(5);
+            carbsFields[i] = createNumberOnlyField();
             centerPanel.add(carbsFields[i], gbc);
 
             // Column 3: Exercise
             gbc.gridx = 3;
-            exerciseFields[i] = new JTextField(5);
+            exerciseFields[i] = createAlphaOnlyField();
             centerPanel.add(exerciseFields[i], gbc);
 
             // Column 4: Insulin
             gbc.gridx = 4;
-            insulinDoseFields[i] = new JTextField(5);
+            insulinDoseFields[i] = createNumberOnlyField();
             centerPanel.add(insulinDoseFields[i], gbc);
 
             // Column 5: Hours Since Meal (only for Pre)
             gbc.gridx = 5;
             if (ROW_LABELS[i].endsWith("Pre")) {
-                hoursSinceMealFields[preIndex] = new JTextField(5);
+                hoursSinceMealFields[preIndex] = createNumberOnlyField();
                 centerPanel.add(hoursSinceMealFields[preIndex], gbc);
                 preIndex++;
             } else {
@@ -203,8 +205,6 @@ public class ComprehensiveLogbook extends BaseUI {
                 JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED
         );
         scrollPane.setOpaque(false);
-        // Note: the panel inside won't be transparent by default;
-        // you can customize if you want a gradient behind the scrollpane or not
 
         mainPanel.add(scrollPane, BorderLayout.CENTER);
 
@@ -226,6 +226,34 @@ public class ComprehensiveLogbook extends BaseUI {
         wrapperPanel.add(navBar, BorderLayout.SOUTH);
 
         mainPanel.add(wrapperPanel, BorderLayout.SOUTH);
+    }
+
+    // Create a JTextField that only accepts numeric input
+    private JTextField createNumberOnlyField() {
+        JTextField textField = new JTextField(5);
+        textField.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent e) {
+                char c = e.getKeyChar();
+                if (!(Character.isDigit(c) || c == '.' || c == KeyEvent.VK_BACK_SPACE || c == KeyEvent.VK_DELETE)) {
+                    e.consume(); // Reject non-numeric input
+                }
+            }
+        });
+        return textField;
+    }
+
+    // Create a JTextField that only accepts alphabetic input
+    private JTextField createAlphaOnlyField() {
+        JTextField textField = new JTextField(5);
+        textField.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent e) {
+                char c = e.getKeyChar();
+                if (!(Character.isLetter(c) || c == KeyEvent.VK_BACK_SPACE || c == KeyEvent.VK_DELETE)) {
+                    e.consume(); // Reject non-alphabetic input
+                }
+            }
+        });
+        return textField;
     }
 
     /**

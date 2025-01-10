@@ -5,6 +5,7 @@ import model.User;
 import service.LogService;
 
 import javax.swing.*;
+import javax.swing.text.*;
 import java.awt.*;
 import java.util.HashMap;
 import java.util.List;
@@ -22,7 +23,7 @@ public class Logbook extends BaseUI {
 
     // Columns: BG, Carbs, HoursSinceMeal (for Pre)
     protected JTextField[] bloodSugarFields = new JTextField[7];
-    protected JTextField[] carbsFields      = new JTextField[7];
+    protected JTextField[] carbsFields = new JTextField[7];
     protected JTextField[] hoursSinceMealFields = new JTextField[3]; // only for 3 "Pre" rows
 
     protected static final String[] ROW_LABELS = {
@@ -126,6 +127,7 @@ public class Logbook extends BaseUI {
 
         // Data rows
         int preIndex = 0;
+        DocumentFilter numericFilter = new NumericFilter(); // Create one filter instance
         for (int i = 0; i < ROW_LABELS.length; i++) {
             gbc.gridy = i + 2;
 
@@ -138,17 +140,20 @@ public class Logbook extends BaseUI {
             // Column 1 - BloodSugar
             gbc.gridx = 1;
             bloodSugarFields[i] = new JTextField(5);
+            ((PlainDocument) bloodSugarFields[i].getDocument()).setDocumentFilter(numericFilter); // Apply filter
             centerPanel.add(bloodSugarFields[i], gbc);
 
             // Column 2 - Carbs
             gbc.gridx = 2;
             carbsFields[i] = new JTextField(5);
+            ((PlainDocument) carbsFields[i].getDocument()).setDocumentFilter(numericFilter); // Apply filter
             centerPanel.add(carbsFields[i], gbc);
 
             // Column 3 - Hours for Pre
             gbc.gridx = 3;
             if (ROW_LABELS[i].endsWith("Pre")) {
                 hoursSinceMealFields[preIndex] = new JTextField(5);
+                ((PlainDocument) hoursSinceMealFields[preIndex].getDocument()).setDocumentFilter(numericFilter); // Apply filter
                 centerPanel.add(hoursSinceMealFields[preIndex], gbc);
                 preIndex++;
             } else {
@@ -253,5 +258,28 @@ public class Logbook extends BaseUI {
         } catch (NumberFormatException e) {
             return 0;
         }
+    }
+}
+
+/**
+ * DocumentFilter to restrict input to numeric values only.
+ */
+class NumericFilter extends DocumentFilter {
+    @Override
+    public void insertString(FilterBypass fb, int offset, String string, AttributeSet attr) throws BadLocationException {
+        if (isNumeric(string)) {
+            super.insertString(fb, offset, string, attr);
+        }
+    }
+
+    @Override
+    public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs) throws BadLocationException {
+        if (isNumeric(text)) {
+            super.replace(fb, offset, length, text, attrs);
+        }
+    }
+
+    private boolean isNumeric(String text) {
+        return text.matches("\\d*\\.?\\d*"); // Allows numbers with optional decimals
     }
 }

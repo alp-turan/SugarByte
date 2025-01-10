@@ -5,6 +5,7 @@ import model.User;
 import service.LogService;
 
 import javax.swing.*;
+import javax.swing.text.*;
 import java.awt.*;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -32,7 +33,6 @@ public class Home extends BaseUI {
 
         setVisible(true);
         addLogoutButton();
-
     }
 
     private void buildUI() {
@@ -213,10 +213,12 @@ public class Home extends BaseUI {
 
         gbc.gridx = 1;
         preBloodSugarField = new JTextField(5);
+        applyNumericFilter(preBloodSugarField);
         panel.add(preBloodSugarField, gbc);
 
         gbc.gridx = 2;
         preCarbsField = new JTextField(5);
+        applyNumericFilter(preCarbsField);
         panel.add(preCarbsField, gbc);
 
         // Post row
@@ -226,10 +228,12 @@ public class Home extends BaseUI {
 
         gbc.gridx = 1;
         postBloodSugarField = new JTextField(5);
+        applyNumericFilter(postBloodSugarField);
         panel.add(postBloodSugarField, gbc);
 
         gbc.gridx = 2;
         postCarbsField = new JTextField(5);
+        applyNumericFilter(postCarbsField);
         panel.add(postCarbsField, gbc);
 
         // Save button
@@ -307,6 +311,37 @@ public class Home extends BaseUI {
             return Double.parseDouble(text);
         } catch (NumberFormatException e) {
             return 0.0;
+        }
+    }
+
+    /**
+     * Apply a numeric filter to a JTextField.
+     */
+    private void applyNumericFilter(JTextField textField) {
+        ((AbstractDocument) textField.getDocument()).setDocumentFilter(new NumericFilter());
+    }
+
+    // Numeric filter that only allows numeric input
+    public static class NumericFilter extends DocumentFilter {
+        @Override
+        public void insertString(FilterBypass fb, int offset, String string, AttributeSet attr) throws BadLocationException {
+            if (string == null || !string.matches("\\d*\\.?\\d*")) {
+                return; // Ignore non-numeric input
+            }
+            super.insertString(fb, offset, string, attr);
+        }
+
+        @Override
+        public void replace(FilterBypass fb, int offset, int length, String string, AttributeSet attrs) throws BadLocationException {
+            if (string == null || !string.matches("\\d*\\.?\\d*")) {
+                return; // Ignore non-numeric input
+            }
+            super.replace(fb, offset, length, string, attrs);
+        }
+
+        @Override
+        public void remove(FilterBypass fb, int offset, int length) throws BadLocationException {
+            super.remove(fb, offset, length);
         }
     }
 }

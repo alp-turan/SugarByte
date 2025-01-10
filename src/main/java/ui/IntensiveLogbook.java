@@ -6,6 +6,8 @@ import service.LogService;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -92,7 +94,7 @@ public class IntensiveLogbook extends BaseUI {
         JPanel centerPanel = new JPanel(new GridBagLayout());
         centerPanel.setOpaque(false);
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(5,5,5,5);
+        gbc.insets = new Insets(5, 5, 5, 5);
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
         // First line of headers
@@ -192,31 +194,38 @@ public class IntensiveLogbook extends BaseUI {
 
             gbc.gridx = 1;
             bloodSugarFields[i] = new JTextField(5);
+            addNumericInputRestriction(bloodSugarFields[i]);
             centerPanel.add(bloodSugarFields[i], gbc);
 
             gbc.gridx = 2;
             carbsFields[i] = new JTextField(5);
+            addNumericInputRestriction(carbsFields[i]);
             centerPanel.add(carbsFields[i], gbc);
 
             gbc.gridx = 3;
             exerciseFields[i] = new JTextField(5);
+            addAlphabeticInputRestriction(exerciseFields[i]);
             centerPanel.add(exerciseFields[i], gbc);
 
             gbc.gridx = 4;
             insulinDoseFields[i] = new JTextField(5);
+            addNumericInputRestriction(insulinDoseFields[i]);
             centerPanel.add(insulinDoseFields[i], gbc);
 
             gbc.gridx = 5;
             foodDiaryFields[i] = new JTextField(5);
+            addAlphabeticInputRestriction(foodDiaryFields[i]);
             centerPanel.add(foodDiaryFields[i], gbc);
 
             gbc.gridx = 6;
             otherEventsFields[i] = new JTextField(5);
+            addAlphabeticInputRestriction(otherEventsFields[i]);
             centerPanel.add(otherEventsFields[i], gbc);
 
             gbc.gridx = 7;
             if (ROW_LABELS[i].endsWith("Pre")) {
                 hoursSinceMealFields[preIndex] = new JTextField(5);
+                addNumericInputRestriction(hoursSinceMealFields[preIndex]);
                 centerPanel.add(hoursSinceMealFields[preIndex], gbc);
                 preIndex++;
             } else {
@@ -255,6 +264,34 @@ public class IntensiveLogbook extends BaseUI {
     }
 
     /**
+     * Add numeric input restriction to a field.
+     */
+    private void addNumericInputRestriction(JTextField textField) {
+        textField.addKeyListener(new KeyAdapter() {
+            public void keyTyped(KeyEvent e) {
+                char c = e.getKeyChar();
+                if (!Character.isDigit(c) && c != '.' && c != KeyEvent.VK_BACK_SPACE) {
+                    e.consume();
+                }
+            }
+        });
+    }
+
+    /**
+     * Add alphabetic input restriction to a field.
+     */
+    private void addAlphabeticInputRestriction(JTextField textField) {
+        textField.addKeyListener(new KeyAdapter() {
+            public void keyTyped(KeyEvent e) {
+                char c = e.getKeyChar();
+                if (!Character.isLetter(c) && c != ' ' && c != KeyEvent.VK_BACK_SPACE) {
+                    e.consume();
+                }
+            }
+        });
+    }
+
+    /**
      * Load data for "Intensive" logbook, including hoursSinceMeal.
      */
     protected void loadLogEntriesIntensive() {
@@ -289,12 +326,12 @@ public class IntensiveLogbook extends BaseUI {
     protected void handleSaveAllIntensive() {
         int preIndex = 0;
         for (int i = 0; i < ROW_LABELS.length; i++) {
-            double bg       = parseDoubleSafe(bloodSugarFields[i].getText());
-            double carbs    = parseDoubleSafe(carbsFields[i].getText());
+            double bg = parseDoubleSafe(bloodSugarFields[i].getText());
+            double carbs = parseDoubleSafe(carbsFields[i].getText());
             String exercise = exerciseFields[i].getText();
-            double insulin  = parseDoubleSafe(insulinDoseFields[i].getText());
-            String food     = foodDiaryFields[i].getText();
-            String other    = otherEventsFields[i].getText();
+            double insulin = parseDoubleSafe(insulinDoseFields[i].getText());
+            String food = foodDiaryFields[i].getText();
+            String other = otherEventsFields[i].getText();
 
             int hours = 0;
             if (ROW_LABELS[i].endsWith("Pre")) {
