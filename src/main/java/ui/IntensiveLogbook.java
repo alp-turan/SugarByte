@@ -10,19 +10,23 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * IntensiveLogbook includes:
+ *   - Blood Glucose
+ *   - Carbs Eaten
+ *   - Exercise Type
+ *   - Insulin Dose
+ *   - Food Diary
+ *   - Other Events
+ *   - Hours Since Last Meal (for Pre rows)
+ * Also triggers alarms via LogService (like the Simple version).
+ */
 public class IntensiveLogbook extends BaseUI {
 
     protected User currentUser;
     protected String targetDate;
 
-    // Example columns: BG, Carbs, Exercise, Insulin, FoodDiary, OtherEvents
-    protected JTextField[] bloodSugarFields   = new JTextField[7];
-    protected JTextField[] carbsFields        = new JTextField[7];
-    protected JTextField[] exerciseFields     = new JTextField[7];
-    protected JTextField[] insulinDoseFields  = new JTextField[7];
-    protected JTextField[] foodDiaryFields    = new JTextField[7];
-    protected JTextField[] otherEventsFields  = new JTextField[7];
-
+    // 7 standard rows
     private static final String[] ROW_LABELS = {
             "Breakfast Pre",
             "Breakfast Post",
@@ -32,6 +36,17 @@ public class IntensiveLogbook extends BaseUI {
             "Dinner Post",
             "Bedtime"
     };
+
+    // Arrays for each column
+    protected JTextField[] bloodSugarFields  = new JTextField[7];
+    protected JTextField[] carbsFields       = new JTextField[7];
+    protected JTextField[] exerciseFields    = new JTextField[7];
+    protected JTextField[] insulinDoseFields = new JTextField[7];
+    protected JTextField[] foodDiaryFields   = new JTextField[7];
+    protected JTextField[] otherEventsFields = new JTextField[7];
+
+    // Hours Since Last Meal for "Pre" rows
+    protected JTextField[] hoursSinceMealFields = new JTextField[3];
 
     public IntensiveLogbook(User user, String date) {
         super("Intensive Logbook for " + date);
@@ -44,14 +59,15 @@ public class IntensiveLogbook extends BaseUI {
     }
 
     /**
-     * Build the "Intensive" UI
+     * Build the "Intensive" UI with columns:
+     * Time of Day | Blood Glucose | Carbs Eaten | Exercise | Insulin | Food | Other | Hours Since Last Meal
      */
     protected void buildUIIntensive() {
         JPanel mainPanel = createGradientPanel(Color.WHITE, Color.WHITE);
         mainPanel.setLayout(new BorderLayout());
         setContentPane(mainPanel);
 
-        // Top
+        // ==== TOP ====
         JPanel topPanel = new JPanel();
         topPanel.setOpaque(false);
         topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.Y_AXIS));
@@ -70,7 +86,7 @@ public class IntensiveLogbook extends BaseUI {
 
         mainPanel.add(topPanel, BorderLayout.NORTH);
 
-        // Center
+        // ==== CENTER (GridBag) ====
         JPanel centerPanel = new JPanel(new GridBagLayout());
         centerPanel.setOpaque(false);
         GridBagConstraints gbc = new GridBagConstraints();
@@ -78,116 +94,144 @@ public class IntensiveLogbook extends BaseUI {
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
         // First line of headers
-        gbc.gridx = 0;
         gbc.gridy = 0;
-        JLabel timeHeaderLine1 = new JLabel("Time");
-        timeHeaderLine1.setFont(new Font("SansSerif", Font.BOLD, 12));
-        centerPanel.add(timeHeaderLine1, gbc);
+        gbc.gridx = 0;
+        JLabel timeHeader1 = new JLabel("Time");
+        timeHeader1.setFont(new Font("SansSerif", Font.BOLD, 12));
+        centerPanel.add(timeHeader1, gbc);
 
         gbc.gridx = 1;
-        JLabel bloodHeaderLine1 = new JLabel("Blood");
-        bloodHeaderLine1.setFont(new Font("SansSerif", Font.BOLD, 12));
-        centerPanel.add(bloodHeaderLine1, gbc);
+        JLabel bloodHeader1 = new JLabel("Blood");
+        bloodHeader1.setFont(new Font("SansSerif", Font.BOLD, 12));
+        centerPanel.add(bloodHeader1, gbc);
 
         gbc.gridx = 2;
-        JLabel carbsHeaderLine1 = new JLabel("Carbs");
-        carbsHeaderLine1.setFont(new Font("SansSerif", Font.BOLD, 12));
-        centerPanel.add(carbsHeaderLine1, gbc);
+        JLabel carbsHeader1 = new JLabel("Carbs");
+        carbsHeader1.setFont(new Font("SansSerif", Font.BOLD, 12));
+        centerPanel.add(carbsHeader1, gbc);
 
         gbc.gridx = 3;
-        JLabel exerciseHeaderLine1 = new JLabel("Exercise");
-        exerciseHeaderLine1.setFont(new Font("SansSerif", Font.BOLD, 12));
-        centerPanel.add(exerciseHeaderLine1, gbc);
+        JLabel exerciseHeader1 = new JLabel("Exercise");
+        exerciseHeader1.setFont(new Font("SansSerif", Font.BOLD, 12));
+        centerPanel.add(exerciseHeader1, gbc);
 
         gbc.gridx = 4;
-        JLabel insulinHeaderLine1 = new JLabel("Insulin");
-        insulinHeaderLine1.setFont(new Font("SansSerif", Font.BOLD, 12));
-        centerPanel.add(insulinHeaderLine1, gbc);
+        JLabel insulinHeader1 = new JLabel("Insulin");
+        insulinHeader1.setFont(new Font("SansSerif", Font.BOLD, 12));
+        centerPanel.add(insulinHeader1, gbc);
 
         gbc.gridx = 5;
-        JLabel foodHeaderLine1 = new JLabel("Food");
-        foodHeaderLine1.setFont(new Font("SansSerif", Font.BOLD, 12));
-        centerPanel.add(foodHeaderLine1, gbc);
+        JLabel foodHeader1 = new JLabel("Food");
+        foodHeader1.setFont(new Font("SansSerif", Font.BOLD, 12));
+        centerPanel.add(foodHeader1, gbc);
 
         gbc.gridx = 6;
-        JLabel otherHeaderLine1 = new JLabel("Other");
-        otherHeaderLine1.setFont(new Font("SansSerif", Font.BOLD, 12));
-        centerPanel.add(otherHeaderLine1, gbc);
+        JLabel otherHeader1 = new JLabel("Other");
+        otherHeader1.setFont(new Font("SansSerif", Font.BOLD, 12));
+        centerPanel.add(otherHeader1, gbc);
+
+        gbc.gridx = 7;
+        JLabel hoursHeader1 = new JLabel("Hours Since");
+        hoursHeader1.setFont(new Font("SansSerif", Font.BOLD, 12));
+        centerPanel.add(hoursHeader1, gbc);
 
         // Second line of headers
         gbc.gridy = 1;
         gbc.gridx = 0;
-        JLabel timeHeaderLine2 = new JLabel("of Day");
-        timeHeaderLine2.setFont(new Font("SansSerif", Font.BOLD, 12));
-        centerPanel.add(timeHeaderLine2, gbc);
+        JLabel timeHeader2 = new JLabel("of Day");
+        timeHeader2.setFont(new Font("SansSerif", Font.BOLD, 12));
+        centerPanel.add(timeHeader2, gbc);
 
         gbc.gridx = 1;
-        JLabel bloodHeaderLine2 = new JLabel("Glucose");
-        bloodHeaderLine2.setFont(new Font("SansSerif", Font.BOLD, 12));
-        centerPanel.add(bloodHeaderLine2, gbc);
+        JLabel bloodHeader2 = new JLabel("Glucose");
+        bloodHeader2.setFont(new Font("SansSerif", Font.BOLD, 12));
+        centerPanel.add(bloodHeader2, gbc);
 
         gbc.gridx = 2;
-        JLabel carbsHeaderLine2 = new JLabel("Eaten");
-        carbsHeaderLine2.setFont(new Font("SansSerif", Font.BOLD, 12));
-        centerPanel.add(carbsHeaderLine2, gbc);
+        JLabel carbsHeader2 = new JLabel("Eaten");
+        carbsHeader2.setFont(new Font("SansSerif", Font.BOLD, 12));
+        centerPanel.add(carbsHeader2, gbc);
 
         gbc.gridx = 3;
-        JLabel exerciseHeaderLine2 = new JLabel("Type");
-        exerciseHeaderLine2.setFont(new Font("SansSerif", Font.BOLD, 12));
-        centerPanel.add(exerciseHeaderLine2, gbc);
+        JLabel exerciseHeader2 = new JLabel("Type");
+        exerciseHeader2.setFont(new Font("SansSerif", Font.BOLD, 12));
+        centerPanel.add(exerciseHeader2, gbc);
 
         gbc.gridx = 4;
-        JLabel insulinHeaderLine2 = new JLabel("Dose");
-        insulinHeaderLine2.setFont(new Font("SansSerif", Font.BOLD, 12));
-        centerPanel.add(insulinHeaderLine2, gbc);
+        JLabel insulinHeader2 = new JLabel("Dose");
+        insulinHeader2.setFont(new Font("SansSerif", Font.BOLD, 12));
+        centerPanel.add(insulinHeader2, gbc);
 
         gbc.gridx = 5;
-        JLabel foodHeaderLine2 = new JLabel("Diary");
-        foodHeaderLine2.setFont(new Font("SansSerif", Font.BOLD, 12));
-        centerPanel.add(foodHeaderLine2, gbc);
+        JLabel foodHeader2 = new JLabel("Diary");
+        foodHeader2.setFont(new Font("SansSerif", Font.BOLD, 12));
+        centerPanel.add(foodHeader2, gbc);
 
         gbc.gridx = 6;
-        JLabel otherHeaderLine2 = new JLabel("Events");
-        otherHeaderLine2.setFont(new Font("SansSerif", Font.BOLD, 12));
-        centerPanel.add(otherHeaderLine2, gbc);
+        JLabel otherHeader2 = new JLabel("Events");
+        otherHeader2.setFont(new Font("SansSerif", Font.BOLD, 12));
+        centerPanel.add(otherHeader2, gbc);
+
+        gbc.gridx = 7;
+        JLabel hoursHeader2 = new JLabel("Last Meal");
+        hoursHeader2.setFont(new Font("SansSerif", Font.BOLD, 12));
+        centerPanel.add(hoursHeader2, gbc);
 
         // Data rows
+        int preIndex = 0; // track "Pre" rows for hours
         for (int i = 0; i < ROW_LABELS.length; i++) {
             gbc.gridy = i + 2;
 
+            // Time-of-day
             gbc.gridx = 0;
             JLabel rowLabel = new JLabel(ROW_LABELS[i] + ":");
             rowLabel.setFont(new Font("SansSerif", Font.BOLD, 12));
             centerPanel.add(rowLabel, gbc);
 
+            // Blood Sugar
             gbc.gridx = 1;
             bloodSugarFields[i] = new JTextField(5);
             centerPanel.add(bloodSugarFields[i], gbc);
 
+            // Carbs
             gbc.gridx = 2;
             carbsFields[i] = new JTextField(5);
             centerPanel.add(carbsFields[i], gbc);
 
+            // Exercise
             gbc.gridx = 3;
             exerciseFields[i] = new JTextField(5);
             centerPanel.add(exerciseFields[i], gbc);
 
+            // Insulin
             gbc.gridx = 4;
             insulinDoseFields[i] = new JTextField(5);
             centerPanel.add(insulinDoseFields[i], gbc);
 
+            // Food
             gbc.gridx = 5;
             foodDiaryFields[i] = new JTextField(5);
             centerPanel.add(foodDiaryFields[i], gbc);
 
+            // Other
             gbc.gridx = 6;
             otherEventsFields[i] = new JTextField(5);
             centerPanel.add(otherEventsFields[i], gbc);
+
+            // Hours Since Last Meal
+            gbc.gridx = 7;
+            if (ROW_LABELS[i].endsWith("Pre")) {
+                hoursSinceMealFields[preIndex] = new JTextField(5);
+                centerPanel.add(hoursSinceMealFields[preIndex], gbc);
+                preIndex++;
+            } else {
+                centerPanel.add(new JLabel("—"), gbc);
+            }
         }
 
         mainPanel.add(centerPanel, BorderLayout.CENTER);
 
-        // Bottom: Save All
+        // ==== BOTTOM (Save + Nav) ====
         JPanel bottomPanel = new JPanel();
         bottomPanel.setOpaque(false);
         JButton saveAllBtn = new JButton("Save All");
@@ -208,15 +252,16 @@ public class IntensiveLogbook extends BaseUI {
     }
 
     /**
-     * Load data for "Intensive" logbook
+     * Load data for "Intensive" logbook, including hoursSinceMeal.
      */
     protected void loadLogEntriesIntensive() {
         List<LogEntry> entries = LogService.getEntriesForDate(currentUser.getId(), targetDate);
         Map<String, LogEntry> entryMap = new HashMap<>();
-        for (LogEntry entry : entries) {
-            entryMap.put(entry.getTimeOfDay(), entry);
+        for (LogEntry e : entries) {
+            entryMap.put(e.getTimeOfDay(), e);
         }
 
+        int preIndex = 0;
         for (int i = 0; i < ROW_LABELS.length; i++) {
             LogEntry e = entryMap.get(ROW_LABELS[i]);
             if (e != null) {
@@ -226,14 +271,20 @@ public class IntensiveLogbook extends BaseUI {
                 insulinDoseFields[i].setText(String.valueOf(e.getInsulinDose()));
                 foodDiaryFields[i].setText(e.getFoodDetails() == null ? "" : e.getFoodDetails());
                 otherEventsFields[i].setText(e.getOtherMedications() == null ? "" : e.getOtherMedications());
+
+                if (ROW_LABELS[i].endsWith("Pre")) {
+                    hoursSinceMealFields[preIndex].setText(String.valueOf(e.getHoursSinceMeal()));
+                    preIndex++;
+                }
             }
         }
     }
 
     /**
-     * Save data from "Intensive" logbook
+     * Save data from the "Intensive" logbook; triggers Alarm via LogService.
      */
     protected void handleSaveAllIntensive() {
+        int preIndex = 0;
         for (int i = 0; i < ROW_LABELS.length; i++) {
             double bg       = parseDoubleSafe(bloodSugarFields[i].getText());
             double carbs    = parseDoubleSafe(carbsFields[i].getText());
@@ -242,9 +293,15 @@ public class IntensiveLogbook extends BaseUI {
             String food     = foodDiaryFields[i].getText();
             String other    = otherEventsFields[i].getText();
 
+            int hours = 0;
+            if (ROW_LABELS[i].endsWith("Pre")) {
+                hours = parseIntSafe(hoursSinceMealFields[preIndex].getText());
+                preIndex++;
+            }
+
             // Only save if something is entered
             if (bg > 0 || carbs > 0 || !exercise.isEmpty() || insulin > 0
-                    || !food.isEmpty() || !other.isEmpty()) {
+                    || !food.isEmpty() || !other.isEmpty() || hours > 0) {
                 LogEntry entry = new LogEntry();
                 entry.setUserId(currentUser.getId());
                 entry.setDate(targetDate);
@@ -255,7 +312,9 @@ public class IntensiveLogbook extends BaseUI {
                 entry.setInsulinDose(insulin);
                 entry.setFoodDetails(food);
                 entry.setOtherMedications(other);
+                entry.setHoursSinceMeal(hours);
 
+                // This automatically triggers the alarm if out of range
                 LogService.createEntry(entry, currentUser);
             }
         }
@@ -271,6 +330,14 @@ public class IntensiveLogbook extends BaseUI {
             return Double.parseDouble(text);
         } catch (NumberFormatException e) {
             return 0.0;
+        }
+    }
+
+    private int parseIntSafe(String text) {
+        try {
+            return Integer.parseInt(text);
+        } catch (NumberFormatException e) {
+            return 0;
         }
     }
 }

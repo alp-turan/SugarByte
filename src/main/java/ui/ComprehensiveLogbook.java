@@ -10,19 +10,21 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * ComprehensiveLogbook includes columns for:
+ *   - Blood Glucose
+ *   - Carbs Eaten
+ *   - Exercise Type
+ *   - Insulin Dose
+ *   - Hours Since Last Meal (for Pre rows)
+ * and triggers alarms (via AlarmService) automatically.
+ */
 public class ComprehensiveLogbook extends BaseUI {
 
     protected User currentUser;
     protected String targetDate;
 
-    // We have columns: BloodSugar, Carbs, ExerciseType, InsulinDose, HoursSinceMeal? etc.
-    protected JTextField[] bloodSugarFields  = new JTextField[7];
-    protected JTextField[] carbsFields       = new JTextField[7];
-    protected JTextField[] exerciseFields    = new JTextField[7];
-    protected JTextField[] insulinDoseFields = new JTextField[7];
-    protected JTextField[] hoursSinceMealFields = new JTextField[3]; // if we still want it
-
-    // same 7 rows
+    // 7 rows: Breakfast Pre/Post, Lunch Pre/Post, Dinner Pre/Post, Bedtime
     private static final String[] ROW_LABELS = {
             "Breakfast Pre",
             "Breakfast Post",
@@ -32,6 +34,15 @@ public class ComprehensiveLogbook extends BaseUI {
             "Dinner Post",
             "Bedtime"
     };
+
+    // Arrays for each column
+    protected JTextField[] bloodSugarFields   = new JTextField[7];
+    protected JTextField[] carbsFields        = new JTextField[7];
+    protected JTextField[] exerciseFields     = new JTextField[7];
+    protected JTextField[] insulinDoseFields  = new JTextField[7];
+
+    // Hours Since Last Meal is only relevant for "Pre" rows
+    protected JTextField[] hoursSinceMealFields = new JTextField[3]; // We have exactly 3 "Pre" rows.
 
     public ComprehensiveLogbook(User user, String date) {
         super("Comprehensive Logbook for " + date);
@@ -44,7 +55,8 @@ public class ComprehensiveLogbook extends BaseUI {
     }
 
     /**
-     * Build the "Comprehensive" UI
+     * Build the "Comprehensive" UI with columns:
+     * Time of Day | Blood Glucose | Carbs Eaten | Exercise Type | Insulin Dose | Hours Since Last Meal
      */
     protected void buildUIComprehensive() {
         // Main gradient background
@@ -52,7 +64,7 @@ public class ComprehensiveLogbook extends BaseUI {
         mainPanel.setLayout(new BorderLayout());
         setContentPane(mainPanel);
 
-        // Top panel
+        // ===== TOP PANEL =====
         JPanel topPanel = new JPanel();
         topPanel.setOpaque(false);
         topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.Y_AXIS));
@@ -71,7 +83,7 @@ public class ComprehensiveLogbook extends BaseUI {
 
         mainPanel.add(topPanel, BorderLayout.NORTH);
 
-        // center panel
+        // ===== CENTER PANEL (GridBagLayout) =====
         JPanel centerPanel = new JPanel(new GridBagLayout());
         centerPanel.setOpaque(false);
         GridBagConstraints gbc = new GridBagConstraints();
@@ -79,8 +91,8 @@ public class ComprehensiveLogbook extends BaseUI {
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
         // First row of headers
-        gbc.gridx = 0;
         gbc.gridy = 0;
+        gbc.gridx = 0;
         JLabel timeHeaderLine1 = new JLabel("Time");
         timeHeaderLine1.setFont(new Font("SansSerif", Font.BOLD, 12));
         centerPanel.add(timeHeaderLine1, gbc);
@@ -105,7 +117,12 @@ public class ComprehensiveLogbook extends BaseUI {
         insulinHeaderLine1.setFont(new Font("SansSerif", Font.BOLD, 12));
         centerPanel.add(insulinHeaderLine1, gbc);
 
-        // Second line of headers
+        gbc.gridx = 5;
+        JLabel hoursHeaderLine1 = new JLabel("Hours Since");
+        hoursHeaderLine1.setFont(new Font("SansSerif", Font.BOLD, 12));
+        centerPanel.add(hoursHeaderLine1, gbc);
+
+        // Second row of headers
         gbc.gridy = 1;
         gbc.gridx = 0;
         JLabel timeHeaderLine2 = new JLabel("of Day");
@@ -132,41 +149,56 @@ public class ComprehensiveLogbook extends BaseUI {
         insulinHeaderLine2.setFont(new Font("SansSerif", Font.BOLD, 12));
         centerPanel.add(insulinHeaderLine2, gbc);
 
-        // Data rows
-        int preIndex = 0;
-        for (int i = 0; i < ROW_LABELS.length; i++) {
-            gbc.gridy = i + 2;
+        gbc.gridx = 5;
+        JLabel hoursHeaderLine2 = new JLabel("Last Meal");
+        hoursHeaderLine2.setFont(new Font("SansSerif", Font.BOLD, 12));
+        centerPanel.add(hoursHeaderLine2, gbc);
 
-            // Time-of-day
+        // Data rows
+        int preIndex = 0; // track how many "Pre" rows we've encountered
+        for (int i = 0; i < ROW_LABELS.length; i++) {
+            gbc.gridy = i + 2; // start from row 2
+
+            // Column 0: Time-of-day label
             gbc.gridx = 0;
             JLabel rowLabel = new JLabel(ROW_LABELS[i] + ":");
             rowLabel.setFont(new Font("SansSerif", Font.BOLD, 12));
             centerPanel.add(rowLabel, gbc);
 
-            // BloodSugar
+            // Column 1: BloodSugar
             gbc.gridx = 1;
             bloodSugarFields[i] = new JTextField(5);
             centerPanel.add(bloodSugarFields[i], gbc);
 
-            // Carbs
+            // Column 2: Carbs
             gbc.gridx = 2;
             carbsFields[i] = new JTextField(5);
             centerPanel.add(carbsFields[i], gbc);
 
-            // Exercise
+            // Column 3: Exercise
             gbc.gridx = 3;
             exerciseFields[i] = new JTextField(5);
             centerPanel.add(exerciseFields[i], gbc);
 
-            // Insulin Dose
+            // Column 4: Insulin
             gbc.gridx = 4;
             insulinDoseFields[i] = new JTextField(5);
             centerPanel.add(insulinDoseFields[i], gbc);
+
+            // Column 5: Hours Since Meal (only for Pre)
+            gbc.gridx = 5;
+            if (ROW_LABELS[i].endsWith("Pre")) {
+                hoursSinceMealFields[preIndex] = new JTextField(5);
+                centerPanel.add(hoursSinceMealFields[preIndex], gbc);
+                preIndex++;
+            } else {
+                centerPanel.add(new JLabel("—"), gbc);
+            }
         }
 
         mainPanel.add(centerPanel, BorderLayout.CENTER);
 
-        // Bottom panel with "Save All"
+        // ===== BOTTOM PANEL (Save + Nav) =====
         JPanel bottomPanel = new JPanel();
         bottomPanel.setOpaque(false);
         JButton saveAllBtn = new JButton("Save All");
@@ -187,7 +219,7 @@ public class ComprehensiveLogbook extends BaseUI {
     }
 
     /**
-     * Load data from DB for the "Comprehensive" style
+     * Load data from DB (including hoursSinceMeal, etc.) for the "Comprehensive" style
      */
     protected void loadLogEntriesComprehensive() {
         List<LogEntry> entries = LogService.getEntriesForDate(currentUser.getId(), targetDate);
@@ -196,6 +228,7 @@ public class ComprehensiveLogbook extends BaseUI {
             entryMap.put(entry.getTimeOfDay(), entry);
         }
 
+        int preIndex = 0;
         for (int i = 0; i < ROW_LABELS.length; i++) {
             LogEntry e = entryMap.get(ROW_LABELS[i]);
             if (e != null) {
@@ -203,22 +236,35 @@ public class ComprehensiveLogbook extends BaseUI {
                 carbsFields[i].setText(String.valueOf(e.getCarbsEaten()));
                 exerciseFields[i].setText(e.getExerciseType() == null ? "" : e.getExerciseType());
                 insulinDoseFields[i].setText(String.valueOf(e.getInsulinDose()));
+
+                if (ROW_LABELS[i].endsWith("Pre")) {
+                    hoursSinceMealFields[preIndex].setText(String.valueOf(e.getHoursSinceMeal()));
+                    preIndex++;
+                }
             }
         }
     }
 
     /**
-     * Save all data from the comprehensive form
+     * Save all data from the comprehensive form; triggers the alarm automatically
+     * via LogService.createEntry(...).
      */
     protected void handleSaveAllComprehensive() {
+        int preIndex = 0; // to track "Pre" rows for hoursSinceMeal
         for (int i = 0; i < ROW_LABELS.length; i++) {
-            double bg = parseDoubleSafe(bloodSugarFields[i].getText());
-            double carbs = parseDoubleSafe(carbsFields[i].getText());
+            double bg       = parseDoubleSafe(bloodSugarFields[i].getText());
+            double carbs    = parseDoubleSafe(carbsFields[i].getText());
             String exercise = exerciseFields[i].getText();
-            double insulin = parseDoubleSafe(insulinDoseFields[i].getText());
+            double insulin  = parseDoubleSafe(insulinDoseFields[i].getText());
+            int hours = 0;
 
-            // Only create/update if there's content
-            if (bg > 0 || carbs > 0 || !exercise.isEmpty() || insulin > 0) {
+            if (ROW_LABELS[i].endsWith("Pre")) {
+                hours = parseIntSafe(hoursSinceMealFields[preIndex].getText());
+                preIndex++;
+            }
+
+            // Only create/update if there's some content
+            if (bg > 0 || carbs > 0 || !exercise.isEmpty() || insulin > 0 || hours > 0) {
                 LogEntry entry = new LogEntry();
                 entry.setUserId(currentUser.getId());
                 entry.setDate(targetDate);
@@ -227,11 +273,14 @@ public class ComprehensiveLogbook extends BaseUI {
                 entry.setCarbsEaten(carbs);
                 entry.setExerciseType(exercise);
                 entry.setInsulinDose(insulin);
+                entry.setHoursSinceMeal(hours);
                 entry.setFoodDetails("Comprehensive Logbook Entry: " + ROW_LABELS[i]);
 
+                // This calls AlarmService.checkAndSendAlarm() behind the scenes
                 LogService.createEntry(entry, currentUser);
             }
         }
+
         JOptionPane.showMessageDialog(this,
                 "All entered values have been saved (Comprehensive).",
                 "Logbook Saved",
@@ -243,6 +292,14 @@ public class ComprehensiveLogbook extends BaseUI {
             return Double.parseDouble(text);
         } catch (NumberFormatException e) {
             return 0.0;
+        }
+    }
+
+    private int parseIntSafe(String text) {
+        try {
+            return Integer.parseInt(text);
+        } catch (NumberFormatException e) {
+            return 0;
         }
     }
 }
