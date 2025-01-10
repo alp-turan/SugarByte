@@ -253,7 +253,7 @@ public class IntensiveLogbook extends BaseUI {
         bottomPanel.add(saveAllBtn);
 
         JPanel navBar = createBottomNavBar("Logbook", currentUser,
-                "/Icons/home.png", "/Icons/logbookfull.png", "/Icons/profile.png");
+                "/Icons/home.png", "/Icons/logbookfull.png", "/Icons/graph.png", "/Icons/profile.png");
 
         JPanel wrapperPanel = new JPanel(new BorderLayout());
         wrapperPanel.setOpaque(false);

@@ -220,7 +220,7 @@ public class Profile extends BaseUI {
         // Bottom Nav
         JPanel navBar = createBottomNavBar(
                 "Profile", currentUser,
-                "/Icons/home.png", "/Icons/logbook.png", "/Icons/profilefull.png"
+                "/Icons/home.png", "/Icons/logbook.png", "/Icons/graph.png", "/Icons/profilefull.png"
         );
         mainPanel.add(navBar, BorderLayout.SOUTH);
 

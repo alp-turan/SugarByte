@@ -96,8 +96,8 @@ public class GlucoseGraph extends BaseUI {
         mainPanel.add(chartPanel, BorderLayout.CENTER);
 
         // ===== BOTTOM NAV BAR =====
-        JPanel navBar = createBottomNavBar("Home", currentUser,
-                "/Icons/home.png", "/Icons/logbook.png", "/Icons/profile.png");
+        JPanel navBar = createBottomNavBar("GlucoseGraph", currentUser,
+                "/Icons/home.png", "/Icons/logbook.png", "/Icons/graphfull.png", "/Icons/profile.png");
         mainPanel.add(navBar, BorderLayout.SOUTH);
     }
 

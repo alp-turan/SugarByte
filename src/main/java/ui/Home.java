@@ -169,7 +169,7 @@ public class Home extends BaseUI {
 
         // ============ BOTTOM NAV BAR ============
         JPanel navBar = createBottomNavBar("Home", currentUser,
-                "/Icons/homefull.png", "/Icons/logbook.png", "/Icons/profile.png");
+                "/Icons/homefull.png", "/Icons/logbook.png", "/Icons/graph.png", "/Icons/profile.png");
         mainPanel.add(navBar);
     }
 

@@ -214,7 +214,7 @@ public class BaseUI extends JFrame {
         return button;
     }
 
-    public JPanel createBottomNavBar(String currentScreen, User currentUser, String icon1, String icon2, String icon3) {
+    public JPanel createBottomNavBar(String currentScreen, User currentUser, String icon1, String icon2, String icon3, String icon4) {
         JPanel navBar = new JPanel(new FlowLayout(FlowLayout.CENTER, 30, 10));
         navBar.setOpaque(false);
         navBar.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
@@ -222,22 +222,32 @@ public class BaseUI extends JFrame {
         // Load icons
         ImageIcon homeIcon = loadScaledIcon(icon1);
         ImageIcon calendarIcon = loadScaledIcon(icon2);
-        ImageIcon profileIcon = loadScaledIcon(icon3);
+        ImageIcon graphIcon = loadScaledIcon(icon3);
+        ImageIcon profileIcon = loadScaledIcon(icon4);  // Load Graph icon
 
+        // Create buttons
         JButton homeButton = createIconButton(homeIcon, "Home");
         JButton calendarButton = createIconButton(calendarIcon, "Calendar");
+        JButton graphButton = createIconButton(graphIcon, "Graph");  // Create Graph button
         JButton profileButton = createIconButton(profileIcon, "Profile");
 
+
+        // Add ActionListeners for navigation
         homeButton.addActionListener(e -> navigateTo("Home", currentScreen, currentUser));
         calendarButton.addActionListener(e -> navigateTo("Calendar", currentScreen, currentUser));
+        graphButton.addActionListener(e -> navigateTo("GlucoseGraph", currentScreen, currentUser));  // Navigate to GlucoseGraph
         profileButton.addActionListener(e -> navigateTo("Profile", currentScreen, currentUser));
 
+        // Add buttons to the navigation bar
         navBar.add(homeButton);
         navBar.add(calendarButton);
+        navBar.add(graphButton);  // Add Graph button
         navBar.add(profileButton);
+
 
         return navBar;
     }
+
 
     private void navigateTo(String targetScreen, String currentScreen, User currentUser) {
         if (!targetScreen.equals(currentScreen)) {
@@ -249,6 +259,9 @@ public class BaseUI extends JFrame {
                 case "Calendar":
                     new Calendar(currentUser);
                     break;
+                case "GlucoseGraph":
+                    new GlucoseGraph(currentUser);  // Navigate to GlucoseGraph
+                    break;
                 case "Profile":
                     new Profile(currentUser);
                     break;
@@ -259,6 +272,7 @@ public class BaseUI extends JFrame {
             JOptionPane.showMessageDialog(this, "Already on the " + targetScreen + " page.", "Info", JOptionPane.INFORMATION_MESSAGE);
         }
     }
+
 
     protected void refreshCalendar() {
         getContentPane().removeAll();
@@ -290,7 +304,7 @@ public class BaseUI extends JFrame {
         contentPanel.add(daysPanel, gbc);
 
         mainPanel.add(contentPanel, BorderLayout.CENTER);
-        mainPanel.add(createBottomNavBar("Calendar", currentUser, "/Icons/home.png", "/Icons/logbookfull.png", "/Icons/profile.png"), BorderLayout.SOUTH);
+        mainPanel.add(createBottomNavBar("Calendar", currentUser, "/Icons/home.png", "/Icons/logbookfull.png", "/Icons/graph.png", "/Icons/profile.png"), BorderLayout.SOUTH);
 
         add(mainPanel);
         revalidate();
