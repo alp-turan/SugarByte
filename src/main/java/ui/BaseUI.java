@@ -29,6 +29,76 @@ public class BaseUI extends JFrame {
         setResizable(false);
     }
 
+    protected void addBackButton() {
+        JButton backButton = new JButton("Back");
+        backButton.setFont(new Font("SansSerif", Font.BOLD, 16));
+        backButton.setFocusPainted(false);
+        backButton.setBorderPainted(false);
+        backButton.setContentAreaFilled(false);
+        backButton.setForeground(Color.BLUE);
+
+        backButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                handleBack();
+            }
+        });
+
+        // Use GridBagConstraints to add the Back button
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 0; // Adjust this if you want to change the position of the button
+        gbc.anchor = GridBagConstraints.WEST;
+
+        // Add the button to the layout
+        add(backButton, gbc);
+    }
+
+    // Method to handle back action
+    private void handleBack() {
+        // Close current window and go back to the previous screen
+        dispose(); // Close the current screen
+        // Example: You can show the previous screen or the main screen
+        new Login(); // Or another class like Profile or Calendar based on your flow
+    }
+
+
+    protected void addLogoutButton() {
+        JButton logoutButton = new JButton("Logout");
+        logoutButton.setFont(new Font("SansSerif", Font.BOLD, 16));
+        logoutButton.setFocusPainted(false);
+        logoutButton.setBorderPainted(false);
+        logoutButton.setContentAreaFilled(false);
+        logoutButton.setForeground(Color.RED);
+
+        logoutButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                handleLogout();
+            }
+        });
+
+        JPanel logoutPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        logoutPanel.setOpaque(false);
+        logoutPanel.add(logoutButton);
+
+        // Add the logout button to the frame
+        getContentPane().add(logoutPanel, BorderLayout.NORTH);
+    }
+
+    // Method to handle logout logic
+    private void handleLogout() {
+        int result = JOptionPane.showConfirmDialog(this, "Are you sure you want to log out?", "Logout", JOptionPane.YES_NO_OPTION);
+        if (result == JOptionPane.YES_OPTION) {
+            // Clear user session or perform any other necessary action
+            // currentUser = null;
+
+            // Example of logging out: Close current window and open the login screen
+            dispose(); // Close the current screen
+            new Login(); // Open the login screen (you should have a Login class)
+        }
+    }
+
     // Method to load custom fonts
     protected Font loadCustomFont(float size) {
         try (InputStream is = getClass().getResourceAsStream("/Fonts/Lobster.ttf")) {

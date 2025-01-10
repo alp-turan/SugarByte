@@ -213,6 +213,8 @@ public class Profile extends BaseUI {
         mainPanel.add(navBar, BorderLayout.SOUTH);
 
         setVisible(true);
+        addLogoutButton();
+
     }
 
     /**

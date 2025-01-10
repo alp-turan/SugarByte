@@ -15,6 +15,8 @@ public class Calendar extends BaseUI {
         this.currentUser = user;
         refreshCalendar(); // Rebuild the calendar UI
         setVisible(true);
+        addLogoutButton();
+
     }
 
     @Override

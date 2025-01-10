@@ -31,6 +31,8 @@ public class Home extends BaseUI {
         }
 
         setVisible(true);
+        addLogoutButton();
+
     }
 
     private void buildUI() {
