@@ -24,6 +24,7 @@ public class LogService {
         LogEntry saved = logEntryDAO.createLogEntry(entry);
         // 2. Alarm check
         AlarmService.checkAndSendAlarm(saved, user);
+
         return saved;
     }
 

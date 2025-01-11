@@ -4,6 +4,7 @@ import model.LogEntry;
 import model.User;
 
 import javax.mail.*;
+import javax.swing.JOptionPane;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import java.util.Properties;
@@ -60,6 +61,7 @@ public class AlarmService {
      * @param bloodSugar  The blood sugar value triggering the alarm.
      * @param hoursSinceMeal The number of hours since the user's last meal.
      */
+
     private static void sendEmailAlarm(String doctorName, String doctorEmail, String userName, double bloodSugar, int hoursSinceMeal) {
         // SugarByte's Gmail credentials:
         final String fromEmail = "sugarbyte.app@gmail.com"; // SugarByte's email address
@@ -88,25 +90,36 @@ public class AlarmService {
             message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(doctorEmail));
             message.setSubject("Urgent: Blood Sugar Alert of your patient " + userName);
 
-            String emailBody = String.format( // by using .format, we can avoid concatenating alternating strings of
-                    // text & values, eg 'userName', can instead be passed at the end of the string & have placeholders
-                    // inside the message to be replaced with the corresponding values
+            String emailBody = String.format(
                     "Dear Doctor %s,\n\nYour patient %s recorded a blood sugar level of %.2f mmol/L, which is %s the safe range.\n"
                             + "This level was recorded %d hours after their last meal at %s.\n\n"
                             + "Please review and advise.\n\n"
                             + "Best regards,\nSugarByte - The Comprehensive Diabetes Monitoring App",
-                    doctorName, userName, bloodSugar, (bloodSugar < MIN_THRESHOLD || bloodSugar > (hoursSinceMeal >= 10 ? 7.0 : 11.0)) ? "outside" : "within", hoursSinceMeal, "the time of day or specific log time here");
+                    doctorName, userName, bloodSugar,
+                    (bloodSugar < MIN_THRESHOLD ? "below" : "above"),
+                    hoursSinceMeal, "the time of day or specific log time here");
 
             message.setText(emailBody);
 
             // Send the email
             Transport.send(message);
             System.out.println("Alarm email sent to " + userName + "'s doctor's email " + doctorEmail);
+
+            // Show a pop-up notification
+            String notificationMessage = String.format(
+                    "Doctor has been notified of %s glucose value (%.2f mmol/L).",
+                    (bloodSugar < MIN_THRESHOLD ? "low" : "high"), bloodSugar);
+            JOptionPane.showMessageDialog(null, notificationMessage, "Notification", JOptionPane.INFORMATION_MESSAGE);
+
         } catch (MessagingException e) {
             e.printStackTrace();
             System.err.println("Failed to send email to " + userName + "'s doctor's email " + doctorEmail);
+
+            // Show an error pop-up
+            JOptionPane.showMessageDialog(null, "Failed to notify the doctor. Please try again.", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
+
 
 
 }
