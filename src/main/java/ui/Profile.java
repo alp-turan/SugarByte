@@ -212,7 +212,7 @@ public class Profile extends BaseUI {
         saveBtn.setFont(new Font("SansSerif", Font.BOLD, 14));  // Set the font style and size
 
 // Set preferred size for the button
-        saveBtn.setPreferredSize(new Dimension(140, 40)); // Consistent size for the button
+        saveBtn.setPreferredSize(new Dimension(140, 35)); // Consistent size for the button
 
 // Add ActionListener to handle save logic
         saveBtn.addActionListener(new ActionListener() {

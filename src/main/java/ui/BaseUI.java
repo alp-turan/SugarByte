@@ -72,7 +72,7 @@ public class BaseUI extends JFrame {
             // Override the preferred size to maintain consistent button dimensions
             @Override
             public Dimension getPreferredSize() {
-                return new Dimension(100, 40);
+                return new Dimension(100, 35);
             }
         };
 
