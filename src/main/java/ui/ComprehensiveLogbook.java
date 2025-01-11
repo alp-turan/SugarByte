@@ -44,7 +44,7 @@ public class ComprehensiveLogbook extends BaseUI {
     // Arrays for each column
     protected JTextField[] bloodSugarFields   = new JTextField[7];
     protected JTextField[] carbsFields        = new JTextField[7];
-    protected JTextField[] exerciseFields     = new JTextField[7];
+    protected JTextArea[] exerciseFields = new JTextArea[7];
     protected JTextField[] insulinDoseFields  = new JTextField[7];
     // Hours Since Last Meal is only relevant for "Pre" rows
     protected JTextField[] hoursSinceMealFields = new JTextField[3];
@@ -186,8 +186,12 @@ public class ComprehensiveLogbook extends BaseUI {
 
             // Column 3: Exercise
             gbc.gridx = 3;
-            exerciseFields[i] = createAlphaOnlyField();
-            centerPanel.add(exerciseFields[i], gbc);
+            exerciseFields[i] = new JTextArea(2, 10); // 2 rows, 10 columns
+            exerciseFields[i].setLineWrap(true);     // Enable line wrapping
+            exerciseFields[i].setWrapStyleWord(true);// Wrap at word boundaries
+            JScrollPane exerciseScrollPane = new JScrollPane(exerciseFields[i]);
+            exerciseScrollPane.setPreferredSize(new Dimension(100, 40));
+            centerPanel.add(exerciseScrollPane, gbc);
 
             // Column 4: Insulin
             gbc.gridx = 4;
@@ -233,7 +237,7 @@ public class ComprehensiveLogbook extends BaseUI {
                 JScrollPane pane = (JScrollPane) parent;
                 if (pane.getHorizontalScrollBar() != null) {
                     Rectangle bounds = pane.getHorizontalScrollBar().getBounds();
-                    bounds.y = 360; // Place at the top
+                    bounds.y = 420; // Place at the top
                     pane.getHorizontalScrollBar().setBounds(bounds);
 
                     // Adjust viewport bounds to avoid overlap
