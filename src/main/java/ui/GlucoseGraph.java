@@ -8,17 +8,23 @@ import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.DateAxis;
+import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.data.xy.DefaultXYDataset;
 import org.jfree.data.xy.XYDataset;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.Date;
 import java.util.List;
 
@@ -64,32 +70,33 @@ public class GlucoseGraph extends BaseUI {
         dateSelectionPanel.setLayout(new FlowLayout());
 
         JLabel startDateLabel = new JLabel("Start Date:");
+        startDateLabel.setFont(startDateLabel.getFont().deriveFont(Font.BOLD)); // Bold the label
         JLabel endDateLabel = new JLabel("End Date:");
+        endDateLabel.setFont(endDateLabel.getFont().deriveFont(Font.BOLD)); // Bold the label
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-
-        JComboBox<String> startDateBox = createDateComboBox(formatter);
-        JComboBox<String> endDateBox = createDateComboBox(formatter);
+        JComboBox<String> startDateBox = createDateComboBox();
+        JComboBox<String> endDateBox = createDateComboBox();
 
         JButton generateButton = new JButton("Generate Graph");
         generateButton.addActionListener(e -> {
-            startDate = LocalDate.parse((String) startDateBox.getSelectedItem(), formatter);
-            endDate = LocalDate.parse((String) endDateBox.getSelectedItem(), formatter);
-            updateGraph();
+            try {
+                startDate = parseDate((String) startDateBox.getSelectedItem());
+                endDate = parseDate((String) endDateBox.getSelectedItem());
+                updateGraph();
+            } catch (DateTimeParseException ex) {
+                JOptionPane.showMessageDialog(this, "Invalid date format. Please select a valid date.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
         });
 
-        // Add Send to Doctor button
         JButton sendToDoctorButton = new JButton("Send to Doctor");
-        sendToDoctorButton.addActionListener(e -> {
-            sendDataToDoctor();
-        });
+        sendToDoctorButton.addActionListener(e -> sendDataToDoctor());
 
         dateSelectionPanel.add(startDateLabel);
         dateSelectionPanel.add(startDateBox);
         dateSelectionPanel.add(endDateLabel);
         dateSelectionPanel.add(endDateBox);
         dateSelectionPanel.add(generateButton);
-        dateSelectionPanel.add(sendToDoctorButton); // Add the button next to generate
+        dateSelectionPanel.add(sendToDoctorButton);
 
         topPanel.add(dateSelectionPanel);
 
@@ -98,12 +105,14 @@ public class GlucoseGraph extends BaseUI {
         // ===== CHART PANEL =====
         chartPanel = new ChartPanel(null);
         chartPanel.setOpaque(false);
-
-        // Set the graph height to be 3/4 (lower height)
-        chartPanel.setPreferredSize(new Dimension(800, 400)); // Change the dimensions as needed
+        chartPanel.setPreferredSize(new Dimension(800, 400));
         chartPanel.revalidate();
         chartPanel.repaint();
         mainPanel.add(chartPanel, BorderLayout.CENTER);
+
+        SwingUtilities.invokeLater(() -> {
+            System.out.println("ChartPanel dimensions: " + chartPanel.getWidth() + "x" + chartPanel.getHeight());
+        });
 
         updateGraph();
 
@@ -130,17 +139,15 @@ public class GlucoseGraph extends BaseUI {
         );
 
         XYPlot plot = chart.getXYPlot();
-        plot.getRangeAxis().setRange(1.0, 14.0);  // No change in range but will be squashed
-
-        // Squash the graph vertically
-        plot.getRangeAxis().setInverted(false); // Make sure Y-axis is increasing downwards
-        plot.getRangeAxis().setLowerBound(1);
-        plot.getRangeAxis().setUpperBound(14);
 
         // Set custom date formatter for the x-axis
         DateAxis dateAxis = new DateAxis("Date");
+        dateAxis.setLabelFont(dateAxis.getLabelFont().deriveFont(Font.BOLD)); // Bold the "Date" label
         dateAxis.setDateFormatOverride(new SimpleDateFormat("d MMM"));
-        plot.setDomainAxis(dateAxis); // Set custom date axis
+        plot.setDomainAxis(dateAxis);
+
+        ValueAxis rangeAxis = plot.getRangeAxis();
+        rangeAxis.setLabelFont(rangeAxis.getLabelFont().deriveFont(Font.BOLD)); // Bold the Y-axis label
 
         XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer();
         renderer.setSeriesShapesVisible(0, true);
@@ -160,22 +167,13 @@ public class GlucoseGraph extends BaseUI {
         double[] xValues = new double[numDays];
         double[] yValues = new double[numDays];
 
-        Date[] dateValues = new Date[numDays]; // Change xValues to Date array
-        DateTimeFormatter dFmt = DateTimeFormatter.ofPattern("d MMM");
-        StringBuilder missingDataMessages = new StringBuilder("<html>");
-
         for (int i = 0; i < numDays; i++) {
             LocalDate currentDate = startDate.plusDays(i);
-            dateValues[i] = java.sql.Date.valueOf(currentDate); // Convert LocalDate to Date
-            xValues[i] = dateValues[i].getTime(); // Store time in milliseconds for Date axis
-
+            xValues[i] = java.sql.Date.valueOf(currentDate).getTime();
             List<LogEntry> dayEntries = LogService.getEntriesForDate(currentUser.getId(), currentDate.toString());
 
             if (dayEntries.isEmpty()) {
                 yValues[i] = Double.NaN;
-                missingDataMessages.append("No log data found for ")
-                        .append(currentDate.format(dFmt))
-                        .append("<br>");
             } else {
                 double sum = 0;
                 for (LogEntry e : dayEntries) {
@@ -185,55 +183,74 @@ public class GlucoseGraph extends BaseUI {
             }
         }
 
-        missingDataMessages.append("</html>");
-
-        double[][] seriesData = new double[2][numDays];
-        seriesData[0] = xValues;
-        seriesData[1] = yValues;
-        dataset.addSeries("BG Trend", seriesData);
-
-        if (!missingDataMessages.toString().equals("<html></html>")) {
-            SwingUtilities.invokeLater(() -> {
-                JDialog warningDialog = new JDialog(this, "Missing Data", false);
-                warningDialog.setLayout(new BorderLayout());
-                JLabel messageLabel = new JLabel(missingDataMessages.toString());
-                messageLabel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-                warningDialog.add(messageLabel, BorderLayout.CENTER);
-
-                JButton closeButton = new JButton("OK");
-                closeButton.addActionListener(e -> warningDialog.dispose());
-                JPanel buttonPanel = new JPanel();
-                buttonPanel.add(closeButton);
-                warningDialog.add(buttonPanel, BorderLayout.SOUTH);
-
-                warningDialog.pack();
-                warningDialog.setLocationRelativeTo(this);
-                warningDialog.setVisible(true);
-            });
-        }
-
+        dataset.addSeries("BG Trend", new double[][]{xValues, yValues});
         return dataset;
     }
 
     /**
-     * Creates a JComboBox with date values for the past 30 days.
+     * Creates a JComboBox with date values formatted as "31st Jan 2025".
      */
-    private JComboBox<String> createDateComboBox(DateTimeFormatter formatter) {
+    private JComboBox<String> createDateComboBox() {
         JComboBox<String> dateBox = new JComboBox<>();
         LocalDate today = LocalDate.now();
+
         for (int i = 0; i < 30; i++) {
             LocalDate date = today.minusDays(i);
-            dateBox.addItem(date.format(formatter));
+            dateBox.addItem(formatDateWithOrdinal(date));
         }
         return dateBox;
     }
 
     /**
-     * Simulate sending data to the doctor.
+     * Formats a LocalDate as "31st Jan 2025".
+     */
+    private String formatDateWithOrdinal(LocalDate date) {
+        int day = date.getDayOfMonth();
+        String suffix = getDaySuffix(day);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d'" + suffix + "' MMM yyyy");
+        return date.format(formatter);
+    }
+
+    /**
+     * Returns the ordinal suffix for a given day of the month.
+     */
+    private String getDaySuffix(int day) {
+        if (day >= 11 && day <= 13) return "th";
+        switch (day % 10) {
+            case 1:  return "st";
+            case 2:  return "nd";
+            case 3:  return "rd";
+            default: return "th";
+        }
+    }
+
+    /**
+     * Parses a date string with ordinal suffix (e.g., "11th Jan 2025") into a LocalDate object.
+     */
+    private LocalDate parseDate(String dateString) {
+        // Remove ordinal suffixes like "st", "nd", "rd", "th"
+        String cleanedDateString = dateString.replaceAll("(\\d+)(st|nd|rd|th)", "$1");
+        return LocalDate.parse(cleanedDateString, DateTimeFormatter.ofPattern("d MMM yyyy"));
+    }
+
+    /**
+     * Simulates sending the graph image to the doctor via email.
      */
     private void sendDataToDoctor() {
-        // Here you would implement the logic to send the data and graph to the doctor.
-        // For now, we will just show a message.
-        JOptionPane.showMessageDialog(this, "Data sent to your doctor for the selected date range.");
+        try {
+            // Capture the graph as an image
+            BufferedImage chartImage = chartPanel.getChart().createBufferedImage(chartPanel.getWidth(), chartPanel.getHeight());
+            File tempFile = new File("graph.png");
+            ImageIO.write(chartImage, "png", tempFile);
+
+            // Retrieve the doctor's email from the user's profile
+            String doctorEmail = currentUser.getDoctorEmail();
+
+            // Simulated email sending
+            System.out.println("Sending graph to " + doctorEmail);
+            JOptionPane.showMessageDialog(this, "Graph sent to your doctor at " + doctorEmail);
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(this, "Failed to send the graph: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }
 }
