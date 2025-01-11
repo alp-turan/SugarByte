@@ -46,10 +46,11 @@ public class IntensiveLogbook extends BaseUI {
     // Arrays for each column
     protected JTextField[] bloodSugarFields  = new JTextField[7];
     protected JTextField[] carbsFields       = new JTextField[7];
-    protected JTextField[] exerciseFields    = new JTextField[7];
     protected JTextField[] insulinDoseFields = new JTextField[7];
-    protected JTextField[] foodDiaryFields   = new JTextField[7];
-    protected JTextField[] otherEventsFields = new JTextField[7];
+    protected JTextArea[] exerciseFields = new JTextArea[7];
+    protected JTextArea[] foodDiaryFields = new JTextArea[7];
+    protected JTextArea[] otherEventsFields = new JTextArea[7];
+
     // Hours Since Last Meal for "Pre" rows
     protected JTextField[] hoursSinceMealFields = new JTextField[3];
 
@@ -139,51 +140,54 @@ public class IntensiveLogbook extends BaseUI {
         centerPanel.add(otherHeader1, gbc);
 
         gbc.gridx = 7;
-        JLabel hoursHeader1 = new JLabel("Hours Since");
+        JLabel hoursHeader1 = new JLabel("Hours since");
         hoursHeader1.setFont(new Font("SansSerif", Font.BOLD, 12));
         centerPanel.add(hoursHeader1, gbc);
 
         // Second line of headers
         gbc.gridy = 1;
         gbc.gridx = 0;
-        JLabel timeHeader2 = new JLabel("of Day");
+        JLabel timeHeader2 = new JLabel("of day");
         timeHeader2.setFont(new Font("SansSerif", Font.BOLD, 12));
         centerPanel.add(timeHeader2, gbc);
 
         gbc.gridx = 1;
-        JLabel bloodHeader2 = new JLabel("Glucose (mmol/L)");
+        JLabel bloodHeader2 = new JLabel("glucose (mmol/L)");
         bloodHeader2.setFont(new Font("SansSerif", Font.BOLD, 12));
         centerPanel.add(bloodHeader2, gbc);
 
         gbc.gridx = 2;
-        JLabel carbsHeader2 = new JLabel("Eaten (g)");
+        JLabel carbsHeader2 = new JLabel("eaten (g)");
         carbsHeader2.setFont(new Font("SansSerif", Font.BOLD, 12));
         centerPanel.add(carbsHeader2, gbc);
 
         gbc.gridx = 3;
-        JLabel exerciseHeader2 = new JLabel("Type");
+        JLabel exerciseHeader2 = new JLabel("type");
         exerciseHeader2.setFont(new Font("SansSerif", Font.BOLD, 12));
         centerPanel.add(exerciseHeader2, gbc);
 
         gbc.gridx = 4;
-        JLabel insulinHeader2 = new JLabel("Dose");
+        JLabel insulinHeader2 = new JLabel("dose");
         insulinHeader2.setFont(new Font("SansSerif", Font.BOLD, 12));
         centerPanel.add(insulinHeader2, gbc);
 
         gbc.gridx = 5;
-        JLabel foodHeader2 = new JLabel("Diary");
+        JLabel foodHeader2 = new JLabel("diary");
         foodHeader2.setFont(new Font("SansSerif", Font.BOLD, 12));
         centerPanel.add(foodHeader2, gbc);
 
         gbc.gridx = 6;
-        JLabel otherHeader2 = new JLabel("Events");
+        JLabel otherHeader2 = new JLabel("events");
         otherHeader2.setFont(new Font("SansSerif", Font.BOLD, 12));
         centerPanel.add(otherHeader2, gbc);
 
         gbc.gridx = 7;
-        JLabel hoursHeader2 = new JLabel("Last Meal");
+        JLabel hoursHeader2 = new JLabel("last meal");
         hoursHeader2.setFont(new Font("SansSerif", Font.BOLD, 12));
         centerPanel.add(hoursHeader2, gbc);
+
+        gbc.gridy = 2;
+
 
         // Data rows
         int preIndex = 0; // track "Pre" rows for hours
@@ -206,25 +210,38 @@ public class IntensiveLogbook extends BaseUI {
             addNumericInputRestriction(carbsFields[i]);
             centerPanel.add(carbsFields[i], gbc);
 
+            // Exercise Type (Multiline JTextArea)
             gbc.gridx = 3;
-            exerciseFields[i] = new JTextField(5);
-            addAlphabeticInputRestriction(exerciseFields[i]);
-            centerPanel.add(exerciseFields[i], gbc);
+            exerciseFields[i] = new JTextArea(2, 10); // 2 rows, 10 columns
+            exerciseFields[i].setLineWrap(true);     // Enable line wrapping
+            exerciseFields[i].setWrapStyleWord(true);// Wrap at word boundaries
+            JScrollPane exerciseScrollPane = new JScrollPane(exerciseFields[i]);
+            exerciseScrollPane.setPreferredSize(new Dimension(100, 40));
+            centerPanel.add(exerciseScrollPane, gbc);
 
+            // Insulin Dose
             gbc.gridx = 4;
             insulinDoseFields[i] = new JTextField(5);
             addNumericInputRestriction(insulinDoseFields[i]);
             centerPanel.add(insulinDoseFields[i], gbc);
 
+            // Food Diary (Multiline JTextArea)
             gbc.gridx = 5;
-            foodDiaryFields[i] = new JTextField(5);
-            addAlphabeticInputRestriction(foodDiaryFields[i]);
-            centerPanel.add(foodDiaryFields[i], gbc);
+            foodDiaryFields[i] = new JTextArea(2, 10); // 2 rows, 10 columns
+            foodDiaryFields[i].setLineWrap(true);
+            foodDiaryFields[i].setWrapStyleWord(true);
+            JScrollPane foodScrollPane = new JScrollPane(foodDiaryFields[i]);
+            foodScrollPane.setPreferredSize(new Dimension(100, 40));
+            centerPanel.add(foodScrollPane, gbc);
 
+            // Other Events (Multiline JTextArea)
             gbc.gridx = 6;
-            otherEventsFields[i] = new JTextField(5);
-            addAlphabeticInputRestriction(otherEventsFields[i]);
-            centerPanel.add(otherEventsFields[i], gbc);
+            otherEventsFields[i] = new JTextArea(2, 10); // 2 rows, 10 columns
+            otherEventsFields[i].setLineWrap(true);
+            otherEventsFields[i].setWrapStyleWord(true);
+            JScrollPane otherScrollPane = new JScrollPane(otherEventsFields[i]);
+            otherScrollPane.setPreferredSize(new Dimension(100, 40));
+            centerPanel.add(otherScrollPane, gbc);
 
             gbc.gridx = 7;
             if (ROW_LABELS[i].endsWith("Pre")) {
@@ -234,6 +251,7 @@ public class IntensiveLogbook extends BaseUI {
                 preIndex++;
             }
         }
+
 
         // Wrap centerPanel in a JScrollPane
         JScrollPane scrollPane = new JScrollPane(
@@ -265,7 +283,7 @@ public class IntensiveLogbook extends BaseUI {
                 JScrollPane pane = (JScrollPane) parent;
                 if (pane.getHorizontalScrollBar() != null) {
                     Rectangle bounds = pane.getHorizontalScrollBar().getBounds();
-                    bounds.y = 360; // Place at the top
+                    bounds.y = 420; // Place at the top
                     pane.getHorizontalScrollBar().setBounds(bounds);
 
                     // Adjust viewport bounds to avoid overlap
