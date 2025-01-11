@@ -16,6 +16,11 @@ import org.jfree.data.xy.DefaultXYDataset;
 import org.jfree.data.xy.XYDataset;
 
 import javax.imageio.ImageIO;
+import javax.mail.*;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeBodyPart;
+import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -27,12 +32,8 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Date;
 import java.util.List;
+import java.util.Properties;
 
-/**
- * Displays a glucose graph for a custom date range,
- * with a shorter vertical chart area and separate rows for date pickers.
- * There's also space at the bottom for a "Send to Doctor" button and the nav bar.
- */
 public class GlucoseGraph extends BaseUI {
 
     private User currentUser;
@@ -53,29 +54,24 @@ public class GlucoseGraph extends BaseUI {
     }
 
     private void buildUI() {
-        // ========== MAIN PANEL WITH GRADIENT ==========
         JPanel mainPanel = createGradientPanel(Color.WHITE, Color.WHITE);
         mainPanel.setLayout(new BorderLayout());
         setContentPane(mainPanel);
 
-        // ========== TOP PANEL ==========
         JPanel topPanel = new JPanel();
         topPanel.setOpaque(false);
         topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.Y_AXIS));
         topPanel.setBorder(BorderFactory.createEmptyBorder(20, 0, 20, 0));
 
-        // Title Label (SugarByte)
         JLabel titleLabel = createTitleLabel("SugarByte", lobsterFont, Color.BLACK);
         titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         topPanel.add(titleLabel);
 
-        // Create a panel for date pickers (BoxLayout Y -> separate lines)
         JPanel datePickersPanel = new JPanel();
         datePickersPanel.setOpaque(false);
         datePickersPanel.setLayout(new BoxLayout(datePickersPanel, BoxLayout.Y_AXIS));
         datePickersPanel.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
 
-        // ========== ROW 1: START DATE ==========
         JPanel startRow = new JPanel(new FlowLayout(FlowLayout.LEFT));
         startRow.setOpaque(false);
         JLabel startDateLabel = new JLabel("Start Date:");
@@ -84,9 +80,6 @@ public class GlucoseGraph extends BaseUI {
         startRow.add(startDateLabel);
         startRow.add(startDateBox);
 
-        // ========== ROW 2: END DATE + GENERATE BUTTON ==========
-        // Instead of FlowLayout, we'll use BoxLayout horizontally
-        // so the button can be placed on the right, and the combo on the left.
         JPanel endRow = new JPanel();
         endRow.setLayout(new BoxLayout(endRow, BoxLayout.X_AXIS));
         endRow.setOpaque(false);
@@ -109,38 +102,29 @@ public class GlucoseGraph extends BaseUI {
             }
         });
 
-        // Add label + combo on the left
         endRow.add(endDateLabel);
-        endRow.add(Box.createHorizontalStrut(10)); // small spacing
+        endRow.add(Box.createHorizontalStrut(10));
         endRow.add(endDateBox);
-
-        // A "glue" that takes remaining horizontal space and pushes the button to the right
         endRow.add(Box.createHorizontalGlue());
         endRow.add(generateButton);
 
-        // Add both rows to datePickersPanel
         datePickersPanel.add(startRow);
         datePickersPanel.add(endRow);
 
         topPanel.add(datePickersPanel);
         mainPanel.add(topPanel, BorderLayout.NORTH);
 
-        // ========== CENTER: CHART PANEL ==========
         chartPanel = new ChartPanel(null);
         chartPanel.setOpaque(false);
-        // Make the chart physically shorter in height
         chartPanel.setPreferredSize(new Dimension(800, 250));
-
         chartPanel.revalidate();
         chartPanel.repaint();
         mainPanel.add(chartPanel, BorderLayout.CENTER);
 
-        // ========== BOTTOM AREA: "Send to Doctor" + Nav Bar ==========
         JPanel bottomWrapper = new JPanel();
         bottomWrapper.setLayout(new BoxLayout(bottomWrapper, BoxLayout.Y_AXIS));
         bottomWrapper.setOpaque(false);
 
-        // Send to Doctor row
         JPanel doctorButtonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         doctorButtonPanel.setOpaque(false);
         doctorButtonPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
@@ -149,7 +133,6 @@ public class GlucoseGraph extends BaseUI {
         sendToDoctorButton.addActionListener(e -> sendDataToDoctor());
         doctorButtonPanel.add(sendToDoctorButton);
 
-        // Bottom Nav
         JPanel navBar = createBottomNavBar("GlucoseGraph", currentUser,
                 "/Icons/home.png", "/Icons/logbook.png", "/Icons/graphfull.png", "/Icons/profile.png");
 
@@ -158,36 +141,30 @@ public class GlucoseGraph extends BaseUI {
 
         mainPanel.add(bottomWrapper, BorderLayout.SOUTH);
 
-        // Initialize the chart
         updateGraph();
     }
 
-    /**
-     * Updates the graph based on the selected start and end dates.
-     */
     private void updateGraph() {
         XYDataset dataset = buildDatasetForRange();
         JFreeChart chart = ChartFactory.createXYLineChart(
-                "", // No title
-                "Date", // X-axis label
-                "Blood Glucose [mmol/L]", // Y-axis label
+                "",
+                "Date",
+                "Blood Glucose [mmol/L]",
                 dataset,
                 PlotOrientation.VERTICAL,
-                false, // No legend
-                false, // No tooltips
-                false  // No URLs
+                false,
+                false,
+                false
         );
 
         XYPlot plot = chart.getXYPlot();
-
-        // Set custom date formatter for the x-axis
         DateAxis dateAxis = new DateAxis("Date");
-        dateAxis.setLabelFont(dateAxis.getLabelFont().deriveFont(Font.BOLD)); // Bold the "Date" label
+        dateAxis.setLabelFont(dateAxis.getLabelFont().deriveFont(Font.BOLD));
         dateAxis.setDateFormatOverride(new SimpleDateFormat("d MMM"));
         plot.setDomainAxis(dateAxis);
 
         ValueAxis rangeAxis = plot.getRangeAxis();
-        rangeAxis.setLabelFont(rangeAxis.getLabelFont().deriveFont(Font.BOLD)); // Bold the Y-axis label
+        rangeAxis.setLabelFont(rangeAxis.getLabelFont().deriveFont(Font.BOLD));
 
         XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer();
         renderer.setSeriesShapesVisible(0, true);
@@ -197,16 +174,12 @@ public class GlucoseGraph extends BaseUI {
         chartPanel.setChart(chart);
     }
 
-    /**
-     * Builds an XYDataset for the specified date range.
-     */
     private XYDataset buildDatasetForRange() {
         DefaultXYDataset dataset = new DefaultXYDataset();
 
         int numDays = (int) (endDate.toEpochDay() - startDate.toEpochDay() + 1);
         if (numDays <= 0) {
-            // If the user picks start date after end date
-            return dataset; // empty
+            return dataset;
         }
 
         double[] xValues = new double[numDays];
@@ -218,7 +191,7 @@ public class GlucoseGraph extends BaseUI {
             List<LogEntry> dayEntries = LogService.getEntriesForDate(currentUser.getId(), currentDate.toString());
 
             if (dayEntries.isEmpty()) {
-                yValues[i] = Double.NaN; // no data
+                yValues[i] = Double.NaN;
             } else {
                 double sum = 0;
                 for (LogEntry e : dayEntries) {
@@ -232,10 +205,6 @@ public class GlucoseGraph extends BaseUI {
         return dataset;
     }
 
-    /**
-     * Creates a JComboBox with date values formatted as "31st Jan 2025".
-     * We'll fill it with the last 30 days for demonstration.
-     */
     private JComboBox<String> createDateComboBox() {
         JComboBox<String> dateBox = new JComboBox<>();
         LocalDate today = LocalDate.now();
@@ -247,9 +216,6 @@ public class GlucoseGraph extends BaseUI {
         return dateBox;
     }
 
-    /**
-     * Formats a LocalDate as "31st Jan 2025".
-     */
     private String formatDateWithOrdinal(LocalDate date) {
         int day = date.getDayOfMonth();
         String suffix = getDaySuffix(day);
@@ -257,55 +223,72 @@ public class GlucoseGraph extends BaseUI {
         return date.format(formatter);
     }
 
-    /**
-     * Returns the ordinal suffix for a given day of the month (st, nd, rd, th).
-     */
     private String getDaySuffix(int day) {
         if (day >= 11 && day <= 13) return "th";
         switch (day % 10) {
-            case 1:  return "st";
-            case 2:  return "nd";
-            case 3:  return "rd";
+            case 1: return "st";
+            case 2: return "nd";
+            case 3: return "rd";
             default: return "th";
         }
     }
 
-    /**
-     * Parses a date string with ordinal suffix (e.g., "11th Jan 2025") into a LocalDate object.
-     */
     private LocalDate parseDate(String dateString) {
-        // Remove ordinal suffixes like "st", "nd", "rd", "th"
         String cleanedDateString = dateString.replaceAll("(\\d+)(st|nd|rd|th)", "$1");
         return LocalDate.parse(cleanedDateString, DateTimeFormatter.ofPattern("d MMM yyyy"));
     }
 
-    /**
-     * Captures the chart as an image and (simulated) sends it to the user's doctor.
-     */
     private void sendDataToDoctor() {
+        final String fromEmail = "sugarbyte.app@gmail.com";
+        final String appPassword = "twym wigt ytak botd";
+
+        Properties props = new Properties();
+        props.put("mail.smtp.host", "smtp.gmail.com");
+        props.put("mail.smtp.port", "587");
+        props.put("mail.smtp.auth", "true");
+        props.put("mail.smtp.starttls.enable", "true");
+        props.put("mail.smtp.ssl.trust", "smtp.gmail.com");
+
+        Session session = Session.getInstance(props, new Authenticator() {
+            @Override
+            protected PasswordAuthentication getPasswordAuthentication() {
+                return new PasswordAuthentication(fromEmail, appPassword);
+            }
+        });
+
         try {
-            // Capture the chart as an image
-            BufferedImage chartImage = chartPanel.getChart().createBufferedImage(
-                    chartPanel.getWidth(),
-                    chartPanel.getHeight()
-            );
-            File tempFile = new File("graph.png");
+            BufferedImage chartImage = chartPanel.getChart().createBufferedImage(chartPanel.getWidth(), chartPanel.getHeight());
+            File tempFile = new File("glucose_graph.png");
             ImageIO.write(chartImage, "png", tempFile);
 
-            // Retrieve the doctor's email
             String doctorEmail = currentUser.getDoctorEmail();
+            String doctorName = currentUser.getDoctorName();
+            String userName = currentUser.getName();
 
-            // Simulated email sending
-            System.out.println("Sending graph to " + doctorEmail);
-            JOptionPane.showMessageDialog(this,
-                    "Graph sent to your doctor at " + doctorEmail,
-                    "Info",
-                    JOptionPane.INFORMATION_MESSAGE);
-        } catch (IOException e) {
-            JOptionPane.showMessageDialog(this,
-                    "Failed to send the graph: " + e.getMessage(),
-                    "Error",
-                    JOptionPane.ERROR_MESSAGE);
+            MimeMessage message = new MimeMessage(session);
+            message.setFrom(new InternetAddress(fromEmail));
+            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(doctorEmail));
+            message.setSubject("Glucose Graph: " + startDate + " to " + endDate);
+
+            MimeBodyPart messageBodyPart = new MimeBodyPart();
+            messageBodyPart.setText(String.format(
+                    "Dear Dr. %s,\n\nPlease find attached the glucose graph for your patient %s from %s to %s.\n\nBest regards,\nSugarByte",
+                    doctorName, userName, startDate, endDate));
+
+            MimeBodyPart attachmentPart = new MimeBodyPart();
+            attachmentPart.attachFile(tempFile);
+
+            Multipart multipart = new MimeMultipart();
+            multipart.addBodyPart(messageBodyPart);
+            multipart.addBodyPart(attachmentPart);
+
+            message.setContent(multipart);
+            Transport.send(message);
+
+            JOptionPane.showMessageDialog(this, "Graph sent to your doctor successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Failed to send the email: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 }
