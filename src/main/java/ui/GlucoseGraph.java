@@ -28,6 +28,11 @@ import java.time.format.DateTimeParseException;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * Displays a glucose graph for a custom date range,
+ * with a shorter vertical chart area and separate rows for date pickers.
+ * There's also space at the bottom for a "Send to Doctor" button and the nav bar.
+ */
 public class GlucoseGraph extends BaseUI {
 
     private User currentUser;
@@ -48,33 +53,42 @@ public class GlucoseGraph extends BaseUI {
     }
 
     private void buildUI() {
-        // Main gradient background
+        // ========== MAIN PANEL WITH GRADIENT ==========
         JPanel mainPanel = createGradientPanel(Color.WHITE, Color.WHITE);
         mainPanel.setLayout(new BorderLayout());
         setContentPane(mainPanel);
 
-        // ===== TOP PANEL =====
+        // ========== TOP PANEL ==========
         JPanel topPanel = new JPanel();
         topPanel.setOpaque(false);
         topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.Y_AXIS));
         topPanel.setBorder(BorderFactory.createEmptyBorder(20, 0, 20, 0));
 
-        // SugarByte title
+        // Title Label (SugarByte)
         JLabel titleLabel = createTitleLabel("SugarByte", lobsterFont, Color.BLACK);
         titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         topPanel.add(titleLabel);
 
-        // Date selection controls
-        JPanel dateSelectionPanel = new JPanel();
-        dateSelectionPanel.setOpaque(false);
-        dateSelectionPanel.setLayout(new FlowLayout());
+        // Create a panel for date pickers (BoxLayout Y -> separate lines)
+        JPanel datePickersPanel = new JPanel();
+        datePickersPanel.setOpaque(false);
+        datePickersPanel.setLayout(new BoxLayout(datePickersPanel, BoxLayout.Y_AXIS));
+        datePickersPanel.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
 
+        // ========== ROW 1: START DATE ==========
+        JPanel startRow = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        startRow.setOpaque(false);
         JLabel startDateLabel = new JLabel("Start Date:");
-        startDateLabel.setFont(startDateLabel.getFont().deriveFont(Font.BOLD)); // Bold the label
-        JLabel endDateLabel = new JLabel("End Date:");
-        endDateLabel.setFont(endDateLabel.getFont().deriveFont(Font.BOLD)); // Bold the label
-
+        startDateLabel.setFont(startDateLabel.getFont().deriveFont(Font.BOLD));
         JComboBox<String> startDateBox = createDateComboBox();
+        startRow.add(startDateLabel);
+        startRow.add(startDateBox);
+
+        // ========== ROW 2: END DATE + GENERATE BUTTON ==========
+        JPanel endRow = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        endRow.setOpaque(false);
+        JLabel endDateLabel = new JLabel("End Date:");
+        endDateLabel.setFont(endDateLabel.getFont().deriveFont(Font.BOLD));
         JComboBox<String> endDateBox = createDateComboBox();
 
         JButton generateButton = new JButton("Generate Graph");
@@ -84,42 +98,62 @@ public class GlucoseGraph extends BaseUI {
                 endDate = parseDate((String) endDateBox.getSelectedItem());
                 updateGraph();
             } catch (DateTimeParseException ex) {
-                JOptionPane.showMessageDialog(this, "Invalid date format. Please select a valid date.", "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this,
+                        "Invalid date format. Please select a valid date.",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
             }
         });
 
-        JButton sendToDoctorButton = new JButton("Send to Doctor");
-        sendToDoctorButton.addActionListener(e -> sendDataToDoctor());
+        endRow.add(endDateLabel);
+        endRow.add(endDateBox);
+        endRow.add(generateButton);
 
-        dateSelectionPanel.add(startDateLabel);
-        dateSelectionPanel.add(startDateBox);
-        dateSelectionPanel.add(endDateLabel);
-        dateSelectionPanel.add(endDateBox);
-        dateSelectionPanel.add(generateButton);
-        dateSelectionPanel.add(sendToDoctorButton);
+        // Add both rows to datePickersPanel
+        datePickersPanel.add(startRow);
+        datePickersPanel.add(endRow);
 
-        topPanel.add(dateSelectionPanel);
-
+        topPanel.add(datePickersPanel);
         mainPanel.add(topPanel, BorderLayout.NORTH);
 
-        // ===== CHART PANEL =====
+        // ========== CENTER: CHART PANEL ==========
         chartPanel = new ChartPanel(null);
         chartPanel.setOpaque(false);
-        chartPanel.setPreferredSize(new Dimension(800, 400));
+        // Make the chart physically shorter in height
+        chartPanel.setPreferredSize(new Dimension(800, 250));
+
         chartPanel.revalidate();
         chartPanel.repaint();
         mainPanel.add(chartPanel, BorderLayout.CENTER);
 
-        SwingUtilities.invokeLater(() -> {
-            System.out.println("ChartPanel dimensions: " + chartPanel.getWidth() + "x" + chartPanel.getHeight());
-        });
+        // ========== BOTTOM AREA: "Send to Doctor" + Nav Bar ==========
+        // We'll create a separate bottomPanel that stacks vertical
+        // 1) "Send to Doctor" button
+        // 2) Nav bar
+        JPanel bottomWrapper = new JPanel();
+        bottomWrapper.setLayout(new BoxLayout(bottomWrapper, BoxLayout.Y_AXIS));
+        bottomWrapper.setOpaque(false);
 
-        updateGraph();
+        // Send to Doctor row
+        JPanel doctorButtonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        doctorButtonPanel.setOpaque(false);
+        doctorButtonPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
 
-        // ===== BOTTOM NAV BAR =====
+        JButton sendToDoctorButton = new JButton("Send to Doctor");
+        sendToDoctorButton.addActionListener(e -> sendDataToDoctor());
+        doctorButtonPanel.add(sendToDoctorButton);
+
+        // Bottom Nav
         JPanel navBar = createBottomNavBar("GlucoseGraph", currentUser,
                 "/Icons/home.png", "/Icons/logbook.png", "/Icons/graphfull.png", "/Icons/profile.png");
-        mainPanel.add(navBar, BorderLayout.SOUTH);
+
+        bottomWrapper.add(doctorButtonPanel);
+        bottomWrapper.add(navBar);
+
+        mainPanel.add(bottomWrapper, BorderLayout.SOUTH);
+
+        // Initialize the chart
+        updateGraph();
     }
 
     /**
@@ -164,6 +198,11 @@ public class GlucoseGraph extends BaseUI {
         DefaultXYDataset dataset = new DefaultXYDataset();
 
         int numDays = (int) (endDate.toEpochDay() - startDate.toEpochDay() + 1);
+        if (numDays <= 0) {
+            // If the user picks start date after end date
+            return dataset; // empty
+        }
+
         double[] xValues = new double[numDays];
         double[] yValues = new double[numDays];
 
@@ -173,7 +212,7 @@ public class GlucoseGraph extends BaseUI {
             List<LogEntry> dayEntries = LogService.getEntriesForDate(currentUser.getId(), currentDate.toString());
 
             if (dayEntries.isEmpty()) {
-                yValues[i] = Double.NaN;
+                yValues[i] = Double.NaN; // no data
             } else {
                 double sum = 0;
                 for (LogEntry e : dayEntries) {
@@ -189,6 +228,7 @@ public class GlucoseGraph extends BaseUI {
 
     /**
      * Creates a JComboBox with date values formatted as "31st Jan 2025".
+     * We'll fill it with the last 30 days for demonstration.
      */
     private JComboBox<String> createDateComboBox() {
         JComboBox<String> dateBox = new JComboBox<>();
@@ -212,7 +252,7 @@ public class GlucoseGraph extends BaseUI {
     }
 
     /**
-     * Returns the ordinal suffix for a given day of the month.
+     * Returns the ordinal suffix for a given day of the month (st, nd, rd, th).
      */
     private String getDaySuffix(int day) {
         if (day >= 11 && day <= 13) return "th";
@@ -234,23 +274,32 @@ public class GlucoseGraph extends BaseUI {
     }
 
     /**
-     * Simulates sending the graph image to the doctor via email.
+     * Captures the chart as an image and (simulated) sends it to the user's doctor.
      */
     private void sendDataToDoctor() {
         try {
-            // Capture the graph as an image
-            BufferedImage chartImage = chartPanel.getChart().createBufferedImage(chartPanel.getWidth(), chartPanel.getHeight());
+            // Capture the chart as an image
+            BufferedImage chartImage = chartPanel.getChart().createBufferedImage(
+                    chartPanel.getWidth(),
+                    chartPanel.getHeight()
+            );
             File tempFile = new File("graph.png");
             ImageIO.write(chartImage, "png", tempFile);
 
-            // Retrieve the doctor's email from the user's profile
+            // Retrieve the doctor's email
             String doctorEmail = currentUser.getDoctorEmail();
 
             // Simulated email sending
             System.out.println("Sending graph to " + doctorEmail);
-            JOptionPane.showMessageDialog(this, "Graph sent to your doctor at " + doctorEmail);
+            JOptionPane.showMessageDialog(this,
+                    "Graph sent to your doctor at " + doctorEmail,
+                    "Info",
+                    JOptionPane.INFORMATION_MESSAGE);
         } catch (IOException e) {
-            JOptionPane.showMessageDialog(this, "Failed to send the graph: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this,
+                    "Failed to send the graph: " + e.getMessage(),
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
         }
     }
 }
