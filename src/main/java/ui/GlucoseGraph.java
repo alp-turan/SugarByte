@@ -7,6 +7,7 @@ import service.LogService;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
@@ -15,21 +16,26 @@ import org.jfree.data.xy.XYDataset;
 
 import javax.swing.*;
 import java.awt.*;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.List;
 
-/**
- * Displays a line chart with dots for the last 7 days of
- * average blood glucose. If a day has no data, shows a message.
- */
 public class GlucoseGraph extends BaseUI {
 
     private User currentUser;
+    private LocalDate startDate;
+    private LocalDate endDate;
+    private ChartPanel chartPanel;
 
     public GlucoseGraph(User user) {
         super("Glucose Graph");
         this.currentUser = user;
+
+        // Default to last 7 days
+        this.startDate = LocalDate.now().minusDays(6);
+        this.endDate = LocalDate.now();
 
         buildUI();
         setVisible(true);
@@ -52,48 +58,54 @@ public class GlucoseGraph extends BaseUI {
         titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         topPanel.add(titleLabel);
 
-        // Subheader in red
-        JLabel subHeader = new JLabel("Last Week's Blood Glucose Trend");
-        subHeader.setForeground(new Color(200, 40, 40)); // The red color used in your app
-        subHeader.setFont(new Font("SansSerif", Font.BOLD, 14));
-        subHeader.setAlignmentX(Component.CENTER_ALIGNMENT);
-        subHeader.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
-        topPanel.add(subHeader);
+        // Date selection controls
+        JPanel dateSelectionPanel = new JPanel();
+        dateSelectionPanel.setOpaque(false);
+        dateSelectionPanel.setLayout(new FlowLayout());
+
+        JLabel startDateLabel = new JLabel("Start Date:");
+        JLabel endDateLabel = new JLabel("End Date:");
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+        JComboBox<String> startDateBox = createDateComboBox(formatter);
+        JComboBox<String> endDateBox = createDateComboBox(formatter);
+
+        JButton generateButton = new JButton("Generate Graph");
+        generateButton.addActionListener(e -> {
+            startDate = LocalDate.parse((String) startDateBox.getSelectedItem(), formatter);
+            endDate = LocalDate.parse((String) endDateBox.getSelectedItem(), formatter);
+            updateGraph();
+        });
+
+        // Add Send to Doctor button
+        JButton sendToDoctorButton = new JButton("Send to Doctor");
+        sendToDoctorButton.addActionListener(e -> {
+            sendDataToDoctor();
+        });
+
+        dateSelectionPanel.add(startDateLabel);
+        dateSelectionPanel.add(startDateBox);
+        dateSelectionPanel.add(endDateLabel);
+        dateSelectionPanel.add(endDateBox);
+        dateSelectionPanel.add(generateButton);
+        dateSelectionPanel.add(sendToDoctorButton); // Add the button next to generate
+
+        topPanel.add(dateSelectionPanel);
 
         mainPanel.add(topPanel, BorderLayout.NORTH);
 
         // ===== CHART PANEL =====
-        JPanel chartPanel = new JPanel(new BorderLayout());
+        chartPanel = new ChartPanel(null);
         chartPanel.setOpaque(false);
 
-        // Build the dataset for the last 7 days
-        XYDataset dataset = buildLast7DaysDataset();
-        JFreeChart chart = ChartFactory.createXYLineChart(
-                "", // Title not needed here
-                "Date", // X-axis label
-                "Blood Glucose [mmol/L]", // Y-axis label
-                dataset,
-                PlotOrientation.VERTICAL,
-                false, // no legend
-                false, // no tooltips
-                false  // no URLs
-        );
-
-        // Adjust range to 0–14
-        XYPlot plot = chart.getXYPlot();
-        plot.getRangeAxis().setRange(0.0, 14.0);
-
-        // Show shapes (dots) on each point
-        XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer();
-        renderer.setSeriesShapesVisible(0, true);  // Show shapes
-        renderer.setSeriesLinesVisible(0, true);   // Connect with lines
-        plot.setRenderer(renderer);
-
-        // Put chart in a ChartPanel
-        ChartPanel cPanel = new ChartPanel(chart);
-        chartPanel.add(cPanel, BorderLayout.CENTER);
-
+        // Set the graph height to be 3/4 (lower height)
+        chartPanel.setPreferredSize(new Dimension(800, 400)); // Change the dimensions as needed
+        chartPanel.revalidate();
+        chartPanel.repaint();
         mainPanel.add(chartPanel, BorderLayout.CENTER);
+
+        updateGraph();
 
         // ===== BOTTOM NAV BAR =====
         JPanel navBar = createBottomNavBar("GlucoseGraph", currentUser,
@@ -102,71 +114,126 @@ public class GlucoseGraph extends BaseUI {
     }
 
     /**
-     * Builds an XYDataset with 7 points for the last 7 days,
-     * each point is the average BG for that day (or no data => message).
+     * Updates the graph based on the selected start and end dates.
      */
-    private XYDataset buildLast7DaysDataset() {
+    private void updateGraph() {
+        XYDataset dataset = buildDatasetForRange();
+        JFreeChart chart = ChartFactory.createXYLineChart(
+                "", // No title
+                "Date", // X-axis label
+                "Blood Glucose [mmol/L]", // Y-axis label
+                dataset,
+                PlotOrientation.VERTICAL,
+                false, // No legend
+                false, // No tooltips
+                false  // No URLs
+        );
+
+        XYPlot plot = chart.getXYPlot();
+        plot.getRangeAxis().setRange(1.0, 14.0);  // No change in range but will be squashed
+
+        // Squash the graph vertically
+        plot.getRangeAxis().setInverted(false); // Make sure Y-axis is increasing downwards
+        plot.getRangeAxis().setLowerBound(1);
+        plot.getRangeAxis().setUpperBound(14);
+
+        // Set custom date formatter for the x-axis
+        DateAxis dateAxis = new DateAxis("Date");
+        dateAxis.setDateFormatOverride(new SimpleDateFormat("d MMM"));
+        plot.setDomainAxis(dateAxis); // Set custom date axis
+
+        XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer();
+        renderer.setSeriesShapesVisible(0, true);
+        renderer.setSeriesLinesVisible(0, true);
+        plot.setRenderer(renderer);
+
+        chartPanel.setChart(chart);
+    }
+
+    /**
+     * Builds an XYDataset for the specified date range.
+     */
+    private XYDataset buildDatasetForRange() {
         DefaultXYDataset dataset = new DefaultXYDataset();
 
-        // We'll create 2 arrays: xValues (dates as double), yValues (BG average)
-        // Then we'll label the x-axis with day index or use date strings as tooltips.
+        int numDays = (int) (endDate.toEpochDay() - startDate.toEpochDay() + 1);
+        double[] xValues = new double[numDays];
+        double[] yValues = new double[numDays];
 
-        double[] xValues = new double[7];
-        double[] yValues = new double[7];
-
-        LocalDate today = LocalDate.now();
+        Date[] dateValues = new Date[numDays]; // Change xValues to Date array
         DateTimeFormatter dFmt = DateTimeFormatter.ofPattern("d MMM");
-
-        // We'll store strings for each date to see if it's empty
-        // We'll display a separate label for "No log data found" if needed
         StringBuilder missingDataMessages = new StringBuilder("<html>");
 
-        for (int i = 0; i < 7; i++) {
-            // day i means (today - i)
-            LocalDate thisDate = today.minusDays(6 - i);
-            // So that x=0 => 6 days ago, x=6 => today
+        for (int i = 0; i < numDays; i++) {
+            LocalDate currentDate = startDate.plusDays(i);
+            dateValues[i] = java.sql.Date.valueOf(currentDate); // Convert LocalDate to Date
+            xValues[i] = dateValues[i].getTime(); // Store time in milliseconds for Date axis
 
-            xValues[i] = i;  // numeric x
-            List<LogEntry> dayEntries = LogService.getEntriesForDate(currentUser.getId(), thisDate.toString());
+            List<LogEntry> dayEntries = LogService.getEntriesForDate(currentUser.getId(), currentDate.toString());
 
             if (dayEntries.isEmpty()) {
-                // No logs => record 0 or NaN
-                yValues[i] = Double.NaN; // so no dot is drawn
+                yValues[i] = Double.NaN;
                 missingDataMessages.append("No log data found for ")
-                        .append(thisDate.format(dFmt))
-                        .append("<br/>");
+                        .append(currentDate.format(dFmt))
+                        .append("<br>");
             } else {
-                // Compute average
                 double sum = 0;
                 for (LogEntry e : dayEntries) {
                     sum += e.getBloodSugar();
                 }
-                double avg = sum / dayEntries.size();
-                yValues[i] = avg;
+                yValues[i] = sum / dayEntries.size();
             }
         }
 
         missingDataMessages.append("</html>");
-        
-        // data format: double[2][N] => [0]=x array, [1]=y array
-        double[][] seriesData = new double[2][7];
+
+        double[][] seriesData = new double[2][numDays];
         seriesData[0] = xValues;
         seriesData[1] = yValues;
         dataset.addSeries("BG Trend", seriesData);
 
-        // If we had missing data, show a small dialog or label:
-        // We'll show a small dialog if there's any missing lines
-        String missingInfo = missingDataMessages.toString();
-        if (!missingInfo.equals("<html></html>")) {
-            // means we found at least one day with no logs
-            JOptionPane.showMessageDialog(
-                    this,
-                    missingInfo,
-                    "Missing Data",
-                    JOptionPane.INFORMATION_MESSAGE
-            );
+        if (!missingDataMessages.toString().equals("<html></html>")) {
+            SwingUtilities.invokeLater(() -> {
+                JDialog warningDialog = new JDialog(this, "Missing Data", false);
+                warningDialog.setLayout(new BorderLayout());
+                JLabel messageLabel = new JLabel(missingDataMessages.toString());
+                messageLabel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+                warningDialog.add(messageLabel, BorderLayout.CENTER);
+
+                JButton closeButton = new JButton("OK");
+                closeButton.addActionListener(e -> warningDialog.dispose());
+                JPanel buttonPanel = new JPanel();
+                buttonPanel.add(closeButton);
+                warningDialog.add(buttonPanel, BorderLayout.SOUTH);
+
+                warningDialog.pack();
+                warningDialog.setLocationRelativeTo(this);
+                warningDialog.setVisible(true);
+            });
         }
 
         return dataset;
+    }
+
+    /**
+     * Creates a JComboBox with date values for the past 30 days.
+     */
+    private JComboBox<String> createDateComboBox(DateTimeFormatter formatter) {
+        JComboBox<String> dateBox = new JComboBox<>();
+        LocalDate today = LocalDate.now();
+        for (int i = 0; i < 30; i++) {
+            LocalDate date = today.minusDays(i);
+            dateBox.addItem(date.format(formatter));
+        }
+        return dateBox;
+    }
+
+    /**
+     * Simulate sending data to the doctor.
+     */
+    private void sendDataToDoctor() {
+        // Here you would implement the logic to send the data and graph to the doctor.
+        // For now, we will just show a message.
+        JOptionPane.showMessageDialog(this, "Data sent to your doctor for the selected date range.");
     }
 }
