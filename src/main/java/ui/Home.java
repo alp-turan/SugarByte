@@ -315,8 +315,14 @@ public class Home extends BaseUI {
             LogService.createEntry(entryPost, currentUser);
         }
 
+        // Show confirmation message
         JOptionPane.showMessageDialog(this, "Quick log saved!");
+
+        // Update glucose indicator immediately
+        double latestGlucose = getLatestGlucoseReading(); // Fetch the updated glucose value
+        glucoseIndicator.updateGlucoseLevel(latestGlucose); // Update the indicator dynamically
     }
+
 
     private double parseDoubleSafe(String text) {
         try {
