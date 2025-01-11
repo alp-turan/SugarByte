@@ -155,7 +155,6 @@ public class Profile extends BaseUI {
         userPanel.add(logbookTypeCombo, gbc);
 
         centerPanel.add(userPanel);
-
         centerPanel.add(Box.createVerticalStrut(20));
 
         // =============== DOCTOR INFO PANEL ===============
@@ -201,21 +200,60 @@ public class Profile extends BaseUI {
         doctorPanel.add(doctorEmergencyField, gbc);
 
         centerPanel.add(doctorPanel);
-
         centerPanel.add(Box.createVerticalStrut(20));
 
-        // =============== SAVE BUTTON ===============
-        JButton saveBtn = new JButton("Save Changes");
-        saveBtn.setBackground(new Color(237, 165, 170));
-        saveBtn.setForeground(Color.BLACK);
+        // =============== BUTTON PANEL (Save and Logout buttons) ===============
+        JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));  // Center both buttons
+        buttonsPanel.setOpaque(false);
+
+// Save Button with RoundedButton (using the same constructor as "Generate graph" button)
+        RoundedButton saveBtn = new RoundedButton("Save Changes", new Color(237, 165, 170));  // Light Pink Color
+        saveBtn.setForeground(Color.BLACK);  // Set text color to black
+        saveBtn.setFont(new Font("SansSerif", Font.BOLD, 14));  // Set the font style and size
+
+// Set preferred size for the button
+        saveBtn.setPreferredSize(new Dimension(140, 40)); // Consistent size for the button
+
+// Add ActionListener to handle save logic
         saveBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                handleSaveChanges();
+                handleSaveChanges();  // Call the method to save the changes
             }
         });
-        centerPanel.add(saveBtn);
+
+// Logout Button (using RoundedButton)
+        RoundedButton logoutButton = new RoundedButton("Logout", new Color(220, 53, 69)) {
+            @Override
+            public Dimension getPreferredSize() {
+                return new Dimension(100, 35); // Consistent size
+            }
+        };
+
+        logoutButton.setForeground(Color.WHITE);
+        logoutButton.setFont(new Font("SansSerif", Font.BOLD, 14));
+
+        logoutButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                logoutButton.setBackground(new Color(200, 35, 51)); // Darker red on hover
+            }
+
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                logoutButton.setBackground(new Color(220, 53, 69)); // Return to original color
+            }
+        });
+
+        logoutButton.addActionListener(e -> handleLogout());
+
+// Add buttons to the panel with increased spacing
+        buttonsPanel.add(saveBtn);
+        buttonsPanel.add(Box.createHorizontalStrut(20));  // Adds more space between buttons
+        buttonsPanel.add(logoutButton);
+
+// Add the button panel to the center section of the layout
+        centerPanel.add(buttonsPanel);
         centerPanel.add(Box.createVerticalStrut(10));
+
 
         // Bottom Nav
         JPanel navBar = createBottomNavBar(
@@ -225,13 +263,9 @@ public class Profile extends BaseUI {
         mainPanel.add(navBar, BorderLayout.SOUTH);
 
         setVisible(true);
-        addLogoutButton();
     }
 
-    /**
-     * Extracts all updated data from fields, sets them into currentUser,
-     * then calls UserDAO.updateUser(...) to persist changes.
-     */
+    // Handle save changes
     private void handleSaveChanges() {
         if (nameField.getText().trim().isEmpty() ||
                 emailField.getText().trim().isEmpty() ||
@@ -273,5 +307,9 @@ public class Profile extends BaseUI {
 
     private String safeValue(String value, String defaultValue) {
         return value != null && !value.isEmpty() ? value : defaultValue;
+    }
+
+    private void handleLogout() {
+        // Implement your logout logic here
     }
 }

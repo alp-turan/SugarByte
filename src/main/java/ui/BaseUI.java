@@ -72,7 +72,7 @@ public class BaseUI extends JFrame {
             // Override the preferred size to maintain consistent button dimensions
             @Override
             public Dimension getPreferredSize() {
-                return new Dimension(100, 35);
+                return new Dimension(100, 40);
             }
         };
 
@@ -96,19 +96,19 @@ public class BaseUI extends JFrame {
         headerPanel.setOpaque(false);
 
         // Create right-aligned panel for logout button with proper padding
-        JPanel logoutPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        JPanel logoutPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         logoutPanel.setOpaque(false);
-        logoutPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 15)); // Add padding
+        logoutPanel.setBorder(BorderFactory.createEmptyBorder(10, 20, 70, 15)); // Add padding
         logoutPanel.add(logoutButton);
 
         // Add logout panel to the header
-        headerPanel.add(logoutPanel, BorderLayout.EAST);
+        headerPanel.add(logoutPanel, BorderLayout.WEST);
 
         // Add action listener for logout functionality
         logoutButton.addActionListener(e -> handleLogout());
 
         // Add the header panel to the frame
-        getContentPane().add(headerPanel, BorderLayout.NORTH);
+        getContentPane().add(headerPanel, BorderLayout.SOUTH);
     }
 
     private void handleLogout() {
