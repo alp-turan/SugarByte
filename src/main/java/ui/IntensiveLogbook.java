@@ -8,6 +8,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -75,14 +77,16 @@ public class IntensiveLogbook extends BaseUI {
         JPanel topPanel = new JPanel();
         topPanel.setOpaque(false);
         topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.Y_AXIS));
-        topPanel.setBorder(BorderFactory.createEmptyBorder(20, 0, 20, 0));
+        topPanel.setBorder(BorderFactory.createEmptyBorder(65, 0, 20, 0));
 
         JLabel titleLabel = createTitleLabel("SugarByte", lobsterFont, Color.BLACK);
         titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         topPanel.add(titleLabel);
 
-        JLabel dateLabel = new JLabel("Logbook for " + targetDate, SwingConstants.CENTER);
-        dateLabel.setFont(new Font("SansSerif", Font.PLAIN, 16));
+        String logbookType = getLogbookType(currentUser);
+        String formattedDate = formatDate(targetDate);
+
+        JLabel dateLabel = new JLabel(logbookType + " logbook for " + formattedDate, SwingConstants.CENTER);        dateLabel.setFont(new Font("SansSerif", Font.PLAIN, 16));
         dateLabel.setForeground(Color.BLACK);
         dateLabel.setBorder(BorderFactory.createEmptyBorder(5, 0, 5, 0));
         dateLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -94,7 +98,7 @@ public class IntensiveLogbook extends BaseUI {
         JPanel centerPanel = new JPanel(new GridBagLayout());
         centerPanel.setOpaque(false);
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(5, 5, 5, 5);
+        gbc.insets = new Insets(5, 5, 0, 5);
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
         // First line of headers
@@ -228,8 +232,6 @@ public class IntensiveLogbook extends BaseUI {
                 addNumericInputRestriction(hoursSinceMealFields[preIndex]);
                 centerPanel.add(hoursSinceMealFields[preIndex], gbc);
                 preIndex++;
-            } else {
-                centerPanel.add(new JLabel("—"), gbc);
             }
         }
 
@@ -239,15 +241,61 @@ public class IntensiveLogbook extends BaseUI {
                 JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
                 JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED
         );
+// Create the scroll pane with the centerPanel
+
+// Make the scroll pane and its viewport transparent
+        scrollPane.setOpaque(false);  // Make the JScrollPane transparent
+        scrollPane.getViewport().setOpaque(false);  // Make the viewport transparent
+        scrollPane.setBackground(new Color(0, 0, 0, 0));  // Transparent background for the scroll pane
+        scrollPane.getViewport().setBackground(new Color(0, 0, 0, 0));  // Transparent background for the viewport
+
+// Remove borders from the scroll pane
+        scrollPane.setBorder(null);  // Remove the border around the scroll pane
+
+// Add the scroll pane to the main panel
+        mainPanel.add(scrollPane, BorderLayout.CENTER);
+
+// Set a custom layout for the JScrollPane
+        scrollPane.setLayout(new ScrollPaneLayout() {
+            @Override
+            public void layoutContainer(Container parent) {
+                super.layoutContainer(parent);
+
+                // Move the horizontal scrollbar to the top
+                JScrollPane pane = (JScrollPane) parent;
+                if (pane.getHorizontalScrollBar() != null) {
+                    Rectangle bounds = pane.getHorizontalScrollBar().getBounds();
+                    bounds.y = 360; // Place at the top
+                    pane.getHorizontalScrollBar().setBounds(bounds);
+
+                    // Adjust viewport bounds to avoid overlap
+                    JViewport viewport = pane.getViewport();
+                    Rectangle viewportBounds = viewport.getBounds();
+                    viewportBounds.y = bounds.height; // Shift the viewport down
+                    viewportBounds.height -= bounds.height; // Reduce height
+                    viewport.setBounds(viewportBounds);
+                }
+            }
+        });
         scrollPane.setOpaque(false);
+        scrollPane.setBackground(Color.WHITE); // Set the background color of the JScrollPane
+        scrollPane.getViewport().setBackground(Color.WHITE); // Set the background color of the viewport
+        scrollPane.setBorder(null);
+        scrollPane.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 20)); // Top, Left, Bottom, Right
+        scrollPane.setViewportBorder(null); // Top, Left, Bottom, Right
+
+        //centerPanel.setBorder(BorderFactory.createEmptyBorder(0, 3, 0, 3)); // Top, Left, Bottom, Right
+
 
         mainPanel.add(scrollPane, BorderLayout.CENTER);
+
 
         // ==== BOTTOM (Save + Nav) ====
         JPanel bottomPanel = new JPanel();
         bottomPanel.setOpaque(false);
-        JButton saveAllBtn = new JButton("Save All");
-        saveAllBtn.setBackground(new Color(237, 165, 170));
+        RoundedButtonLogin saveAllBtn = new RoundedButtonLogin("Save all", new Color(237, 165, 170));
+        saveAllBtn.setPreferredSize(new Dimension(96, 40));
+        saveAllBtn.setFont(new Font("SansSerif", Font.BOLD, 16));
         saveAllBtn.setForeground(Color.BLACK);
         saveAllBtn.addActionListener(e -> handleSaveAllIntensive());
         bottomPanel.add(saveAllBtn);
@@ -317,6 +365,22 @@ public class IntensiveLogbook extends BaseUI {
                     preIndex++;
                 }
             }
+        }
+    }
+
+    private String getLogbookType(User user) {
+        String logbookType = user.getLogbookType(); // Assuming `User` has a `getLogbookType()` method
+        return logbookType != null ? logbookType : "Simple";
+    }
+
+    protected String formatDate(String date) {
+        try {
+            SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd"); // Adjust based on your input format
+            SimpleDateFormat outputFormat = new SimpleDateFormat("EEEE, MMM d"); // Desired format
+            return outputFormat.format(inputFormat.parse(date));
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return date; // Fallback to the original date if parsing fails
         }
     }
 
