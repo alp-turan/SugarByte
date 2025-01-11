@@ -11,7 +11,6 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.ArrayList;
 
 public class Home extends BaseUI {
 
@@ -35,7 +34,6 @@ public class Home extends BaseUI {
         }
 
         setVisible(true);
-        addLogoutButton();
     }
 
     private void buildUI() {
@@ -116,27 +114,12 @@ public class Home extends BaseUI {
         centerPanel.add(quickLogPanel, gbc);
 
         // ============ LAST WEEK'S TREND BUTTON ============
-        JButton trendButton = new RoundedButton("Last Week's Glucose Trend", new Color(240, 240, 240));
-        trendButton.setForeground(Color.BLACK);
-        trendButton.setFont(new Font("Poppins", Font.BOLD, 14));
-        trendButton.setPreferredSize(new Dimension(250, 40));
-
-        trendButton.addActionListener(e -> {
-            dispose(); // Close Home
-            new GlucoseGraph(currentUser); // Open the new graph page
-        });
-
-        gbc.gridy = 5;
-        gbc.insets = new Insets(20, 20, 10, 20);
-        centerPanel.add(trendButton, gbc);
-
         // "View Today's Logbook" button
-        RoundedButton logbookButton = new RoundedButton("View Today's Logbook", new Color(240, 240, 240));
+        RoundedButton logbookButton = new RoundedButton("View today's logbook", new Color(240, 240, 240));
         logbookButton.setForeground(Color.BLACK);
         logbookButton.setFont(new Font("Poppins", Font.BOLD, 14));
         logbookButton.setPreferredSize(new Dimension(200, 40));
 
-        // Now open the CORRECT logbook based on user.getLogbookType()
         logbookButton.addActionListener(e -> {
             dispose();
             String logbookType = currentUser.getLogbookType(); // "Simple", "Comprehensive", or "Intensive"
@@ -162,9 +145,24 @@ public class Home extends BaseUI {
             }
         });
 
-        gbc.gridy = 6;
-        gbc.insets = new Insets(15, 20, 20, 20);
+        gbc.gridy = 5; // Adjusted position for "View Today's Logbook"
+        gbc.insets = new Insets(20, 20, 10, 20);
         centerPanel.add(logbookButton, gbc);
+
+        // ============ GLUCOSE GRAPH BUTTON ============
+        JButton trendButton = new RoundedButton("Glucose graph", new Color(240, 240, 240));
+        trendButton.setForeground(Color.BLACK);
+        trendButton.setFont(new Font("Poppins", Font.BOLD, 14));
+        trendButton.setPreferredSize(new Dimension(250, 40));
+
+        trendButton.addActionListener(e -> {
+            dispose(); // Close Home
+            new GlucoseGraph(currentUser); // Open the new graph page
+        });
+
+        gbc.gridy = 6; // Position it after the "View Today's Logbook" button
+        gbc.insets = new Insets(10, 20, 10, 20);
+        centerPanel.add(trendButton, gbc);
 
         mainPanel.add(centerPanel);
 
@@ -173,6 +171,7 @@ public class Home extends BaseUI {
                 "/Icons/homefull.png", "/Icons/logbook.png", "/Icons/graph.png", "/Icons/profile.png");
         mainPanel.add(navBar);
     }
+
     private double getLatestGlucoseReading() {
         List<LogEntry> todaysLogs = LogService.getEntriesForDate(
                 currentUser.getId(),
@@ -185,9 +184,6 @@ public class Home extends BaseUI {
         return 6.0; // Default "normal" value if no readings today
     }
 
-    /**
-     * Creates a Quick Log panel with Pre/Post BG + Carbs.
-     */
     private JPanel createActualQuickLogPanel() {
         JPanel panel = new JPanel();
         panel.setOpaque(false);
@@ -214,9 +210,9 @@ public class Home extends BaseUI {
         gbc.gridx = 0;
         panel.add(new JLabel(""), gbc);
         gbc.gridx = 1;
-        panel.add(new JLabel("Blood Glucose (mmol/L)"), gbc);
+        panel.add(new JLabel("Blood glucose (mmol/L)"), gbc);
         gbc.gridx = 2;
-        panel.add(new JLabel("Carbs Eaten (g)"), gbc);
+        panel.add(new JLabel("Carbs eaten (g)"), gbc);
 
         // Pre row
         gbc.gridy = 2;
@@ -252,18 +248,15 @@ public class Home extends BaseUI {
         gbc.gridy = 4;
         gbc.gridx = 0;
         gbc.gridwidth = 3;
-        JButton saveBtn = new JButton("Save Log");
-        saveBtn.setBackground(new Color(237, 165, 170));
+        JButton saveBtn = new RoundedButton("Save Log", new Color(237, 165, 170));
         saveBtn.setForeground(Color.BLACK);
+        saveBtn.setPreferredSize(new Dimension(200, 40)); // Making the button less wide
         saveBtn.addActionListener(e -> saveQuickLog());
         panel.add(saveBtn, gbc);
 
         return panel;
     }
 
-    /**
-     * Determine which meal it is, based on local time.
-     */
     private String getCurrentMeal() {
         int hour = LocalTime.now().getHour();
         if (hour >= 6 && hour < 12) {
@@ -277,11 +270,6 @@ public class Home extends BaseUI {
         }
     }
 
-    /**
-     * Saves the quick log(s) to DB.
-     * By default, it saves "Pre" as one LogEntry,
-     * and if the "Post" fields have data, it saves a second LogEntry.
-     */
     private void saveQuickLog() {
         double preBG = parseDoubleSafe(preBloodSugarField.getText());
         double preCarbs = parseDoubleSafe(preCarbsField.getText());
@@ -323,7 +311,6 @@ public class Home extends BaseUI {
         glucoseIndicator.updateGlucoseLevel(latestGlucose); // Update the indicator dynamically
     }
 
-
     private double parseDoubleSafe(String text) {
         try {
             return Double.parseDouble(text);
@@ -332,9 +319,6 @@ public class Home extends BaseUI {
         }
     }
 
-    /**
-     * Apply a numeric filter to a JTextField.
-     */
     private void applyNumericFilter(JTextField textField) {
         ((AbstractDocument) textField.getDocument()).setDocumentFilter(new NumericFilter());
     }
@@ -350,16 +334,11 @@ public class Home extends BaseUI {
         }
 
         @Override
-        public void replace(FilterBypass fb, int offset, int length, String string, AttributeSet attrs) throws BadLocationException {
-            if (string == null || !string.matches("\\d*\\.?\\d*")) {
+        public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs) throws BadLocationException {
+            if (text == null || !text.matches("\\d*\\.?\\d*")) {
                 return; // Ignore non-numeric input
             }
-            super.replace(fb, offset, length, string, attrs);
-        }
-
-        @Override
-        public void remove(FilterBypass fb, int offset, int length) throws BadLocationException {
-            super.remove(fb, offset, length);
+            super.replace(fb, offset, length, text, attrs);
         }
     }
 }

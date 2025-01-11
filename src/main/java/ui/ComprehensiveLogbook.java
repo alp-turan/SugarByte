@@ -5,6 +5,8 @@ import model.User;
 import service.LogService;
 
 import javax.swing.*;
+import java.util.Set;
+import java.util.HashSet;
 import java.awt.*;
 import java.util.HashMap;
 import java.util.List;
@@ -289,6 +291,8 @@ public class ComprehensiveLogbook extends BaseUI {
      */
     protected void handleSaveAllComprehensive() {
         int preIndex = 0; // to track "Pre" rows for hoursSinceMeal
+        Set<String> processedEntries = new HashSet<>();  // Store processed entries by a unique identifier like date + timeOfDay
+
         for (int i = 0; i < ROW_LABELS.length; i++) {
             double bg       = parseDoubleSafe(bloodSugarFields[i].getText());
             double carbs    = parseDoubleSafe(carbsFields[i].getText());
@@ -314,16 +318,23 @@ public class ComprehensiveLogbook extends BaseUI {
                 entry.setHoursSinceMeal(hours);
                 entry.setFoodDetails("Comprehensive Logbook Entry: " + ROW_LABELS[i]);
 
-                // This calls AlarmService.checkAndSendAlarm() behind the scenes
-                LogService.createEntry(entry, currentUser);
+                // Create a unique identifier for each log entry (using date and timeOfDay, for example)
+                String entryIdentifier = targetDate + "-" + ROW_LABELS[i];
+
+                // If the entry has already been processed (i.e., notification was already sent), skip sending the notification
+                if (processedEntries.contains(entryIdentifier)) {
+                    System.out.println("Notification already sent for entry: " + entryIdentifier + ", skipping.");
+                } else {
+                    // This calls AlarmService.checkAndSendAlarm() behind the scenes
+                    LogService.createEntry(entry, currentUser);
+
+                    // Mark the entry as processed
+                    processedEntries.add(entryIdentifier);  // Add this entry to the processed list
+                }
             }
         }
-
-        JOptionPane.showMessageDialog(this,
-                "All entered values have been saved (Comprehensive).",
-                "Logbook Saved",
-                JOptionPane.INFORMATION_MESSAGE);
     }
+
 
     private double parseDoubleSafe(String text) {
         try {
