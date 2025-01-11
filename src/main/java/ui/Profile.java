@@ -308,8 +308,17 @@ public class Profile extends BaseUI {
     private String safeValue(String value, String defaultValue) {
         return value != null && !value.isEmpty() ? value : defaultValue;
     }
-
     private void handleLogout() {
-        // Implement your logout logic here
+        // Create a custom confirmation dialog with styled buttons
+        int result = createCustomConfirmDialog(
+                "Logout Confirmation",
+                "Are you sure you want to log out?",
+                new Color(220, 53, 69)  // Match logout button color
+        );
+
+        if (result == JOptionPane.YES_OPTION) {
+            dispose();
+            new Login();
+        }
     }
 }
