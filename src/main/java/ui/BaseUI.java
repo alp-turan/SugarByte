@@ -521,7 +521,7 @@ public class BaseUI extends JFrame {
         if (labelText.equalsIgnoreCase("Password")) {
             rememberMeCheckBox = new JCheckBox("Remember Me");
             rememberMeCheckBox.setOpaque(false);
-            rememberMeCheckBox.setFont(new Font("SansSerif", Font.PLAIN, 12));
+            rememberMeCheckBox.setFont(new Font("SansSerif", Font.PLAIN, 13));
             rememberMeCheckBox.setForeground(Color.GRAY);
             containerPanel.add(rememberMeCheckBox);
             loadCredentials(); // Load saved credentials if available

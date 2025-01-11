@@ -29,11 +29,12 @@ public class Login extends BaseUI {
         signInButton.setForeground(Color.BLACK);
 
         // Create Account Button
-        JButton createAccountBtn = new JButton("Create Account");
-        createAccountBtn.setFont(new Font("SansSerif", Font.PLAIN, 14));
-        createAccountBtn.setBackground(new Color(240, 240, 240));
-        createAccountBtn.setForeground(Color.DARK_GRAY);
-        createAccountBtn.setFocusPainted(false);
+        RoundedButtonLogin createAccountBtn = new RoundedButtonLogin("Create Account", new Color(220, 53, 69));
+        createAccountBtn.setPreferredSize(new Dimension(170, 40)); // Same size as sign-in button
+        createAccountBtn.setFont(new Font("SansSerif", Font.BOLD, 16)); // Bold font to match
+        createAccountBtn.setForeground(Color.WHITE); // Black text for contrast
+
+
 
         // Layout
         gbc.insets = new Insets(10, 0, 30, 0);
