@@ -85,8 +85,12 @@ public class GlucoseGraph extends BaseUI {
         startRow.add(startDateBox);
 
         // ========== ROW 2: END DATE + GENERATE BUTTON ==========
-        JPanel endRow = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        // Instead of FlowLayout, we'll use BoxLayout horizontally
+        // so the button can be placed on the right, and the combo on the left.
+        JPanel endRow = new JPanel();
+        endRow.setLayout(new BoxLayout(endRow, BoxLayout.X_AXIS));
         endRow.setOpaque(false);
+
         JLabel endDateLabel = new JLabel("End Date:");
         endDateLabel.setFont(endDateLabel.getFont().deriveFont(Font.BOLD));
         JComboBox<String> endDateBox = createDateComboBox();
@@ -105,8 +109,13 @@ public class GlucoseGraph extends BaseUI {
             }
         });
 
+        // Add label + combo on the left
         endRow.add(endDateLabel);
+        endRow.add(Box.createHorizontalStrut(10)); // small spacing
         endRow.add(endDateBox);
+
+        // A "glue" that takes remaining horizontal space and pushes the button to the right
+        endRow.add(Box.createHorizontalGlue());
         endRow.add(generateButton);
 
         // Add both rows to datePickersPanel
@@ -127,9 +136,6 @@ public class GlucoseGraph extends BaseUI {
         mainPanel.add(chartPanel, BorderLayout.CENTER);
 
         // ========== BOTTOM AREA: "Send to Doctor" + Nav Bar ==========
-        // We'll create a separate bottomPanel that stacks vertical
-        // 1) "Send to Doctor" button
-        // 2) Nav bar
         JPanel bottomWrapper = new JPanel();
         bottomWrapper.setLayout(new BoxLayout(bottomWrapper, BoxLayout.Y_AXIS));
         bottomWrapper.setOpaque(false);
