@@ -67,33 +67,75 @@ public class GlucoseGraph extends BaseUI {
         titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         topPanel.add(titleLabel);
 
+        // Panel for the start and end date pickers
         JPanel datePickersPanel = new JPanel();
         datePickersPanel.setOpaque(false);
-        datePickersPanel.setLayout(new BoxLayout(datePickersPanel, BoxLayout.Y_AXIS));
-        datePickersPanel.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
+        datePickersPanel.setLayout(new BoxLayout(datePickersPanel, BoxLayout.Y_AXIS));  // Stack components vertically
+        datePickersPanel.setBorder(BorderFactory.createEmptyBorder(10, 15, 10, 15));
 
-        JPanel startRow = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        startRow.setOpaque(false);
-        JLabel startDateLabel = new JLabel("Start Date:");
-        startDateLabel.setFont(startDateLabel.getFont().deriveFont(Font.BOLD));
+        // Start Date Label and ComboBox
+        JLabel startDateLabel = new JLabel("Start date:");
+        startDateLabel.setFont(startDateLabel.getFont().deriveFont(14f));  // Set font size
+        startDateLabel.setAlignmentX(Component.CENTER_ALIGNMENT); // Center the label
+
         JComboBox<String> startDateBox = createDateComboBox();
-        startRow.add(startDateLabel);
-        startRow.add(startDateBox);
+        startDateBox.setPreferredSize(new Dimension(150, startDateBox.getPreferredSize().height));  // Set fixed width and make it shorter
+        startDateBox.setAlignmentX(Component.CENTER_ALIGNMENT); // Center the combo box
+        startDateBox.setRenderer(new DefaultListCellRenderer() {
+            @Override
+            public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+                JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+                label.setHorizontalAlignment(SwingConstants.CENTER); // Center the text inside the combo box
+                return label;
+            }
+        });
 
-        JPanel endRow = new JPanel();
-        endRow.setLayout(new BoxLayout(endRow, BoxLayout.X_AXIS));
-        endRow.setOpaque(false);
+        // End Date Label and ComboBox
+        JLabel endDateLabel = new JLabel("End date:");
+        endDateLabel.setFont(endDateLabel.getFont().deriveFont(14f));  // Set font size
+        endDateLabel.setAlignmentX(Component.CENTER_ALIGNMENT); // Center the label
 
-        JLabel endDateLabel = new JLabel("End Date:");
-        endDateLabel.setFont(endDateLabel.getFont().deriveFont(Font.BOLD));
         JComboBox<String> endDateBox = createDateComboBox();
+        endDateBox.setPreferredSize(new Dimension(150, endDateBox.getPreferredSize().height));  // Set fixed width and make it shorter
+        endDateBox.setAlignmentX(Component.CENTER_ALIGNMENT); // Center the combo box
+        endDateBox.setRenderer(new DefaultListCellRenderer() {
+            @Override
+            public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+                JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+                label.setHorizontalAlignment(SwingConstants.CENTER); // Center the text inside the combo box
+                return label;
+            }
+        });
 
-        JButton generateButton = new JButton("Generate Graph");
+        // Add start and end date components to the datePickersPanel
+        datePickersPanel.add(startDateLabel);
+        datePickersPanel.add(startDateBox);
+        datePickersPanel.add(Box.createVerticalStrut(10));  // Add some vertical space
+        datePickersPanel.add(endDateLabel);
+        datePickersPanel.add(endDateBox);
+
+        // "Generate Graph" Button centered below the date pickers
+        RoundedButton generateButton = new RoundedButton("Generate graph", new Color(237, 165, 170));  // Light Blue Color
+        generateButton.setPreferredSize(new Dimension(150, 40));  // Control the button size
+        Font buttonFont = generateButton.getFont().deriveFont(14f);  // Set font size
+        generateButton.setFont(buttonFont);
         generateButton.addActionListener(e -> {
             try {
+                // Parse the selected dates
                 startDate = parseDate((String) startDateBox.getSelectedItem());
                 endDate = parseDate((String) endDateBox.getSelectedItem());
-                updateGraph();
+
+                // Check if start date is after the end date
+                if (startDate.isAfter(endDate)) {
+                    // Show a warning message
+                    JOptionPane.showMessageDialog(this,
+                            "Start date cannot be after end date. Please select valid dates.",
+                            "Date Error",
+                            JOptionPane.WARNING_MESSAGE);
+                } else {
+                    // If the dates are valid, update the graph
+                    updateGraph();
+                }
             } catch (DateTimeParseException ex) {
                 JOptionPane.showMessageDialog(this,
                         "Invalid date format. Please select a valid date.",
@@ -102,16 +144,27 @@ public class GlucoseGraph extends BaseUI {
             }
         });
 
-        endRow.add(endDateLabel);
-        endRow.add(Box.createHorizontalStrut(10));
-        endRow.add(endDateBox);
-        endRow.add(Box.createHorizontalGlue());
-        endRow.add(generateButton);
 
-        datePickersPanel.add(startRow);
-        datePickersPanel.add(endRow);
+        // "Send to Doctor" Button
+        RoundedButton sendToDoctorButton = new RoundedButton("Send to doctor", new Color(237, 165, 170));  // Green Color
+        sendToDoctorButton.setPreferredSize(new Dimension(140, 40));  // Button size
+        Font sendButtonFont = sendToDoctorButton.getFont().deriveFont(14f);  // Set font size
+        sendToDoctorButton.setFont(sendButtonFont);
+        sendToDoctorButton.addActionListener(e -> sendDataToDoctor());
+
+        // Add components to the top panel
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setOpaque(false);
+        buttonPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
+        buttonPanel.add(generateButton);
+
+        JPanel doctorButtonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        doctorButtonPanel.setOpaque(false);
+        doctorButtonPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
+        doctorButtonPanel.add(sendToDoctorButton);
 
         topPanel.add(datePickersPanel);
+        topPanel.add(buttonPanel);  // Centered "Generate Graph" button
         mainPanel.add(topPanel, BorderLayout.NORTH);
 
         chartPanel = new ChartPanel(null);
@@ -125,14 +178,6 @@ public class GlucoseGraph extends BaseUI {
         bottomWrapper.setLayout(new BoxLayout(bottomWrapper, BoxLayout.Y_AXIS));
         bottomWrapper.setOpaque(false);
 
-        JPanel doctorButtonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        doctorButtonPanel.setOpaque(false);
-        doctorButtonPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
-
-        JButton sendToDoctorButton = new JButton("Send to Doctor");
-        sendToDoctorButton.addActionListener(e -> sendDataToDoctor());
-        doctorButtonPanel.add(sendToDoctorButton);
-
         JPanel navBar = createBottomNavBar("GlucoseGraph", currentUser,
                 "/Icons/home.png", "/Icons/logbook.png", "/Icons/graphfull.png", "/Icons/profile.png");
 
@@ -143,6 +188,10 @@ public class GlucoseGraph extends BaseUI {
 
         updateGraph();
     }
+
+
+
+
 
     private void updateGraph() {
         XYDataset dataset = buildDatasetForRange();
@@ -160,6 +209,8 @@ public class GlucoseGraph extends BaseUI {
         XYPlot plot = chart.getXYPlot();
         DateAxis dateAxis = new DateAxis("Date");
         dateAxis.setLabelFont(dateAxis.getLabelFont().deriveFont(Font.BOLD));
+        Font newFont = dateAxis.getLabelFont().deriveFont(14f);  // Set the font size to 16
+        dateAxis.setLabelFont(newFont);
         dateAxis.setDateFormatOverride(new SimpleDateFormat("d MMM"));
         plot.setDomainAxis(dateAxis);
 
@@ -207,8 +258,11 @@ public class GlucoseGraph extends BaseUI {
 
     private JComboBox<String> createDateComboBox() {
         JComboBox<String> dateBox = new JComboBox<>();
-        LocalDate today = LocalDate.now();
+        dateBox.addItem("Please select date for graph generation");
 
+        // Ensure the default prompt is displayed as the selected option
+        dateBox.setSelectedIndex(0);
+        LocalDate today = LocalDate.now();
         for (int i = 0; i < 30; i++) {
             LocalDate date = today.minusDays(i);
             dateBox.addItem(formatDateWithOrdinal(date));
@@ -265,15 +319,19 @@ public class GlucoseGraph extends BaseUI {
             String doctorName = currentUser.getDoctorName();
             String userName = currentUser.getName();
 
+            // Format the dates with ordinal suffix
+            String formattedStartDate = formatDateWithOrdinal(startDate);
+            String formattedEndDate = formatDateWithOrdinal(endDate);
+
             MimeMessage message = new MimeMessage(session);
             message.setFrom(new InternetAddress(fromEmail));
             message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(doctorEmail));
-            message.setSubject("Glucose Graph: " + startDate + " to " + endDate);
+            message.setSubject("Glucose Graph: " + formattedStartDate + " to " + formattedEndDate);
 
             MimeBodyPart messageBodyPart = new MimeBodyPart();
             messageBodyPart.setText(String.format(
                     "Dear Dr. %s,\n\nPlease find attached the glucose graph for your patient %s from %s to %s.\n\nBest regards,\nSugarByte",
-                    doctorName, userName, startDate, endDate));
+                    doctorName, userName, formattedStartDate, formattedEndDate));
 
             MimeBodyPart attachmentPart = new MimeBodyPart();
             attachmentPart.attachFile(tempFile);
@@ -291,4 +349,5 @@ public class GlucoseGraph extends BaseUI {
             JOptionPane.showMessageDialog(this, "Failed to send the email: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
+
 }
