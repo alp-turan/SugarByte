@@ -26,10 +26,13 @@ public class BaseUI extends JFrame {
 
     public BaseUI(String title) {
         setTitle(title);
+
         setSize(400, 800); // Mimic a mobile screen size
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
         setResizable(false);
+
+
     }
 
     // Helper method to create consistently styled confirmation dialogs
@@ -156,6 +159,7 @@ public class BaseUI extends JFrame {
             return null;
         }
     }
+
 
     public JButton createIconButton(ImageIcon icon, String altText) {
         JButton button = new JButton(icon);

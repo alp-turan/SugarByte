@@ -24,7 +24,7 @@ public class Login extends BaseUI {
 
         // Sign In Button
         RoundedButtonLogin signInButton = new RoundedButtonLogin("Sign In", new Color(237, 165, 170));
-        signInButton.setPreferredSize(new Dimension(130, 40));
+        signInButton.setPreferredSize(new Dimension(96, 40));
         signInButton.setFont(new Font("SansSerif", Font.BOLD, 16));
         signInButton.setForeground(Color.BLACK);
 

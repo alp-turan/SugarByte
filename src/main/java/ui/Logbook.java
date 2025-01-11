@@ -7,6 +7,8 @@ import service.LogService;
 import javax.swing.*;
 import javax.swing.text.*;
 import java.awt.*;
+import java.text.SimpleDateFormat;
+import java.text.ParseException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -59,13 +61,16 @@ public class Logbook extends BaseUI {
         JPanel topPanel = new JPanel();
         topPanel.setOpaque(false);
         topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.Y_AXIS));
-        topPanel.setBorder(BorderFactory.createEmptyBorder(20, 0, 20, 0));
+        topPanel.setBorder(BorderFactory.createEmptyBorder(70, 0, 20, 0));
 
         JLabel titleLabel = createTitleLabel("SugarByte", lobsterFont, Color.BLACK);
         titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         topPanel.add(titleLabel);
 
-        JLabel dateLabel = new JLabel("Logbook for " + targetDate, SwingConstants.CENTER);
+        String logbookType = getLogbookType(currentUser);
+        String formattedDate = formatDate(targetDate);
+
+        JLabel dateLabel = new JLabel(logbookType + " logbook for " + formattedDate, SwingConstants.CENTER);
         dateLabel.setFont(new Font("SansSerif", Font.PLAIN, 16));
         dateLabel.setForeground(Color.BLACK);
         dateLabel.setBorder(BorderFactory.createEmptyBorder(5, 0, 5, 0));
@@ -156,32 +161,33 @@ public class Logbook extends BaseUI {
                 ((PlainDocument) hoursSinceMealFields[preIndex].getDocument()).setDocumentFilter(numericFilter); // Apply filter
                 centerPanel.add(hoursSinceMealFields[preIndex], gbc);
                 preIndex++;
-            } else {
-                centerPanel.add(new JLabel("—"), gbc);
             }
         }
 
         mainPanel.add(centerPanel, BorderLayout.CENTER);
 
-        // Bottom panel with "Save All"
+        // Bottom panel with "Save All" Button (moved above nav bar)
         JPanel bottomPanel = new JPanel();
         bottomPanel.setOpaque(false);
-        JButton saveAllBtn = new JButton("Save All");
-        saveAllBtn.setBackground(new Color(237, 165, 170));
-        saveAllBtn.setForeground(Color.BLACK);
-        saveAllBtn.addActionListener(e -> handleSaveAll());
-        bottomPanel.add(saveAllBtn);
+        bottomPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 20));  // Center the button
 
-        // Nav bar
+        RoundedButtonLogin saveAllBtn = new RoundedButtonLogin("Save all", new Color(237, 165, 170));
+        saveAllBtn.setForeground(Color.BLACK);
+        saveAllBtn.setFont(new Font("SansSerif", Font.BOLD, 14));  // Adjust text size and font
+        saveAllBtn.setPreferredSize(new Dimension(100, 40));  // Adjust button size if needed
+        saveAllBtn.addActionListener(e -> handleSaveAll());
+
+        bottomPanel.add(saveAllBtn);  // Add button to bottom panel
+
+        // Add bottom panel directly below the table, above the navigation bar
+        mainPanel.add(bottomPanel, BorderLayout.SOUTH);  // Place below table content
+
+        // Nav bar at the very bottom
         JPanel navBar = createBottomNavBar("Logbook", currentUser,
                 "/Icons/home.png", "/Icons/logbookfull.png", "/Icons/graph.png", "/Icons/profile.png");
 
-        JPanel wrapperPanel = new JPanel(new BorderLayout());
-        wrapperPanel.setOpaque(false);
-        wrapperPanel.add(bottomPanel, BorderLayout.NORTH);
-        wrapperPanel.add(navBar, BorderLayout.SOUTH);
-
-        mainPanel.add(wrapperPanel, BorderLayout.SOUTH);
+        // Add navBar below bottomPanel
+        mainPanel.add(navBar, BorderLayout.SOUTH);
     }
 
     /**
@@ -242,6 +248,25 @@ public class Logbook extends BaseUI {
                 "All entered values have been saved.",
                 "Logbook Saved",
                 JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    private String getLogbookType(User user) {
+        String logbookType = user.getLogbookType(); // Assuming `User` has a `getLogbookType()` method
+        return logbookType != null ? logbookType : "Simple";
+    }
+
+    /**
+     * Format the date for display.
+     */
+    protected String formatDate(String date) {
+        try {
+            SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd"); // Adjust based on your input format
+            SimpleDateFormat outputFormat = new SimpleDateFormat("EEEE, MMM d"); // Desired format
+            return outputFormat.format(inputFormat.parse(date));
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return date; // Fallback to the original date if parsing fails
+        }
     }
 
     protected double parseDoubleSafe(String text) {
