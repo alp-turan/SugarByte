@@ -153,21 +153,32 @@ public class CreateAccount extends BaseUI {
         String pass         = new String(passwordField.getPassword());
 
         // Basic required checks
-        if (name.isEmpty() || email.isEmpty() || pass.isEmpty() || doctorName.isEmpty()) {
+        if (name.isEmpty() || email.isEmpty() || pass.isEmpty() || doctorName.isEmpty() || docEmail.isEmpty()) {
             JOptionPane.showMessageDialog(
                     this,
-                    "Name, Email, Password, and Doctor's Name are required!",
+                    "Name, Email, Password, Doctor's Name, and Doctor's Email are required!",
                     "Error",
                     JOptionPane.ERROR_MESSAGE
             );
             return;
         }
 
-        // Advanced email check
+        // Advanced email check for user's email
         if (!isValidEmail(email)) {
             JOptionPane.showMessageDialog(
                     this,
                     "Invalid email address!",
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE
+            );
+            return;
+        }
+
+        // Advanced email check for doctor's email
+        if (!isValidEmail(docEmail)) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Invalid doctor's email address!",
                     "Error",
                     JOptionPane.ERROR_MESSAGE
             );
@@ -224,6 +235,7 @@ public class CreateAccount extends BaseUI {
             );
         }
     }
+
 
     /**
      * Simple email validation (regex-based).
