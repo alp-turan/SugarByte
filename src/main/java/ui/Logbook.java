@@ -83,7 +83,7 @@ public class Logbook extends BaseUI {
         JPanel centerPanel = new JPanel(new GridBagLayout());
         centerPanel.setOpaque(false);
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(5, 5, 5, 5);
+        gbc.insets = new Insets(5, 5, 7, 5);
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
         // Two-line header
@@ -104,29 +104,29 @@ public class Logbook extends BaseUI {
         centerPanel.add(carbsHeaderLine1, gbc);
 
         gbc.gridx = 3;
-        JLabel hoursHeaderLine1 = new JLabel("Hours Since");
+        JLabel hoursHeaderLine1 = new JLabel("Hours since");
         hoursHeaderLine1.setFont(new Font("SansSerif", Font.BOLD, 12));
         centerPanel.add(hoursHeaderLine1, gbc);
 
         // Second line
         gbc.gridy = 1;
         gbc.gridx = 0;
-        JLabel timeOfDayHeaderLine2 = new JLabel("of Day");
+        JLabel timeOfDayHeaderLine2 = new JLabel("of day");
         timeOfDayHeaderLine2.setFont(new Font("SansSerif", Font.BOLD, 12));
         centerPanel.add(timeOfDayHeaderLine2, gbc);
 
         gbc.gridx = 1;
-        JLabel bloodHeaderLine2 = new JLabel("Glucose");
+        JLabel bloodHeaderLine2 = new JLabel("glucose (mmol/L)");
         bloodHeaderLine2.setFont(new Font("SansSerif", Font.BOLD, 12));
         centerPanel.add(bloodHeaderLine2, gbc);
 
         gbc.gridx = 2;
-        JLabel carbsHeaderLine2 = new JLabel("Eaten");
+        JLabel carbsHeaderLine2 = new JLabel("eaten (g)");
         carbsHeaderLine2.setFont(new Font("SansSerif", Font.BOLD, 12));
         centerPanel.add(carbsHeaderLine2, gbc);
 
         gbc.gridx = 3;
-        JLabel hoursHeaderLine2 = new JLabel("Last Meal");
+        JLabel hoursHeaderLine2 = new JLabel("last meal");
         hoursHeaderLine2.setFont(new Font("SansSerif", Font.BOLD, 12));
         centerPanel.add(hoursHeaderLine2, gbc);
 
