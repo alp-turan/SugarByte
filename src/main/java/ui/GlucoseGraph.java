@@ -267,7 +267,7 @@ public class GlucoseGraph extends BaseUI {
             // Show the warning message without blocking the UI
             SwingUtilities.invokeLater(() -> {
                 JOptionPane.showMessageDialog(this,
-                        "The following dates have missing blood glucose data:\n" + missingDatesStr.toString() +
+                        "The following dates have no blood glucose entries:\n" + missingDatesStr.toString() +
                                 "The graph might be incomplete.",
                         "Warning",
                         JOptionPane.WARNING_MESSAGE);
