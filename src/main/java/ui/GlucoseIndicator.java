@@ -20,8 +20,8 @@ public class GlucoseIndicator extends JPanel {
     // Medical thresholds for blood glucose (in mmol/L)
     private static final double HYPO_THRESHOLD = 3.3;    // Dangerously low
     private static final double LOW_WARNING = 4.0;       // Lower bound of target range
-    private static final double HIGH_WARNING = 8.5;      // Upper bound of target range
-    private static final double HYPER_THRESHOLD = 10.0;  // Dangerously high
+    private static final double HIGH_WARNING = 7.0;      // Upper bound of target range
+    private static final double HYPER_THRESHOLD = 11.0;  // Dangerously high
 
     // Current glucose level and animation state
     private double glucoseLevel;

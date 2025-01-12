@@ -114,7 +114,7 @@ public class GlucoseGraph extends BaseUI {
         datePickersPanel.add(Box.createVerticalStrut(10));  // Add some vertical space
         datePickersPanel.add(endDateLabel);
         datePickersPanel.add(endDateBox);
-
+        /*
         // "Generate Graph" Button centered below the date pickers
         RoundedButton generateButton = new RoundedButton("Generate graph", new Color(237, 165, 170));  // Light Blue Color
         generateButton.setPreferredSize(new Dimension(150, 40));  // Control the button size
@@ -143,12 +143,35 @@ public class GlucoseGraph extends BaseUI {
                         "Error",
                         JOptionPane.ERROR_MESSAGE);
             }
+        }); */
+
+        RoundedButton generateButton = new RoundedButton("Generate Graph", new Color(237, 165, 170));
+        generateButton.setFont(generateButton.getFont().deriveFont(14f)); // Set font size
+        generateButton.setMargin(new Insets(5, 15, 5, 15)); // Add padding to the button
+        generateButton.addActionListener(e -> {
+            try {
+                startDate = parseDate((String) startDateBox.getSelectedItem());
+                endDate = parseDate((String) endDateBox.getSelectedItem());
+                if (startDate.isAfter(endDate)) {
+                    JOptionPane.showMessageDialog(this,
+                            "Start date cannot be after end date. Please select valid dates.",
+                            "Date Error",
+                            JOptionPane.WARNING_MESSAGE);
+                } else {
+                    updateGraph();
+                }
+            } catch (DateTimeParseException ex) {
+                JOptionPane.showMessageDialog(this,
+                        "Invalid date format. Please select a valid date.",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
+            }
         });
 
 
         // "Send to Doctor" Button
         RoundedButton sendToDoctorButton = new RoundedButton("Send to doctor", new Color(237, 165, 170));  // Green Color
-        sendToDoctorButton.setPreferredSize(new Dimension(140, 40));  // Button size
+        //sendToDoctorButton.setPreferredSize(new Dimension(140, 40));  // Button size
         Font sendButtonFont = sendToDoctorButton.getFont().deriveFont(14f);  // Set font size
         sendToDoctorButton.setFont(sendButtonFont);
         sendToDoctorButton.addActionListener(e -> sendDataToDoctor());
