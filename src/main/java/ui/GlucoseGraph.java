@@ -16,6 +16,7 @@ import org.jfree.data.xy.DefaultXYDataset;
 import org.jfree.data.xy.XYDataset;
 
 import javax.imageio.ImageIO;
+import java.util.ArrayList;
 import javax.mail.*;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
@@ -71,7 +72,7 @@ public class GlucoseGraph extends BaseUI {
         JPanel datePickersPanel = new JPanel();
         datePickersPanel.setOpaque(false);
         datePickersPanel.setLayout(new BoxLayout(datePickersPanel, BoxLayout.Y_AXIS));  // Stack components vertically
-        datePickersPanel.setBorder(BorderFactory.createEmptyBorder(10, 15, 10, 15));
+        datePickersPanel.setBorder(BorderFactory.createEmptyBorder(10, 15, 20, 15));
 
         // Start Date Label and ComboBox
         JLabel startDateLabel = new JLabel("Start date:");
@@ -156,6 +157,7 @@ public class GlucoseGraph extends BaseUI {
         JPanel buttonPanel = new JPanel();
         buttonPanel.setOpaque(false);
         buttonPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
+
         buttonPanel.add(generateButton);
 
         JPanel doctorButtonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
@@ -227,7 +229,6 @@ public class GlucoseGraph extends BaseUI {
 
     private XYDataset buildDatasetForRange() {
         DefaultXYDataset dataset = new DefaultXYDataset();
-
         int numDays = (int) (endDate.toEpochDay() - startDate.toEpochDay() + 1);
         if (numDays <= 0) {
             return dataset;
@@ -235,6 +236,7 @@ public class GlucoseGraph extends BaseUI {
 
         double[] xValues = new double[numDays];
         double[] yValues = new double[numDays];
+        List<String> missingDates = new ArrayList<>(); // List to collect missing dates
 
         for (int i = 0; i < numDays; i++) {
             LocalDate currentDate = startDate.plusDays(i);
@@ -243,6 +245,7 @@ public class GlucoseGraph extends BaseUI {
 
             if (dayEntries.isEmpty()) {
                 yValues[i] = Double.NaN;
+                missingDates.add(currentDate.format(DateTimeFormatter.ofPattern("d MMM yyyy"))); // Add missing date
             } else {
                 double sum = 0;
                 for (LogEntry e : dayEntries) {
@@ -253,8 +256,28 @@ public class GlucoseGraph extends BaseUI {
         }
 
         dataset.addSeries("BG Trend", new double[][]{xValues, yValues});
+
+        if (!missingDates.isEmpty()) {
+            // Show a warning dialog listing the missing dates vertically
+            StringBuilder missingDatesStr = new StringBuilder();
+            for (String missingDate : missingDates) {
+                missingDatesStr.append(missingDate).append("\n"); // Append each date with a newline
+            }
+
+            // Show the warning message without blocking the UI
+            SwingUtilities.invokeLater(() -> {
+                JOptionPane.showMessageDialog(this,
+                        "The following dates have missing blood glucose data:\n" + missingDatesStr.toString() +
+                                "The graph might be incomplete.",
+                        "Warning",
+                        JOptionPane.WARNING_MESSAGE);
+            });
+        }
+
         return dataset;
     }
+
+
 
     private JComboBox<String> createDateComboBox() {
         JComboBox<String> dateBox = new JComboBox<>();
