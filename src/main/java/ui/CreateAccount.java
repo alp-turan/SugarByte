@@ -7,6 +7,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
 public class CreateAccount extends BaseUI {
 
@@ -99,6 +101,35 @@ public class CreateAccount extends BaseUI {
             @Override
             public void actionPerformed(ActionEvent e) {
                 handleCreate();
+            }
+        });
+
+        // Add validation for name fields (only letters allowed)
+        nameField.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+                if (!Character.isLetter(e.getKeyChar()) && e.getKeyChar() != ' ') {
+                    e.consume(); // Ignore the event (disallow non-letter characters)
+                }
+            }
+        });
+
+        doctorNameField.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+                if (!Character.isLetter(e.getKeyChar()) && e.getKeyChar() != ' ') {
+                    e.consume(); // Ignore the event (disallow non-letter characters)
+                }
+            }
+        });
+
+        // Add validation for phone number field (only numbers allowed)
+        phoneField.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+                if (!Character.isDigit(e.getKeyChar())) {
+                    e.consume(); // Ignore the event (disallow non-digit characters)
+                }
             }
         });
 
@@ -235,7 +266,6 @@ public class CreateAccount extends BaseUI {
             );
         }
     }
-
 
     /**
      * Simple email validation (regex-based).
