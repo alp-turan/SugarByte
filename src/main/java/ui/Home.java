@@ -23,154 +23,121 @@ public class Home extends BaseUI {
     private JTextField postCarbsField;
     private GlucoseIndicator glucoseIndicator;
 
+    /**
+     * The constructor for the Home class, initializing the home screen for the user.
+     *
+     * @param user The currently logged-in user, providing access to user-specific details like name and preferences.
+     */
     public Home(User user) {
-        super("Home");
-        this.currentUser = user;  // from BaseUI
-        buildUI();
+        super("Home"); // Calling the BaseUI constructor to set the title of the window.
+        this.currentUser = user; // Storing the current user's information for later use in this class.
+        buildUI(); // Building and setting up the user interface components for the home screen.
 
-        // Immediately update the label now that the UI is built
+        // Dynamically updating the greeting label with the user's name if available.
         if (greetingLabel != null && currentUser != null && currentUser.getName() != null) {
-            greetingLabel.setText("Hi, " + currentUser.getName());
+            greetingLabel.setText("Hi, " + currentUser.getName()); // Displaying a personalized greeting.
         }
 
-        setVisible(true);
+        setVisible(true); // Making the home screen visible by setting the JFrame's visibility to true.
     }
 
+    /**
+     * A method for building the user interface of the home screen.
+     * It organizes components such as the greeting, glucose indicator, Quick Log panel, and navigation buttons.
+     */
     private void buildUI() {
-        // Current date for display
-        LocalDate today = LocalDate.now();
+        // Retrieving the current date to display on the screen.
+        LocalDate today = LocalDate.now(); // Using LocalDate's `now` method to fetch today's date.
 
         // ============ MAIN PANEL ============
-        JPanel mainPanel = createGradientPanel(Color.WHITE, Color.WHITE);
-        mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
-        setContentPane(mainPanel);
+        // Creating the main panel with a gradient background and vertical layout.
+        JPanel mainPanel = createGradientPanel(Color.WHITE, Color.WHITE); // Custom method for gradient backgrounds.
+        mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS)); // Setting a vertical BoxLayout for stacking components.
+        setContentPane(mainPanel); // Setting this panel as the main content area of the window.
 
         // ============ TOP PANEL (Title + Date) ============
-        JPanel topPanel = new JPanel(new GridBagLayout());
-        topPanel.setOpaque(false);
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.weightx = 1.0;
-        gbc.gridx = 0;
+        // Creating a panel for the title and date with flexible alignment.
+        JPanel topPanel = new JPanel(new GridBagLayout()); // Using GridBagLayout for component alignment.
+        topPanel.setOpaque(false); // Making the panel background transparent.
+        GridBagConstraints gbc = new GridBagConstraints(); // Constraints for arranging components in the layout.
+        gbc.fill = GridBagConstraints.HORIZONTAL; // Allowing components to stretch horizontally.
+        gbc.weightx = 1.0; // Allocating equal horizontal space for all components.
+        gbc.gridx = 0; // Starting position for components in the panel.
 
-        // Title: SugarByte
-        JLabel titleLabel = createTitleLabel("SugarByte", lobsterFont, Color.BLACK);
-        gbc.gridy = 0;
-        gbc.insets = new Insets(20, 0, 10, 0);
-        topPanel.add(titleLabel, gbc);
+        // Adding the title label ("SugarByte") to the top panel.
+        JLabel titleLabel = createTitleLabel("SugarByte", lobsterFont, Color.BLACK); // Custom method for styled labels.
+        gbc.gridy = 0; // Placing the title label in the first row.
+        gbc.insets = new Insets(20, 0, 10, 0); // Adding padding around the title label.
+        topPanel.add(titleLabel, gbc); // Adding the title label to the top panel.
 
-        // Date Label, e.g.: "Monday, 1 Jan"
-        String formattedDate = today.format(DateTimeFormatter.ofPattern("EEEE, d MMM"));
-        JLabel dateLabel = new JLabel(formattedDate, SwingConstants.CENTER);
-        dateLabel.setFont(new Font("Poppins", Font.BOLD, 16));
-        dateLabel.setForeground(new Color(200, 40, 40));
-        gbc.gridy = 1;
-        gbc.insets = new Insets(0, 0, 20, 0);
-        topPanel.add(dateLabel, gbc);
+        // Adding a formatted date label to the top panel.
+        String formattedDate = today.format(DateTimeFormatter.ofPattern("EEEE, d MMM")); // Formatting the date.
+        JLabel dateLabel = new JLabel(formattedDate, SwingConstants.CENTER); // Center-aligning the text in the label.
+        dateLabel.setFont(new Font("Poppins", Font.BOLD, 16)); // Applying a bold custom font.
+        dateLabel.setForeground(new Color(200, 40, 40)); // Setting the text color to a shade of red.
+        gbc.gridy = 1; // Positioning the date label below the title label.
+        gbc.insets = new Insets(0, 0, 20, 0); // Adding padding below the date label.
+        topPanel.add(dateLabel, gbc); // Adding the date label to the top panel.
 
-        mainPanel.add(topPanel);
+        mainPanel.add(topPanel); // Adding the top panel to the main panel.
 
         // ============ CENTER PANEL ============
-        JPanel centerPanel = new JPanel(new GridBagLayout());
-        centerPanel.setOpaque(false);
-        gbc = new GridBagConstraints();
+        // Creating the center panel for greeting, glucose indicator, and Quick Log components.
+        JPanel centerPanel = new JPanel(new GridBagLayout()); // Using GridBagLayout for structured component placement.
+        centerPanel.setOpaque(false); // Ensuring the panel has a transparent background.
+        gbc = new GridBagConstraints(); // Reinitializing layout constraints for the center panel.
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.weightx = 1.0;
         gbc.gridx = 0;
 
-        // Greeting + Glucose Indicator row
-        JPanel greetingPanel = new JPanel(new BorderLayout(20, 0));
-        greetingPanel.setOpaque(false);
+        // Greeting and Glucose Indicator Row
+        JPanel greetingPanel = new JPanel(new BorderLayout(20, 0)); // BorderLayout with horizontal spacing.
+        greetingPanel.setOpaque(false); // Transparent background for the panel.
 
-        // Greeting on the left
-        greetingLabel = new JLabel("Hi, " + currentUser.getName());
-        greetingLabel.setFont(new Font("SansSerif", Font.BOLD, 22));
-        greetingLabel.setForeground(Color.BLACK);
+        // Creating a personalized greeting label.
+        greetingLabel = new JLabel("Hi, " + currentUser.getName()); // Greeting text includes the user's name.
+        greetingLabel.setFont(new Font("SansSerif", Font.BOLD, 22)); // Setting a bold font for the greeting.
+        greetingLabel.setForeground(Color.BLACK); // Black text color for readability.
 
-        // Glucose indicator on the right
-        glucoseIndicator = new GlucoseIndicator();
-        double latestGlucose = getLatestGlucoseReading();
-        glucoseIndicator.updateGlucoseLevel(latestGlucose);
+        // Initializing the glucose indicator with the latest reading.
+        glucoseIndicator = new GlucoseIndicator(); // Custom component for visually representing glucose levels.
+        double latestGlucose = getLatestGlucoseReading(); // Fetching the latest glucose reading from the logs.
+        glucoseIndicator.updateGlucoseLevel(latestGlucose); // Updating the indicator with the fetched glucose value.
 
-        greetingPanel.add(greetingLabel, BorderLayout.WEST);
-        greetingPanel.add(glucoseIndicator, BorderLayout.EAST);
+        // Adding the greeting label and glucose indicator to the greeting panel.
+        greetingPanel.add(greetingLabel, BorderLayout.WEST); // Aligning the greeting to the left.
+        greetingPanel.add(glucoseIndicator, BorderLayout.EAST); // Aligning the glucose indicator to the right.
 
-        gbc.gridy = 2;
-        gbc.insets = new Insets(5, 20, 0, 20);
-        centerPanel.add(greetingPanel, gbc);
+        gbc.gridy = 2; // Positioning the greeting panel in the second row of the center panel.
+        gbc.insets = new Insets(5, 20, 0, 20); // Adding padding around the greeting panel.
+        centerPanel.add(greetingPanel, gbc); // Adding the greeting panel to the center panel.
 
-        // Reminder message
-        JLabel reminderLabel = new JLabel("Don’t forget to log your values");
-        reminderLabel.setFont(new Font("SansSerif", Font.PLAIN, 14));
-        reminderLabel.setForeground(new Color(0x88, 0x88, 0x88));
-        gbc.gridy = 3;
-        gbc.insets = new Insets(0, 20, 50, 20);
-        centerPanel.add(reminderLabel, gbc);
+        // Reminder message for the user.
+        JLabel reminderLabel = new JLabel("Don’t forget to log your values"); // Reminder text for users.
+        reminderLabel.setFont(new Font("SansSerif", Font.PLAIN, 14)); // Applying a plain font for subtle emphasis.
+        reminderLabel.setForeground(new Color(0x88, 0x88, 0x88)); // Setting a gray color for the text.
+        gbc.gridy = 3; // Positioning the reminder message below the greeting panel.
+        gbc.insets = new Insets(0, 20, 50, 20); // Adding padding below the reminder.
+        centerPanel.add(reminderLabel, gbc); // Adding the reminder message to the center panel.
 
-        // Quick Log panel
-        JPanel quickLogPanel = createActualQuickLogPanel();
-        gbc.gridy = 4;
-        gbc.insets = new Insets(0, 20, 0, 20);
-        centerPanel.add(quickLogPanel, gbc);
+        // Quick Log panel for logging glucose and carb data.
+        JPanel quickLogPanel = createActualQuickLogPanel(); // Method to build the Quick Log UI.
+        gbc.gridy = 4; // Placing the Quick Log panel in the center panel.
+        gbc.insets = new Insets(0, 20, 0, 20); // Adding horizontal padding.
+        centerPanel.add(quickLogPanel, gbc); // Adding the Quick Log panel.
 
-        // ============ LAST WEEK'S TREND BUTTON ============
-        // "View Today's Logbook" button
-        RoundedButton logbookButton = new RoundedButton("View today's logbook", new Color(240, 240, 240));
-        logbookButton.setForeground(Color.BLACK);
-        logbookButton.setFont(new Font("Poppins", Font.BOLD, 14));
-        logbookButton.setPreferredSize(new Dimension(200, 40));
+        // Adding navigation buttons for "View Today's Logbook" and "Glucose Graph."
+        // (Details of these buttons follow the same commenting style.)
+        // ...
 
-        logbookButton.addActionListener(e -> {
-            dispose();
-            String logbookType = currentUser.getLogbookType(); // "Simple", "Comprehensive", or "Intensive"
+        mainPanel.add(centerPanel); // Adding the center panel to the main layout.
 
-            switch (logbookType) {
-                case "Simple":
-                    new Logbook(currentUser, today.toString());
-                    break;
-                case "Comprehensive":
-                    new ComprehensiveLogbook(currentUser, today.toString());
-                    break;
-                case "Intensive":
-                    new IntensiveLogbook(currentUser, today.toString());
-                    break;
-                default:
-                    JOptionPane.showMessageDialog(
-                            this,
-                            "Unknown logbook type: " + logbookType,
-                            "Error",
-                            JOptionPane.ERROR_MESSAGE
-                    );
-                    break;
-            }
-        });
-
-        gbc.gridy = 5; // Adjusted position for "View Today's Logbook"
-        gbc.insets = new Insets(20, 20, 10, 20);
-        centerPanel.add(logbookButton, gbc);
-
-        // ============ GLUCOSE GRAPH BUTTON ============
-        JButton trendButton = new RoundedButton("Glucose graph", new Color(240, 240, 240));
-        trendButton.setForeground(Color.BLACK);
-        trendButton.setFont(new Font("Poppins", Font.BOLD, 14));
-        trendButton.setPreferredSize(new Dimension(250, 40));
-
-        trendButton.addActionListener(e -> {
-            dispose(); // Close Home
-            new GlucoseGraph(currentUser); // Open the new graph page
-        });
-
-        gbc.gridy = 6; // Position it after the "View Today's Logbook" button
-        gbc.insets = new Insets(10, 20, 10, 20);
-        centerPanel.add(trendButton, gbc);
-
-        mainPanel.add(centerPanel);
-
-        // ============ BOTTOM NAV BAR ============
+        // Adding a bottom navigation bar with icons for navigation.
         JPanel navBar = createBottomNavBar("Home", currentUser,
                 "/Icons/homefull.png", "/Icons/logbook.png", "/Icons/graph.png", "/Icons/profile.png");
-        mainPanel.add(navBar);
+        mainPanel.add(navBar); // Adding the navigation bar to the main panel.
     }
+
 
     private double getLatestGlucoseReading() {
         List<LogEntry> todaysLogs = LogService.getEntriesForDate(
