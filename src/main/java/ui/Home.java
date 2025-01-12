@@ -246,9 +246,9 @@ public class Home extends BaseUI {
 
         // Save button
         gbc.gridy = 4;
-        gbc.gridx = 0;
-        gbc.gridwidth = 3;
-        JButton saveBtn = new RoundedButton("Save Log", new Color(237, 165, 170));
+        gbc.gridx = 1;
+        gbc.gridwidth = 2;
+        JButton saveBtn = new RoundedButton("Save log", new Color(237, 165, 170));
         saveBtn.setForeground(Color.BLACK);
         saveBtn.setFont(new Font("SansSerif", Font.BOLD, 14));
         saveBtn.setPreferredSize(new Dimension(200, 40)); // Making the button less wide
