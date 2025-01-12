@@ -167,7 +167,10 @@ public class Logbook extends BaseUI {
         mainPanel.add(centerPanel, BorderLayout.CENTER);
 
         // Bottom panel with "Save All" Button (moved above nav bar)
+        // Bottom panel with "Save All" Button (moved above nav bar)
         JPanel bottomPanel = new JPanel();
+        bottomPanel.add(Box.createVerticalStrut(60)); // Adjust the value to control vertical space above the button
+
         bottomPanel.setOpaque(false);
         bottomPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 20));  // Center the button
 
@@ -179,20 +182,22 @@ public class Logbook extends BaseUI {
 
         bottomPanel.add(saveAllBtn);  // Add button to bottom panel
 
-        // Add bottom panel directly below the table, above the navigation bar
-        mainPanel.add(bottomPanel, BorderLayout.SOUTH);  // Place below table content
+// Combine bottomPanel and navBar
+        JPanel southPanel = new JPanel();
+        southPanel.setLayout(new BorderLayout());
+        southPanel.setOpaque(false);
+        southPanel.add(bottomPanel, BorderLayout.CENTER);
+        southPanel.add(createBottomNavBar("Logbook", currentUser,
+                        "/Icons/home.png", "/Icons/logbookfull.png", "/Icons/graph.png", "/Icons/profile.png"),
+                BorderLayout.SOUTH);
 
-        // Nav bar at the very bottom
-        JPanel navBar = createBottomNavBar("Logbook", currentUser,
-                "/Icons/home.png", "/Icons/logbookfull.png", "/Icons/graph.png", "/Icons/profile.png");
-
-        // Add navBar below bottomPanel
-        mainPanel.add(navBar, BorderLayout.SOUTH);
+// Add combined panel to mainPanel
+        mainPanel.add(southPanel, BorderLayout.SOUTH);
     }
 
-    /**
-     * Load data for "simple" logbook.
-     */
+        /**
+         * Load data for "simple" logbook.
+         */
     protected void loadLogEntries() {
         List<LogEntry> entries = LogService.getEntriesForDate(currentUser.getId(), targetDate);
         Map<String, LogEntry> entryMap = new HashMap<>();

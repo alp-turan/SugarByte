@@ -309,16 +309,14 @@ public class Profile extends BaseUI {
         return value != null && !value.isEmpty() ? value : defaultValue;
     }
     private void handleLogout() {
-        // Create a custom confirmation dialog with styled buttons
-        int result = createCustomConfirmDialog(
-                "Logout Confirmation",
-                "Are you sure you want to log out?",
-                new Color(220, 53, 69)  // Match logout button color
-        );
-
+        int result = JOptionPane.showConfirmDialog(this, "Are you sure you want to log out?", "Logout", JOptionPane.YES_NO_OPTION);
         if (result == JOptionPane.YES_OPTION) {
-            dispose();
-            new Login();
+            // Clear user session or perform any other necessary action
+            // currentUser = null;
+
+            // Example of logging out: Close current window and open the login screen
+            dispose(); // Close the current screen
+            new Login(); // Open the login screen (you should have a Login class)
         }
     }
 }
