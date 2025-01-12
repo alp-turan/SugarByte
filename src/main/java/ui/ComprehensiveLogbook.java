@@ -127,39 +127,39 @@ public class ComprehensiveLogbook extends BaseUI {
         centerPanel.add(insulinHeaderLine1, gbc);
 
         gbc.gridx = 5;
-        JLabel hoursHeaderLine1 = new JLabel("Hours Since");
+        JLabel hoursHeaderLine1 = new JLabel("Hours since");
         hoursHeaderLine1.setFont(new Font("SansSerif", Font.BOLD, 12));
         centerPanel.add(hoursHeaderLine1, gbc);
 
         // Second row of headers
         gbc.gridy = 1;
         gbc.gridx = 0;
-        JLabel timeHeaderLine2 = new JLabel("of Day");
+        JLabel timeHeaderLine2 = new JLabel("of day");
         timeHeaderLine2.setFont(new Font("SansSerif", Font.BOLD, 12));
         centerPanel.add(timeHeaderLine2, gbc);
 
         gbc.gridx = 1;
-        JLabel bloodHeaderLine2 = new JLabel("Glucose (mmol/L)");
+        JLabel bloodHeaderLine2 = new JLabel("glucose (mmol/L)");
         bloodHeaderLine2.setFont(new Font("SansSerif", Font.BOLD, 12));
         centerPanel.add(bloodHeaderLine2, gbc);
 
         gbc.gridx = 2;
-        JLabel carbsHeaderLine2 = new JLabel("Eaten (g)");
+        JLabel carbsHeaderLine2 = new JLabel("eaten (g)");
         carbsHeaderLine2.setFont(new Font("SansSerif", Font.BOLD, 12));
         centerPanel.add(carbsHeaderLine2, gbc);
 
         gbc.gridx = 3;
-        JLabel exerciseHeaderLine2 = new JLabel("Type");
+        JLabel exerciseHeaderLine2 = new JLabel("type");
         exerciseHeaderLine2.setFont(new Font("SansSerif", Font.BOLD, 12));
         centerPanel.add(exerciseHeaderLine2, gbc);
 
         gbc.gridx = 4;
-        JLabel insulinHeaderLine2 = new JLabel("Dose");
+        JLabel insulinHeaderLine2 = new JLabel("dose");
         insulinHeaderLine2.setFont(new Font("SansSerif", Font.BOLD, 12));
         centerPanel.add(insulinHeaderLine2, gbc);
 
         gbc.gridx = 5;
-        JLabel hoursHeaderLine2 = new JLabel("Last Meal");
+        JLabel hoursHeaderLine2 = new JLabel("last meal");
         hoursHeaderLine2.setFont(new Font("SansSerif", Font.BOLD, 12));
         centerPanel.add(hoursHeaderLine2, gbc);
 

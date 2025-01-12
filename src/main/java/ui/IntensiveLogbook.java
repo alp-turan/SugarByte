@@ -162,7 +162,7 @@ public class IntensiveLogbook extends BaseUI {
         centerPanel.add(carbsHeader2, gbc);
 
         gbc.gridx = 3;
-        JLabel exerciseHeader2 = new JLabel("type");
+        JLabel exerciseHeader2 = new JLabel("type and duration");
         exerciseHeader2.setFont(new Font("SansSerif", Font.BOLD, 12));
         centerPanel.add(exerciseHeader2, gbc);
 
