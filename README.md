@@ -17,7 +17,7 @@ The database of users and log entries was developed using SQL, and all of the UI
 - Alert system that sends an email to the user's doctor if glucose levels recorded are outside of the healthy range.
     - NOTE 1: As set by the WHO, at-risk blood glucose readings are:
        - Hypoglycaemia: 3.9mmol/l as the minimum healthy threshold at any point in the day
-       - Hyperglycaemia: 11.0 mmol/l as the max healthy threshold if >2 hours have passed since the last meal, and 7.0mmol/l when fasting (we classified fasting as 10 hours, since most medical literature considers fasting to be between 8-12 hours since eating).
+       - Hyperglycemia: 11.0 mmol/l as the max healthy threshold if >2 hours have passed since the last meal, and 7.0mmol/l when fasting (we classified fasting as 10 hours, since most medical literature considers fasting to be between 8-12 hours since eating).
    - NOTE 2: the alarm system is built around the assumption that all 'Post-' meal glucose readings are taken immediately after eating, or at the very most within 2 hours of the meal. Hence, the alert system was build based ont he 'Pre-' meal glucose values. 
 
 ## Contributing to the development
