@@ -35,27 +35,6 @@ public class BaseUI extends JFrame {
 
     }
 
-    // Helper method to create consistently styled confirmation dialogs
-    protected int createCustomConfirmDialog(String title, String message, Color accentColor) {
-        // Create custom buttons with consistent styling
-        RoundedButton yesButton = new RoundedButton("Yes", accentColor);
-        RoundedButton noButton = new RoundedButton("No", Color.GRAY);
-        yesButton.setForeground(Color.WHITE);
-        noButton.setForeground(Color.WHITE);
-
-        // Create the dialog with custom options
-        Object[] options = {yesButton, noButton};
-        return JOptionPane.showOptionDialog(
-                this,
-                message,
-                title,
-                JOptionPane.YES_NO_OPTION,
-                JOptionPane.QUESTION_MESSAGE,
-                null,
-                options,
-                noButton  // Default to 'No'
-        );
-    }
 
     // Method to load custom fonts
     protected Font loadCustomFont(float size) {
