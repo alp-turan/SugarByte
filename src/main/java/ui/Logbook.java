@@ -177,7 +177,7 @@ public class Logbook extends BaseUI {
         RoundedButtonLogin saveAllBtn = new RoundedButtonLogin("Save all", new Color(237, 165, 170));
         saveAllBtn.setForeground(Color.BLACK);
         saveAllBtn.setFont(new Font("SansSerif", Font.BOLD, 14));  // Adjust text size and font
-        saveAllBtn.setPreferredSize(new Dimension(100, 40));  // Adjust button size if needed
+       // saveAllBtn.setPreferredSize(new Dimension(100, 40));  // Adjust button size if needed
         saveAllBtn.addActionListener(e -> handleSaveAll());
 
         bottomPanel.add(saveAllBtn);  // Add button to bottom panel

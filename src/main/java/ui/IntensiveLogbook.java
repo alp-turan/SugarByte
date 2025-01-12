@@ -115,34 +115,35 @@ public class IntensiveLogbook extends BaseUI {
         centerPanel.add(bloodHeader1, gbc);
 
         gbc.gridx = 2;
+        JLabel hoursHeader1 = new JLabel("Hours since");
+        hoursHeader1.setFont(new Font("SansSerif", Font.BOLD, 12));
+        centerPanel.add(hoursHeader1, gbc);
+
+        gbc.gridx = 3;
         JLabel carbsHeader1 = new JLabel("Carbs");
         carbsHeader1.setFont(new Font("SansSerif", Font.BOLD, 12));
         centerPanel.add(carbsHeader1, gbc);
 
-        gbc.gridx = 3;
+        gbc.gridx = 4;
         JLabel exerciseHeader1 = new JLabel("Exercise");
         exerciseHeader1.setFont(new Font("SansSerif", Font.BOLD, 12));
         centerPanel.add(exerciseHeader1, gbc);
 
-        gbc.gridx = 4;
+        gbc.gridx = 5;
         JLabel insulinHeader1 = new JLabel("Insulin");
         insulinHeader1.setFont(new Font("SansSerif", Font.BOLD, 12));
         centerPanel.add(insulinHeader1, gbc);
 
-        gbc.gridx = 5;
+        gbc.gridx = 6;
         JLabel foodHeader1 = new JLabel("Food");
         foodHeader1.setFont(new Font("SansSerif", Font.BOLD, 12));
         centerPanel.add(foodHeader1, gbc);
 
-        gbc.gridx = 6;
+        gbc.gridx = 7;
         JLabel otherHeader1 = new JLabel("Other");
         otherHeader1.setFont(new Font("SansSerif", Font.BOLD, 12));
         centerPanel.add(otherHeader1, gbc);
 
-        gbc.gridx = 7;
-        JLabel hoursHeader1 = new JLabel("Hours since");
-        hoursHeader1.setFont(new Font("SansSerif", Font.BOLD, 12));
-        centerPanel.add(hoursHeader1, gbc);
 
         // Second line of headers
         gbc.gridy = 1;
@@ -157,34 +158,35 @@ public class IntensiveLogbook extends BaseUI {
         centerPanel.add(bloodHeader2, gbc);
 
         gbc.gridx = 2;
+        JLabel hoursHeader2 = new JLabel("last meal");
+        hoursHeader2.setFont(new Font("SansSerif", Font.BOLD, 12));
+        centerPanel.add(hoursHeader2, gbc);
+
+        gbc.gridx = 3;
         JLabel carbsHeader2 = new JLabel("eaten (g)");
         carbsHeader2.setFont(new Font("SansSerif", Font.BOLD, 12));
         centerPanel.add(carbsHeader2, gbc);
 
-        gbc.gridx = 3;
+        gbc.gridx = 4;
         JLabel exerciseHeader2 = new JLabel("type and duration");
         exerciseHeader2.setFont(new Font("SansSerif", Font.BOLD, 12));
         centerPanel.add(exerciseHeader2, gbc);
 
-        gbc.gridx = 4;
+        gbc.gridx = 5;
         JLabel insulinHeader2 = new JLabel("dose");
         insulinHeader2.setFont(new Font("SansSerif", Font.BOLD, 12));
         centerPanel.add(insulinHeader2, gbc);
 
-        gbc.gridx = 5;
+        gbc.gridx = 6;
         JLabel foodHeader2 = new JLabel("diary");
         foodHeader2.setFont(new Font("SansSerif", Font.BOLD, 12));
         centerPanel.add(foodHeader2, gbc);
 
-        gbc.gridx = 6;
+        gbc.gridx = 7;
         JLabel otherHeader2 = new JLabel("events");
         otherHeader2.setFont(new Font("SansSerif", Font.BOLD, 12));
         centerPanel.add(otherHeader2, gbc);
 
-        gbc.gridx = 7;
-        JLabel hoursHeader2 = new JLabel("last meal");
-        hoursHeader2.setFont(new Font("SansSerif", Font.BOLD, 12));
-        centerPanel.add(hoursHeader2, gbc);
 
         gbc.gridy = 2;
 
@@ -205,13 +207,22 @@ public class IntensiveLogbook extends BaseUI {
             addNumericInputRestriction(bloodSugarFields[i]);
             centerPanel.add(bloodSugarFields[i], gbc);
 
+
             gbc.gridx = 2;
+            if (ROW_LABELS[i].endsWith("Pre")) {
+                hoursSinceMealFields[preIndex] = new JTextField(5);
+                addNumericInputRestriction(hoursSinceMealFields[preIndex]);
+                centerPanel.add(hoursSinceMealFields[preIndex], gbc);
+                preIndex++;
+            }
+
+            gbc.gridx = 3;
             carbsFields[i] = new JTextField(5);
             addNumericInputRestriction(carbsFields[i]);
             centerPanel.add(carbsFields[i], gbc);
 
             // Exercise Type (Multiline JTextArea)
-            gbc.gridx = 3;
+            gbc.gridx = 4;
             exerciseFields[i] = new JTextArea(2, 10); // 2 rows, 10 columns
             exerciseFields[i].setLineWrap(true);     // Enable line wrapping
             exerciseFields[i].setWrapStyleWord(true);// Wrap at word boundaries
@@ -220,13 +231,13 @@ public class IntensiveLogbook extends BaseUI {
             centerPanel.add(exerciseScrollPane, gbc);
 
             // Insulin Dose
-            gbc.gridx = 4;
+            gbc.gridx = 5;
             insulinDoseFields[i] = new JTextField(5);
             addNumericInputRestriction(insulinDoseFields[i]);
             centerPanel.add(insulinDoseFields[i], gbc);
 
             // Food Diary (Multiline JTextArea)
-            gbc.gridx = 5;
+            gbc.gridx = 6;
             foodDiaryFields[i] = new JTextArea(2, 10); // 2 rows, 10 columns
             foodDiaryFields[i].setLineWrap(true);
             foodDiaryFields[i].setWrapStyleWord(true);
@@ -235,7 +246,7 @@ public class IntensiveLogbook extends BaseUI {
             centerPanel.add(foodScrollPane, gbc);
 
             // Other Events (Multiline JTextArea)
-            gbc.gridx = 6;
+            gbc.gridx = 7;
             otherEventsFields[i] = new JTextArea(2, 10); // 2 rows, 10 columns
             otherEventsFields[i].setLineWrap(true);
             otherEventsFields[i].setWrapStyleWord(true);
@@ -243,13 +254,6 @@ public class IntensiveLogbook extends BaseUI {
             otherScrollPane.setPreferredSize(new Dimension(100, 40));
             centerPanel.add(otherScrollPane, gbc);
 
-            gbc.gridx = 7;
-            if (ROW_LABELS[i].endsWith("Pre")) {
-                hoursSinceMealFields[preIndex] = new JTextField(5);
-                addNumericInputRestriction(hoursSinceMealFields[preIndex]);
-                centerPanel.add(hoursSinceMealFields[preIndex], gbc);
-                preIndex++;
-            }
         }
 
 

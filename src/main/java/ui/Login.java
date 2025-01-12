@@ -24,13 +24,13 @@ public class Login extends BaseUI {
 
         // Sign In Button
         RoundedButtonLogin signInButton = new RoundedButtonLogin("Sign In", new Color(237, 165, 170));
-        signInButton.setPreferredSize(new Dimension(96, 40));
+        //signInButton.setPreferredSize(new Dimension(96, 40));
         signInButton.setFont(new Font("SansSerif", Font.BOLD, 16));
         signInButton.setForeground(Color.BLACK);
 
         // Create Account Button
         RoundedButtonLogin createAccountBtn = new RoundedButtonLogin("Create Account", new Color(220, 53, 69));
-        createAccountBtn.setPreferredSize(new Dimension(170, 40)); // Same size as sign-in button
+        //createAccountBtn.setPreferredSize(new Dimension(170, 40)); // Same size as sign-in button
         createAccountBtn.setFont(new Font("SansSerif", Font.BOLD, 16)); // Bold font to match
         createAccountBtn.setForeground(Color.WHITE); // Black text for contrast
 

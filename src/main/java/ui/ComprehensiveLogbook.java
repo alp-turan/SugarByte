@@ -112,24 +112,25 @@ public class ComprehensiveLogbook extends BaseUI {
         centerPanel.add(bloodHeaderLine1, gbc);
 
         gbc.gridx = 2;
+        JLabel hoursHeaderLine1 = new JLabel("Hours since");
+        hoursHeaderLine1.setFont(new Font("SansSerif", Font.BOLD, 12));
+        centerPanel.add(hoursHeaderLine1, gbc);
+
+        gbc.gridx = 3;
         JLabel carbsHeaderLine1 = new JLabel("Carbs");
         carbsHeaderLine1.setFont(new Font("SansSerif", Font.BOLD, 12));
         centerPanel.add(carbsHeaderLine1, gbc);
 
-        gbc.gridx = 3;
+        gbc.gridx = 4;
         JLabel exerciseHeaderLine1 = new JLabel("Exercise");
         exerciseHeaderLine1.setFont(new Font("SansSerif", Font.BOLD, 12));
         centerPanel.add(exerciseHeaderLine1, gbc);
 
-        gbc.gridx = 4;
+        gbc.gridx = 5;
         JLabel insulinHeaderLine1 = new JLabel("Insulin");
         insulinHeaderLine1.setFont(new Font("SansSerif", Font.BOLD, 12));
         centerPanel.add(insulinHeaderLine1, gbc);
 
-        gbc.gridx = 5;
-        JLabel hoursHeaderLine1 = new JLabel("Hours since");
-        hoursHeaderLine1.setFont(new Font("SansSerif", Font.BOLD, 12));
-        centerPanel.add(hoursHeaderLine1, gbc);
 
         // Second row of headers
         gbc.gridy = 1;
@@ -144,24 +145,24 @@ public class ComprehensiveLogbook extends BaseUI {
         centerPanel.add(bloodHeaderLine2, gbc);
 
         gbc.gridx = 2;
+        JLabel hoursHeaderLine2 = new JLabel("last meal");
+        hoursHeaderLine2.setFont(new Font("SansSerif", Font.BOLD, 12));
+        centerPanel.add(hoursHeaderLine2, gbc);
+
+        gbc.gridx = 3;
         JLabel carbsHeaderLine2 = new JLabel("eaten (g)");
         carbsHeaderLine2.setFont(new Font("SansSerif", Font.BOLD, 12));
         centerPanel.add(carbsHeaderLine2, gbc);
 
-        gbc.gridx = 3;
+        gbc.gridx = 4;
         JLabel exerciseHeaderLine2 = new JLabel("type");
         exerciseHeaderLine2.setFont(new Font("SansSerif", Font.BOLD, 12));
         centerPanel.add(exerciseHeaderLine2, gbc);
 
-        gbc.gridx = 4;
+        gbc.gridx = 5;
         JLabel insulinHeaderLine2 = new JLabel("dose");
         insulinHeaderLine2.setFont(new Font("SansSerif", Font.BOLD, 12));
         centerPanel.add(insulinHeaderLine2, gbc);
-
-        gbc.gridx = 5;
-        JLabel hoursHeaderLine2 = new JLabel("last meal");
-        hoursHeaderLine2.setFont(new Font("SansSerif", Font.BOLD, 12));
-        centerPanel.add(hoursHeaderLine2, gbc);
 
         // Data rows
         int preIndex = 0; // track how many "Pre" rows we've encountered
@@ -179,13 +180,21 @@ public class ComprehensiveLogbook extends BaseUI {
             bloodSugarFields[i] = createNumberOnlyField();
             centerPanel.add(bloodSugarFields[i], gbc);
 
-            // Column 2: Carbs
+            // Column 2: Hours Since Meal (only for Pre values)
             gbc.gridx = 2;
+            if (ROW_LABELS[i].endsWith("Pre")) {
+                hoursSinceMealFields[preIndex] = createNumberOnlyField();
+                centerPanel.add(hoursSinceMealFields[preIndex], gbc);
+                preIndex++;
+            }
+
+            // Column 3: Carbs
+            gbc.gridx = 3;
             carbsFields[i] = createNumberOnlyField();
             centerPanel.add(carbsFields[i], gbc);
 
-            // Column 3: Exercise
-            gbc.gridx = 3;
+            // Column 4: Exercise
+            gbc.gridx = 4;
             exerciseFields[i] = new JTextArea(2, 10); // 2 rows, 10 columns
             exerciseFields[i].setLineWrap(true);     // Enable line wrapping
             exerciseFields[i].setWrapStyleWord(true);// Wrap at word boundaries
@@ -193,18 +202,11 @@ public class ComprehensiveLogbook extends BaseUI {
             exerciseScrollPane.setPreferredSize(new Dimension(100, 40));
             centerPanel.add(exerciseScrollPane, gbc);
 
-            // Column 4: Insulin
-            gbc.gridx = 4;
+            // Column 5: Insulin
+            gbc.gridx = 5;
             insulinDoseFields[i] = createNumberOnlyField();
             centerPanel.add(insulinDoseFields[i], gbc);
 
-            // Column 5: Hours Since Meal (only for Pre)
-            gbc.gridx = 5;
-            if (ROW_LABELS[i].endsWith("Pre")) {
-                hoursSinceMealFields[preIndex] = createNumberOnlyField();
-                centerPanel.add(hoursSinceMealFields[preIndex], gbc);
-                preIndex++;
-            }
         }
 
         // Put centerPanel in a JScrollPane for scrollable UI
