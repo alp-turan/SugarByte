@@ -30,7 +30,7 @@ public class GlucoseIndicator extends JPanel {
 
     public GlucoseIndicator() {
         // Set up the panel's size and appearance
-        setPreferredSize(new Dimension(120, 40));
+        setPreferredSize(new Dimension(150, 35));
         setOpaque(false);
 
         // Create a timer for the warning flash animation (twice per second)
@@ -108,7 +108,7 @@ public class GlucoseIndicator extends JPanel {
         // Center the text
         FontMetrics fm = g2.getFontMetrics();
         int textX = (width - fm.stringWidth(glucoseText)) / 2 + 2;
-        int textY = height / 2 - 2;  // Adjust for warning text below
+        int textY = height / 2 ;  // Adjust for warning text below
 
         g2.drawString(glucoseText, textX, textY);
 
