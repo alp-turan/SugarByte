@@ -136,14 +136,106 @@ public class CreateAccount extends BaseUI {
     }
 
     private void handleCreate() {
-        // Same as in your original code
+        String name         = nameField.getText().trim();
+        String diabetes     = (String) diabetesCombo.getSelectedItem();
+        String insulinType  = (String) insulinTypeCombo.getSelectedItem();
+        String insulinAdmin = (String) insulinAdminCombo.getSelectedItem();
+        String email        = emailField.getText().trim();
+        String phone        = phoneField.getText().trim();
+
+        // Additional fields
+        String doctorName   = doctorNameField.getText().trim();
+        String docEmail     = doctorEmailField.getText().trim();
+        String docAddress   = doctorAddressField.getText().trim();
+        String docEmerg     = doctorEmergencyField.getText().trim();
+        String logbookType  = (String) logbookTypeCombo.getSelectedItem(); // "Simple", "Comprehensive", "Intensive"
+
+        String pass         = new String(passwordField.getPassword());
+
+        // Basic required checks
+        if (name.isEmpty() || email.isEmpty() || pass.isEmpty() || doctorName.isEmpty()) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Name, Email, Password, and Doctor's Name are required!",
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE
+            );
+            return;
+        }
+
+        // Advanced email check
+        if (!isValidEmail(email)) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Invalid email address!",
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE
+            );
+            return;
+        }
+
+        // Advanced password check
+        if (!isValidPassword(pass)) {
+            JOptionPane.showMessageDialog(this,
+                    "Password must be at least 8 characters long and include both letters and numbers.",
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE
+            );
+            return;
+        }
+
+        // Construct the user object
+        User u = new User();
+        u.setName(name);
+        u.setDiabetesType(diabetes);
+        u.setInsulinType(insulinType);
+        u.setInsulinAdmin(insulinAdmin);
+        u.setEmail(email);
+        u.setPhone(phone);
+
+        // Doctor info
+        u.setDoctorName(doctorName);
+        u.setDoctorEmail(docEmail);
+        u.setDoctorAddress(docAddress);
+        u.setDoctorEmergencyPhone(docEmerg);
+
+        // *** Save logbook choice in DB ***
+        u.setLogbookType(logbookType);
+
+        u.setPassword(pass);
+
+        // Insert into DB
+        UserDAO dao = new UserDAO();
+        User created = dao.createUser(u);
+        if (created != null && created.getId() > 0) {
+            JOptionPane.showMessageDialog(this,
+                    "Account created successfully!",
+                    "Success",
+                    JOptionPane.INFORMATION_MESSAGE
+            );
+            dispose();
+            new Home(created);
+        } else {
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Failed to create account. Try a different email or check DB logs.",
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE
+            );
+        }
     }
 
+    /**
+     * Simple email validation (regex-based).
+     */
     private boolean isValidEmail(String email) {
         String emailRegex = "^[A-Za-z0-9+_.-]+@(.+)$";
         return email.matches(emailRegex);
     }
 
+    /**
+     * Ensures password has at least 8 chars, contains letters and digits.
+     */
     private boolean isValidPassword(String password) {
         if (password.length() < 8) return false;
         boolean hasLetter = false;
