@@ -361,7 +361,7 @@ public class IntensiveLogbook extends BaseUI {
      * Load data for "Intensive" logbook, including hoursSinceMeal.
      */
     protected void loadLogEntriesIntensive() {
-        List<LogEntry> entries = LogService.getEntriesForDate(currentUser.getId(), targetDate);
+                List<LogEntry> entries = LogService.getEntriesForDate(currentUser.getId(), targetDate);
         Map<String, LogEntry> entryMap = new HashMap<>();
         for (LogEntry e : entries) {
             entryMap.put(e.getTimeOfDay(), e);
@@ -388,7 +388,7 @@ public class IntensiveLogbook extends BaseUI {
 
     private String getLogbookType(User user) {
         String logbookType = user.getLogbookType(); // Assuming `User` has a `getLogbookType()` method
-        return logbookType != null ? logbookType : "Simple";
+        return logbookType != null ? logbookType : "Intensive";
     }
 
     protected String formatDate(String date) {

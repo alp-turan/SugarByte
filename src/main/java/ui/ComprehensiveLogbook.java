@@ -300,7 +300,7 @@ public class ComprehensiveLogbook extends BaseUI {
 
     private String getLogbookType(User user) {
         String logbookType = user.getLogbookType(); // Assuming `User` has a `getLogbookType()` method
-        return logbookType != null ? logbookType : "Simple";
+        return logbookType != null ? logbookType : "Comprehensive";
     }
 
     /**
@@ -389,7 +389,7 @@ public class ComprehensiveLogbook extends BaseUI {
                 entry.setExerciseType(exercise);
                 entry.setInsulinDose(insulin);
                 entry.setHoursSinceMeal(hours);
-                entry.setFoodDetails("Comprehensive Logbook Entry: " + ROW_LABELS[i]);
+                //entry.setFoodDetails("Comprehensive Logbook Entry: " + ROW_LABELS[i]);
 
                 // Create a unique identifier for each log entry (using date and timeOfDay, for example)
                 String entryIdentifier = targetDate + "-" + ROW_LABELS[i];

@@ -243,7 +243,7 @@ public class Logbook extends BaseUI {
                 entry.setBloodSugar(bg);
                 entry.setCarbsEaten(carbs);
                 entry.setHoursSinceMeal(hours);
-                entry.setFoodDetails("Simple Logbook Entry: " + ROW_LABELS[i]);
+                //entry.setFoodDetails("" + ROW_LABELS[i]);
 
                 LogService.createEntry(entry, currentUser);
             }

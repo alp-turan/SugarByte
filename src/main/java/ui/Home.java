@@ -286,7 +286,7 @@ public class Home extends BaseUI {
             entryPre.setTimeOfDay(meal + " Pre");
             entryPre.setBloodSugar(preBG);
             entryPre.setCarbsEaten(preCarbs);
-            entryPre.setFoodDetails("Quick log (Pre)");
+            //entryPre.setFoodDetails("Quick log (Pre)");
             LogService.createEntry(entryPre, currentUser);
         }
 
@@ -300,7 +300,7 @@ public class Home extends BaseUI {
             entryPost.setTimeOfDay(meal + " Post");
             entryPost.setBloodSugar(postBG);
             entryPost.setCarbsEaten(postCarbs);
-            entryPost.setFoodDetails("Quick log (Post)");
+            //entryPost.setFoodDetails("Quick log (Post)");
             LogService.createEntry(entryPost, currentUser);
         }
 
