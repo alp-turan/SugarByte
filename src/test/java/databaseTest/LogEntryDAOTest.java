@@ -29,14 +29,11 @@ class LogEntryDAOTest {
 
     @BeforeEach
     void setUp() {
-        // Configure logging
         logger.info("Setting up the test environment for LogEntryDAO.");
 
-        // Initialize LogEntryDAO and reset the database
         logEntryDAO = new LogEntryDAO();
         try (Connection conn = DatabaseManager.getInstance().getConnection();
              Statement stmt = conn.createStatement()) {
-            // Clear the logentry table
             stmt.executeUpdate("DELETE FROM logentry;");
             logger.info("Database table 'logentry' cleared.");
         } catch (SQLException e) {
@@ -88,7 +85,6 @@ class LogEntryDAOTest {
         entry.setBloodSugar(100.0);
         logEntryDAO.createLogEntry(entry);
 
-        // Update the same entry
         entry.setBloodSugar(130.0);
         entry.setCarbsEaten(50.0);
         LogEntry updatedEntry = logEntryDAO.createLogEntry(entry);

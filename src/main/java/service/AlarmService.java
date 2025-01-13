@@ -145,4 +145,11 @@ public class AlarmService {
         }
     }
 
+
+    // public method for unit testing to avoid changing private access of methods.
+    public static Set<String> getNotifiedMeals() {
+        return notifiedMeals;
+    }
+
+
 }
