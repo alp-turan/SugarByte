@@ -336,16 +336,27 @@ public class IntensiveLogbook extends BaseUI {
     /**
      * Add numeric input restriction to a field.
      */
+    /**
+     * Add numeric input restriction to a field and ensure no negative numbers are allowed.
+     */
     private void addNumericInputRestriction(JTextField textField) {
         textField.addKeyListener(new KeyAdapter() {
             public void keyTyped(KeyEvent e) {
                 char c = e.getKeyChar();
+
+                // Prevent non-digit characters, except for decimal point and backspace
                 if (!Character.isDigit(c) && c != '.' && c != KeyEvent.VK_BACK_SPACE) {
                     e.consume();
+                }
+
+                // Prevent entering negative numbers
+                if (c == '-' && (textField.getText().isEmpty() || textField.getText().contains("-"))) {
+                    e.consume();  // If the text is empty or already contains a negative sign, don't allow further negative sign
                 }
             }
         });
     }
+
 
     /**
      * Add alphabetic input restriction to a field.

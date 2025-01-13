@@ -23,61 +23,88 @@ public class AlarmServiceTest {
     @Test
     void testCheckAndSendAlarm_AlarmAlreadySentForMeal() {
         // Arrange
-        when(logEntry.getBloodSugar()).thenReturn(3.5);  // Blood sugar value
-        when(logEntry.getHoursSinceMeal()).thenReturn(2);  // Hours since meal
-        when(logEntry.getTimeOfDay()).thenReturn("Breakfast");  // Meal time
+        when(logEntry.getBloodSugar()).thenReturn(3.5);
+        when(logEntry.getHoursSinceMeal()).thenReturn(2);
+        when(logEntry.getTimeOfDay()).thenReturn("Breakfast");
 
-        when(user.getName()).thenReturn("John Doe");  // User name
-        when(user.getDoctorName()).thenReturn("Dr. Smith");  // Doctor's name
-        when(user.getDoctorEmail()).thenReturn("dr.smith@example.com");  // Doctor's email
+        when(user.getName()).thenReturn("John Doe");
+        when(user.getDoctorName()).thenReturn("Dr. Smith");
+        when(user.getDoctorEmail()).thenReturn("dr.smith@example.com");
 
-        // Call the checkAndSendAlarm method for the first time
         AlarmService.checkAndSendAlarm(logEntry, user);
 
-        // Assert: Ensure that the alarm was triggered for "Breakfast"
         assertTrue(AlarmService.getNotifiedMeals().contains("John Doe_Breakfast"));
 
-        // Act: Try to call the method again with the same meal type
         AlarmService.checkAndSendAlarm(logEntry, user);
 
-        // Assert: Ensure that the alarm is NOT triggered a second time for "Breakfast"
         assertTrue(AlarmService.getNotifiedMeals().contains("John Doe_Breakfast"));
         assertEquals(1, AlarmService.getNotifiedMeals().size(), "Alarm should only be sent once for Breakfast");
     }
 
     @Test
     void testCheckAndSendAlarm_AlarmTriggeredForOutOfRangeBloodSugar() {
-        // Arrange
-        when(logEntry.getBloodSugar()).thenReturn(12.0);  // Blood sugar value (out of range)
-        when(logEntry.getHoursSinceMeal()).thenReturn(3);  // Hours since meal
-        when(logEntry.getTimeOfDay()).thenReturn("Lunch");  // Meal time
+        when(logEntry.getBloodSugar()).thenReturn(12.0);
+        when(logEntry.getHoursSinceMeal()).thenReturn(3);
+        when(logEntry.getTimeOfDay()).thenReturn("Lunch");
 
-        when(user.getName()).thenReturn("John Doe");  // User name
-        when(user.getDoctorName()).thenReturn("Dr. Smith");  // Doctor's name
-        when(user.getDoctorEmail()).thenReturn("dr.smith@example.com");  // Doctor's email
+        when(user.getName()).thenReturn("John Doe");
+        when(user.getDoctorName()).thenReturn("Dr. Smith");
+        when(user.getDoctorEmail()).thenReturn("dr.smith@example.com");
 
-        // Call the checkAndSendAlarm method
         AlarmService.checkAndSendAlarm(logEntry, user);
 
-        // Assert: Ensure that the alarm was triggered for "Lunch"
         assertTrue(AlarmService.getNotifiedMeals().contains("John Doe_Lunch"));
     }
 
     @Test
     void testCheckAndSendAlarm_AlarmNotTriggeredForNormalBloodSugar() {
-        // Arrange
-        when(logEntry.getBloodSugar()).thenReturn(5.0);  // Blood sugar value (within range)
-        when(logEntry.getHoursSinceMeal()).thenReturn(3);  // Hours since meal
-        when(logEntry.getTimeOfDay()).thenReturn("Dinner");  // Meal time
+        when(logEntry.getBloodSugar()).thenReturn(5.0);
+        when(logEntry.getHoursSinceMeal()).thenReturn(3);
+        when(logEntry.getTimeOfDay()).thenReturn("Dinner");
 
-        when(user.getName()).thenReturn("John Doe");  // User name
-        when(user.getDoctorName()).thenReturn("Dr. Smith");  // Doctor's name
-        when(user.getDoctorEmail()).thenReturn("dr.smith@example.com");  // Doctor's email
+        when(user.getName()).thenReturn("John Doe");
+        when(user.getDoctorName()).thenReturn("Dr. Smith");
+        when(user.getDoctorEmail()).thenReturn("dr.smith@example.com");
 
-        // Call the checkAndSendAlarm method
         AlarmService.checkAndSendAlarm(logEntry, user);
 
-        // Assert: Ensure that no alarm was triggered for "Dinner"
         assertFalse(AlarmService.getNotifiedMeals().contains("John Doe_Dinner"));
     }
+
+
+    @Test
+    void testGetMaxThreshold() {
+        // Test the thresholds using getter methods
+        assertEquals(7.0, AlarmService.getMaxThresholdFasting());
+        assertEquals(11.0, AlarmService.getMaxThresholdPostMeal());
+        assertEquals(3.9, AlarmService.getMinThreshold());
+    }
+
+
+    @Test
+    void testGetNotifiedMeals() {
+        // Add a notified meal and verify it's in the set
+        AlarmService.getNotifiedMeals().add("John Doe_Breakfast");
+        assertTrue(AlarmService.getNotifiedMeals().contains("John Doe_Breakfast"));
+    }
+
+    @Test
+    void testEdgeCaseForMissingUserInfo() {              /////////////
+        // Test with a user that has missing information
+        when(logEntry.getBloodSugar()).thenReturn(5.0);
+        when(logEntry.getHoursSinceMeal()).thenReturn(3);
+        when(logEntry.getTimeOfDay()).thenReturn("Dinner");
+
+        // Mock a user with null or missing information
+        when(user.getName()).thenReturn(null);
+        when(user.getDoctorName()).thenReturn(null);
+        when(user.getDoctorEmail()).thenReturn(null);
+
+        // Act: Alarm should not throw an error even if user information is missing
+        AlarmService.checkAndSendAlarm(logEntry, user);
+
+        // Assert: Alarm should not be in the notified meals set
+        assertFalse(AlarmService.getNotifiedMeals().contains("null_Dinner"));
+    }
+
 }

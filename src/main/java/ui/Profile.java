@@ -2,7 +2,8 @@ package ui;
 
 import database.UserDAO;
 import model.User;
-
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -261,6 +262,45 @@ public class Profile extends BaseUI {
                 "/Icons/home.png", "/Icons/logbook.png", "/Icons/graph.png", "/Icons/profilefull.png"
         );
         mainPanel.add(navBar, BorderLayout.SOUTH);
+
+        phoneField.addKeyListener(new KeyAdapter() {
+            public void keyTyped(KeyEvent e) {
+                char c = e.getKeyChar();
+                if (!Character.isDigit(c) && c != KeyEvent.VK_BACK_SPACE) {
+                    e.consume(); // Prevent non-digit characters
+                }
+            }
+        });
+
+        // Add KeyListener to ensure emergency phone fields only allow digits
+        doctorEmergencyField.addKeyListener(new KeyAdapter() {
+            public void keyTyped(KeyEvent e) {
+                char c = e.getKeyChar();
+                if (!Character.isDigit(c) && c != KeyEvent.VK_BACK_SPACE) {
+                    e.consume(); // Prevent non-digit characters
+                }
+            }
+        });
+
+        // Add KeyListener to ensure name fields only allow letters
+        nameField.addKeyListener(new KeyAdapter() {
+            public void keyTyped(KeyEvent e) {
+                char c = e.getKeyChar();
+                if (!Character.isLetter(c) && !Character.isWhitespace(c) && c != KeyEvent.VK_BACK_SPACE) {
+                    e.consume(); // Prevent non-letter characters (allowing spaces between names)
+                }
+            }
+        });
+
+        // Add KeyListener to ensure doctor's name fields only allow letters
+        doctorNameField.addKeyListener(new KeyAdapter() {
+            public void keyTyped(KeyEvent e) {
+                char c = e.getKeyChar();
+                if (!Character.isLetter(c) && !Character.isWhitespace(c) && c != KeyEvent.VK_BACK_SPACE) {
+                    e.consume(); // Prevent non-letter characters (allowing spaces between names)
+                }
+            }
+        });
 
         setVisible(true);
     }

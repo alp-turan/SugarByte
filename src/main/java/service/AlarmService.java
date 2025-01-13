@@ -32,6 +32,12 @@ public class AlarmService {
     public static void checkAndSendAlarm(LogEntry entry, User user) {
         // Retrieve the blood sugar value and time of the log entry
         double bloodSugar = entry.getBloodSugar();
+
+        if (bloodSugar < 0) {
+            System.err.println("Invalid blood sugar value: " + bloodSugar + ". Blood sugar cannot be negative.");
+            return;
+        }
+
         // Retrieve hours since last meal (this should now be part of the LogEntry)
         int hoursSinceMeal = entry.getHoursSinceMeal();
         String mealTime = entry.getTimeOfDay(); // assuming `mealTime` is a String like "Breakfast", "Lunch", etc.
@@ -145,8 +151,20 @@ public class AlarmService {
         }
     }
 
+    //// added getters and setters to allow testing of private methods in this class and avoid having to make them public.
 
-    // public method for unit testing to avoid changing private access of methods.
+    public static double getMinThreshold() {
+        return MIN_THRESHOLD;
+    }
+
+    public static double getMaxThresholdPostMeal() {
+        return MAX_THRESHOLD_POST_MEAL;
+    }
+
+    public static double getMaxThresholdFasting() {
+        return MAX_THRESHOLD_FASTING;
+    }
+
     public static Set<String> getNotifiedMeals() {
         return notifiedMeals;
     }

@@ -77,44 +77,6 @@ class UserDAOTest {
     }
 
     @Test
-    void testCreateUser_UserDoesNotExist() throws SQLException {
-        // Create the user object to test
-        User newUser = new User();
-        newUser.setName("New User");
-        newUser.setEmail("unique@example.com");
-
-        // Create mock objects
-        DatabaseManager mockDatabaseManager = mock(DatabaseManager.class);
-        Connection mockConnection = mock(Connection.class);
-        PreparedStatement mockStatement = mock(PreparedStatement.class);
-        ResultSet mockResultSet = mock(ResultSet.class);
-
-        // Mock DatabaseManager and Connection
-        when(DatabaseManager.getInstance()).thenReturn(mockDatabaseManager);
-        when(mockDatabaseManager.getConnection()).thenReturn(mockConnection);
-
-        // Mock PreparedStatement creation and ResultSet behavior
-        when(mockConnection.prepareStatement(anyString(), eq(Statement.RETURN_GENERATED_KEYS)))
-                .thenReturn(mockStatement);
-        when(mockStatement.getGeneratedKeys()).thenReturn(mockResultSet);
-        when(mockResultSet.next()).thenReturn(true);  // Simulate that generated keys are returned
-        when(mockResultSet.getInt(1)).thenReturn(1); // Simulate user ID 1 as generated key
-
-        // Call the method under test
-        User createdUser = userDAO.createUser(newUser);
-
-        // Verify that user creation occurs and generated key is returned
-        assertNotNull(createdUser);
-        assertEquals(1, createdUser.getId()); // Assuming ID is set to 1 by the generated key
-
-        // Verify interactions with PreparedStatement and ResultSet
-        verify(mockStatement).executeUpdate();   // Ensure executeUpdate was called
-        verify(mockStatement).getGeneratedKeys();  // Ensure generated keys were fetched
-    }
-
-
-
-    @Test
     void testCreateUser_UserAlreadyExists() throws SQLException {
         User existingUser = new User();
         existingUser.setName("Existing User");

@@ -7,6 +7,8 @@ import service.LogService;
 import javax.swing.*;
 import javax.swing.text.*;
 import java.awt.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.text.SimpleDateFormat;
 import java.text.ParseException;
 import java.util.HashMap;
@@ -132,7 +134,6 @@ public class Logbook extends BaseUI {
 
         // Data rows
         int preIndex = 0;
-        DocumentFilter numericFilter = new NumericFilter(); // Create one filter instance
         for (int i = 0; i < ROW_LABELS.length; i++) {
             gbc.gridy = i + 2;
 
@@ -145,20 +146,20 @@ public class Logbook extends BaseUI {
             // Column 1 - BloodSugar
             gbc.gridx = 1;
             bloodSugarFields[i] = new JTextField(5);
-            ((PlainDocument) bloodSugarFields[i].getDocument()).setDocumentFilter(numericFilter); // Apply filter
+            addNumericInputRestriction(bloodSugarFields[i]); // Apply restriction here
             centerPanel.add(bloodSugarFields[i], gbc);
 
             // Column 2 - Carbs
             gbc.gridx = 2;
             carbsFields[i] = new JTextField(5);
-            ((PlainDocument) carbsFields[i].getDocument()).setDocumentFilter(numericFilter); // Apply filter
+            addNumericInputRestriction(carbsFields[i]); // Apply restriction here
             centerPanel.add(carbsFields[i], gbc);
 
             // Column 3 - Hours for Pre
             gbc.gridx = 3;
             if (ROW_LABELS[i].endsWith("Pre")) {
                 hoursSinceMealFields[preIndex] = new JTextField(5);
-                ((PlainDocument) hoursSinceMealFields[preIndex].getDocument()).setDocumentFilter(numericFilter); // Apply filter
+                addNumericInputRestriction(hoursSinceMealFields[preIndex]); // Apply restriction here
                 centerPanel.add(hoursSinceMealFields[preIndex], gbc);
                 preIndex++;
             }
@@ -166,7 +167,6 @@ public class Logbook extends BaseUI {
 
         mainPanel.add(centerPanel, BorderLayout.CENTER);
 
-        // Bottom panel with "Save All" Button (moved above nav bar)
         // Bottom panel with "Save All" Button (moved above nav bar)
         JPanel bottomPanel = new JPanel();
         bottomPanel.add(Box.createVerticalStrut(60)); // Adjust the value to control vertical space above the button
@@ -177,12 +177,11 @@ public class Logbook extends BaseUI {
         RoundedButtonLogin saveAllBtn = new RoundedButtonLogin("Save all", new Color(237, 165, 170));
         saveAllBtn.setForeground(Color.BLACK);
         saveAllBtn.setFont(new Font("SansSerif", Font.BOLD, 14));  // Adjust text size and font
-       // saveAllBtn.setPreferredSize(new Dimension(100, 40));  // Adjust button size if needed
         saveAllBtn.addActionListener(e -> handleSaveAll());
 
         bottomPanel.add(saveAllBtn);  // Add button to bottom panel
 
-// Combine bottomPanel and navBar
+        // Combine bottomPanel and navBar
         JPanel southPanel = new JPanel();
         southPanel.setLayout(new BorderLayout());
         southPanel.setOpaque(false);
@@ -191,13 +190,13 @@ public class Logbook extends BaseUI {
                         "/Icons/home.png", "/Icons/logbookfull.png", "/Icons/graph.png", "/Icons/profile.png"),
                 BorderLayout.SOUTH);
 
-// Add combined panel to mainPanel
+        // Add combined panel to mainPanel
         mainPanel.add(southPanel, BorderLayout.SOUTH);
     }
 
-        /**
-         * Load data for "simple" logbook.
-         */
+    /**
+     * Load data for "simple" logbook.
+     */
     protected void loadLogEntries() {
         List<LogEntry> entries = LogService.getEntriesForDate(currentUser.getId(), targetDate);
         Map<String, LogEntry> entryMap = new HashMap<>();
@@ -243,7 +242,6 @@ public class Logbook extends BaseUI {
                 entry.setBloodSugar(bg);
                 entry.setCarbsEaten(carbs);
                 entry.setHoursSinceMeal(hours);
-                //entry.setFoodDetails("" + ROW_LABELS[i]);
 
                 LogService.createEntry(entry, currentUser);
             }
@@ -289,27 +287,25 @@ public class Logbook extends BaseUI {
             return 0;
         }
     }
-}
 
-/**
- * DocumentFilter to restrict input to numeric values only.
- */
-class NumericFilter extends DocumentFilter {
-    @Override
-    public void insertString(FilterBypass fb, int offset, String string, AttributeSet attr) throws BadLocationException {
-        if (isNumeric(string)) {
-            super.insertString(fb, offset, string, attr);
-        }
-    }
+    /**
+     * Add numeric input restriction to a field and ensure no negative numbers are allowed.
+     */
+    private void addNumericInputRestriction(JTextField textField) {
+        textField.addKeyListener(new KeyAdapter() {
+            public void keyTyped(KeyEvent e) {
+                char c = e.getKeyChar();
 
-    @Override
-    public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs) throws BadLocationException {
-        if (isNumeric(text)) {
-            super.replace(fb, offset, length, text, attrs);
-        }
-    }
+                // Prevent non-digit characters, except for decimal point and backspace
+                if (!Character.isDigit(c) && c != '.' && c != KeyEvent.VK_BACK_SPACE) {
+                    e.consume();
+                }
 
-    private boolean isNumeric(String text) {
-        return text.matches("\\d*\\.?\\d*"); // Allows numbers with optional decimals
+                // Prevent entering negative numbers
+                if (c == '-' && (textField.getText().isEmpty() || textField.getText().contains("-"))) {
+                    e.consume();  // If the text is empty or already contains a negative sign, don't allow further negative sign
+                }
+            }
+        });
     }
 }

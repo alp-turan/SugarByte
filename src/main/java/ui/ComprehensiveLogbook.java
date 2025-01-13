@@ -287,18 +287,39 @@ public class ComprehensiveLogbook extends BaseUI {
     }
 
     // Create a JTextField that only accepts numeric input
+    // Create a JTextField that only accepts numeric input and non-negative values
     private JTextField createNumberOnlyField() {
         JTextField textField = new JTextField(5);
         textField.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyTyped(java.awt.event.KeyEvent e) {
                 char c = e.getKeyChar();
+                // Allow digits, decimal points, backspace, and delete
                 if (!(Character.isDigit(c) || c == '.' || c == KeyEvent.VK_BACK_SPACE || c == KeyEvent.VK_DELETE)) {
                     e.consume(); // Reject non-numeric input
                 }
             }
         });
+
+        // Add a focus listener to check for negative numbers when the user exits the field
+        textField.addFocusListener(new java.awt.event.FocusAdapter() {
+            @Override
+            public void focusLost(java.awt.event.FocusEvent e) {
+                // Try parsing the value as a double to ensure it's a valid number
+                try {
+                    double value = Double.parseDouble(textField.getText());
+                    if (value < 0) {
+                        textField.setText("");  // Clear the field if the value is negative
+                        JOptionPane.showMessageDialog(null, "Negative values are not allowed.", "Invalid Input", JOptionPane.ERROR_MESSAGE);
+                    }
+                } catch (NumberFormatException ex) {
+                    // If the value is not a valid number, clear the field
+                    textField.setText("");
+                }
+            }
+        });
         return textField;
     }
+
 
     private String getLogbookType(User user) {
         String logbookType = user.getLogbookType(); // Assuming `User` has a `getLogbookType()` method
