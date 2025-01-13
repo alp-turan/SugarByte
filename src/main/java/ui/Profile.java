@@ -45,7 +45,7 @@ public class Profile extends BaseUI {
         setContentPane(mainPanel);
 
         // Fonts
-        Font lobsterFont = loadCustomFont(38f);
+        Font lobsterFont = loadCustomFont(38f); // though these are used throughout the classes/code, inspo for them was taken from ChatGPT
         Font poppinsBold = new Font("SansSerif", Font.BOLD, 16);
 
         // Title
@@ -232,7 +232,7 @@ public class Profile extends BaseUI {
 
         logoutButton.setForeground(Color.WHITE);
         logoutButton.setFont(new Font("SansSerif", Font.BOLD, 14));
-
+        /* reference - this section was taken from ChatGPT */
         logoutButton.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 logoutButton.setBackground(new Color(200, 35, 51)); // Darker red on hover
@@ -242,6 +242,7 @@ public class Profile extends BaseUI {
                 logoutButton.setBackground(new Color(220, 53, 69)); // Return to original color
             }
         });
+        /* end of reference*/
 
         logoutButton.addActionListener(e -> handleLogout());
 
@@ -267,6 +268,7 @@ public class Profile extends BaseUI {
 
     // Handle save changes
     private void handleSaveChanges() {
+        // the next 3 lines are taken from ChatGPT - not properly referenced as <6 lines
         if (nameField.getText().trim().isEmpty() ||
                 emailField.getText().trim().isEmpty() ||
                 passwordField.getPassword().length == 0) {
@@ -308,6 +310,7 @@ public class Profile extends BaseUI {
     private String safeValue(String value, String defaultValue) {
         return value != null && !value.isEmpty() ? value : defaultValue;
     }
+    /* reference - inspo for syntax & logic taken from https://stackoverflow.com/questions/1215436/get-the-return-value-of-joptionpane */
     private void handleLogout() {
         int result = JOptionPane.showConfirmDialog(this, "Are you sure you want to log out?", "Logout", JOptionPane.YES_NO_OPTION);
         if (result == JOptionPane.YES_OPTION) {
@@ -318,5 +321,6 @@ public class Profile extends BaseUI {
             dispose(); // Close the current screen
             new Login(); // Open the login screen (you should have a Login class)
         }
+        /* end of reference*/
     }
 }

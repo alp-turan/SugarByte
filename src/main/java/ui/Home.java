@@ -372,6 +372,7 @@ public class Home extends BaseUI {
      *
      * @param textField The JTextField to which the numeric filter is applied.
      */
+    /* reference - this entire section was taken from ChatGPT*/
     private void applyNumericFilter(JTextField textField) {
         // Setting a custom DocumentFilter on the text field's document to enforce numeric input.
         ((AbstractDocument) textField.getDocument()).setDocumentFilter(new NumericFilter());
@@ -422,6 +423,7 @@ public class Home extends BaseUI {
             super.replace(fb, offset, length, text, attrs);
         }
     }
+    /* end of reference*/
 
 }
 

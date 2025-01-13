@@ -19,7 +19,7 @@ public class Login extends BaseUI {
         JLabel titleLabel = createTitleLabel("SugarByte", lobsterFont, Color.BLACK);
 
         // Username & Password panels (includes "Remember Me" checkbox in password panel)
-        JPanel usernamePanel = createInputPanel("Username");
+        JPanel usernamePanel = createInputPanel("Username (email)");
         JPanel passwordPanel = createInputPanel("Password"); // Remember Me is handled in BaseUI
 
         // Sign In Button

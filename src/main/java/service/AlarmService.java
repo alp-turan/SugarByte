@@ -82,6 +82,7 @@ public class AlarmService {
      * @param bloodSugar   The blood sugar value triggering the alarm.
      * @param hoursSinceMeal The number of hours since the user's last meal.
      */
+    /* Reference - all of the logic & syntax, such as the object type properties and the key-value pairs for gmail, were take from ChatGPT*/
     private static void sendEmailAlarm(String doctorName, String doctorEmail, String userName, double bloodSugar, int hoursSinceMeal) {
         // SugarByte's Gmail credentials:
         final String fromEmail = "sugarbyte.app@gmail.com"; // SugarByte's email address
@@ -124,6 +125,7 @@ public class AlarmService {
             // Sends the email
             Transport.send(message);
             System.out.println("Alarm email sent to " + userName + "'s doctor's email " + doctorEmail);
+            /* end of reference*/
 
             // Shows a pop-up notification on the app to confirm the sending of the alarm (centred in the centre as there is no parent component assigned)
             String notificationMessage = String.format(

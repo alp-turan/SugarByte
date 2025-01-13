@@ -31,6 +31,8 @@ public class GlucoseIndicator extends JPanel {
     /**
      * Constructing the GlucoseIndicator panel.
      * Setting up its appearance and initializing the warning animation timer.
+     * -- used Oracle (https://docs.oracle.com/javase/8/docs/api/javax/swing/Timer.html#:~:text=Timers%20are%20constructed%20by%20specifying,first%20ActionEvent%20to%20registered%20listeners)
+     *          to understand the syntax & role of the built-in Timer function --
      */
     public GlucoseIndicator() {
         // Setting the preferred size of the panel
@@ -78,6 +80,8 @@ public class GlucoseIndicator extends JPanel {
      * This method customizes the appearance of the panel.
      * @param g The Graphics object used for drawing.
      */
+    /* reference -  inspiration & in-built functions were taken from Oracle (https://docs.oracle.com/javase/7/docs/api/java/awt/Graphics2D.html)
+     *          albeit entire 6 consecutive lines weren't copied, but cumulatively over 6 lines worth of code came from Oracle*/
     @Override
     protected void paintComponent(Graphics g) {
         // Calling the superclass method to ensure the panel is drawn correctly
@@ -145,6 +149,7 @@ public class GlucoseIndicator extends JPanel {
         // Releasing the Graphics2D resources
         g2.dispose();
     }
+    /* end of reference*/
 
     /**
      * Overriding the getToolTipText method to provide detailed information about glucose ranges.
