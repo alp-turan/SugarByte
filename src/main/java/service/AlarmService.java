@@ -82,7 +82,7 @@ public class AlarmService {
      * @param bloodSugar   The blood sugar value triggering the alarm.
      * @param hoursSinceMeal The number of hours since the user's last meal.
      */
-    /* Reference - all of the logic & syntax, such as the object type properties and the key-value pairs for gmail, were take from ChatGPT*/
+    /* Reference - all of the logic & syntax, such as the object type properties and the key-value pairs for gmail, were taken from ChatGPT*/
     private static void sendEmailAlarm(String doctorName, String doctorEmail, String userName, double bloodSugar, int hoursSinceMeal) {
         // SugarByte's Gmail credentials:
         final String fromEmail = "sugarbyte.app@gmail.com"; // SugarByte's email address
@@ -142,6 +142,9 @@ public class AlarmService {
         }
     }
 
+    /**
+     * This section is necessary for the unit testing to work
+     */
     public static Set<String> getNotifiedMeals() {
         return notifiedMeals;
     }
