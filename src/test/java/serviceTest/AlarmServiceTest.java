@@ -15,7 +15,6 @@ public class AlarmServiceTest {
 
     @BeforeEach
     void setUp() {
-        // Initialize mock objects for log entry and user
         logEntry = mock(LogEntry.class);
         user = mock(User.class);
     }
@@ -89,21 +88,18 @@ public class AlarmServiceTest {
     }
 
     @Test
-    void testEdgeCaseForMissingUserInfo() {              /////////////
+    void testEdgeCaseForMissingUserInfo() {
         // Test with a user that has missing information
         when(logEntry.getBloodSugar()).thenReturn(5.0);
         when(logEntry.getHoursSinceMeal()).thenReturn(3);
         when(logEntry.getTimeOfDay()).thenReturn("Dinner");
 
-        // Mock a user with null or missing information
         when(user.getName()).thenReturn(null);
         when(user.getDoctorName()).thenReturn(null);
         when(user.getDoctorEmail()).thenReturn(null);
 
-        // Act: Alarm should not throw an error even if user information is missing
         AlarmService.checkAndSendAlarm(logEntry, user);
 
-        // Assert: Alarm should not be in the notified meals set
         assertFalse(AlarmService.getNotifiedMeals().contains("null_Dinner"));
     }
 
