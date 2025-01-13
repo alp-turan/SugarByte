@@ -18,7 +18,41 @@ The database of users and log entries was developed using SQL, and all of the UI
     - NOTE 1: As set by the WHO, at-risk blood glucose readings are:
        - Hypoglycaemia: 3.9mmol/l as the minimum healthy threshold at any point in the day
        - Hyperglycemia: 11.0 mmol/l as the max healthy threshold if >2 hours have passed since the last meal, and 7.0mmol/l when fasting (we classified fasting as 10 hours, since most medical literature considers fasting to be between 8-12 hours since eating).
-   - NOTE 2: the alarm system is built around the assumption that all 'Post-' meal glucose readings are taken immediately after eating, or at the very most within 2 hours of the meal. Hence, the alert system was build based ont he 'Pre-' meal glucose values. 
+   - NOTE 2: the alarm system is built around the assumption that all 'Post-' meal glucose readings are taken immediately after eating, or at the very most within 2 hours of the meal. Hence, the alert system was build based ont he 'Pre-' meal glucose values.
+ 
+## Code structure:
+- 1. Database package: handles all of the database-related aspects, such as saving log entries and users correctly.
+     - Class: DatabaseManager
+     - Class: LogEntryDAO
+     - Class: UserEntryDAO
+- 2. Model package: the blueprint for all users ('User' objects) and log entries (LogEntry objectes - whether simple, comprehensive, or intensive).
+     - Class: LogEntry
+     - Class: User
+- 3. Service package: contains the code for the alert system in AlarmService (to notify the user's doctor), and for checking whether log entries need to have the alert system triggered in LogService
+     - Class: AlarmService
+     - Class: LogService
+- 4. UI package: encompasses all of the frontend and UI aspects of the app for all features/pages/windows.
+     - Class: BaseUI (which most other classes in UI inherit from)
+     - Class: Calendar
+     - Class: ComprehensiveLogbook
+     - Class: CreateAccount
+     - Class: GlucoseGraph
+     - Class: GlucoseIndicator
+     - Class: Home
+     - Class: IntensiveLogbook
+     - Class: Logbook
+     - Class: Login
+     - Class: OpeningWindow
+     - Class: Profile
+- 5. Test package: comprises of all the unit testing code 
+     - databaseTest package: the unit testing code for the database classes
+        - Class: DatabaseManagerTest
+        - Class: LogEntryDAOTest
+        - Class: UserDAOTest
+     - serviceTest package: the unit testing code for the service classes
+        - Class: AlarmServiceTest
+        - Class: LogServiceTest
+      
 
 ## Contributing to the development
 In order to contribute to our project, please set up your environment as follows:
