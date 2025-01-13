@@ -356,7 +356,7 @@ public class Home extends BaseUI {
             LogService.createEntry(entryBedtime, currentUser); // Saving the log entry using LogService.
         }
 
-        // Showing a confirmation dialog to indicate successful logging.
+        // Showing confirmation dialog to indicate successful logging.
         JOptionPane.showMessageDialog(this, "Quick log saved!");
 
         // Updating the glucose indicator with the latest glucose value after saving.
