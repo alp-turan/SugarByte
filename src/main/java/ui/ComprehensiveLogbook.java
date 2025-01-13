@@ -225,6 +225,7 @@ public class ComprehensiveLogbook extends BaseUI {
         }
 
 // Create a JScrollPane to make the centerPanel scrollable
+        /* reference - taken from ChatGPT as we did not how to make a scrollable panel*/
         JScrollPane scrollPane = new JScrollPane(
                 centerPanel, // The panel to be scrolled
                 JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, // Add vertical scroll bar as needed
@@ -239,6 +240,7 @@ public class ComprehensiveLogbook extends BaseUI {
 
 // Remove the default border of the scroll pane
         scrollPane.setBorder(null); // Remove all borders from the scroll pane
+        /* end of reference*/
 
 // Add the scroll pane to the main panel
         mainPanel.add(scrollPane, BorderLayout.CENTER); // Place the scroll pane in the center of the main panel

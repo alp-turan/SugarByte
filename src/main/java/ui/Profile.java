@@ -2,7 +2,8 @@ package ui;
 
 import database.UserDAO;
 import model.User;
-
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -45,7 +46,7 @@ public class Profile extends BaseUI {
         setContentPane(mainPanel);
 
         // Fonts
-        Font lobsterFont = loadCustomFont(38f);
+        Font lobsterFont = loadCustomFont(38f); // though these are used throughout the classes/code, inspo for them was taken from ChatGPT.
         Font poppinsBold = new Font("SansSerif", Font.BOLD, 16);
 
         // Title
@@ -206,15 +207,13 @@ public class Profile extends BaseUI {
         JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));  // Center both buttons
         buttonsPanel.setOpaque(false);
 
-// Save Button with RoundedButton (using the same constructor as "Generate graph" button)
+        // Save Button with RoundedButton (using the same constructor as "Generate graph" button)
         RoundedButton saveBtn = new RoundedButton("Save Changes", new Color(237, 165, 170));  // Light Pink Color
         saveBtn.setForeground(Color.BLACK);  // Set text color to black
         saveBtn.setFont(new Font("SansSerif", Font.BOLD, 14));  // Set the font style and size
 
-// Set preferred size for the button
-        //saveBtn.setPreferredSize(new Dimension(140, 35)); // Consistent size for the button
 
-// Add ActionListener to handle save logic
+        // Add ActionListener to handle save logic
         saveBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -222,7 +221,7 @@ public class Profile extends BaseUI {
             }
         });
 
-// Logout Button (using RoundedButton)
+        // Logout Button (using RoundedButton)
         RoundedButton logoutButton = new RoundedButton("Logout", new Color(220, 53, 69)) {
             @Override
             public Dimension getPreferredSize() {
@@ -232,7 +231,7 @@ public class Profile extends BaseUI {
 
         logoutButton.setForeground(Color.WHITE);
         logoutButton.setFont(new Font("SansSerif", Font.BOLD, 14));
-
+        /* reference - this section was taken from ChatGPT */
         logoutButton.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 logoutButton.setBackground(new Color(200, 35, 51)); // Darker red on hover
@@ -242,15 +241,16 @@ public class Profile extends BaseUI {
                 logoutButton.setBackground(new Color(220, 53, 69)); // Return to original color
             }
         });
+        /* end of reference*/
 
         logoutButton.addActionListener(e -> handleLogout());
 
-// Add buttons to the panel with increased spacing
+        // Add buttons to the panel with increased spacing
         buttonsPanel.add(saveBtn);
         buttonsPanel.add(Box.createHorizontalStrut(20));  // Adds more space between buttons
         buttonsPanel.add(logoutButton);
 
-// Add the button panel to the center section of the layout
+        // Add the button panel to the center section of the layout
         centerPanel.add(buttonsPanel);
         centerPanel.add(Box.createVerticalStrut(10));
 
@@ -262,11 +262,51 @@ public class Profile extends BaseUI {
         );
         mainPanel.add(navBar, BorderLayout.SOUTH);
 
+        phoneField.addKeyListener(new KeyAdapter() {
+            public void keyTyped(KeyEvent e) {
+                char c = e.getKeyChar();
+                if (!Character.isDigit(c) && c != KeyEvent.VK_BACK_SPACE) {
+                    e.consume(); // Prevent non-digit characters
+                }
+            }
+        });
+
+        // Add KeyListener to ensure emergency phone fields only allow digits
+        doctorEmergencyField.addKeyListener(new KeyAdapter() {
+            public void keyTyped(KeyEvent e) {
+                char c = e.getKeyChar();
+                if (!Character.isDigit(c) && c != KeyEvent.VK_BACK_SPACE) {
+                    e.consume(); // Prevent non-digit characters
+                }
+            }
+        });
+
+        // Add KeyListener to ensure name fields only allow letters
+        nameField.addKeyListener(new KeyAdapter() {
+            public void keyTyped(KeyEvent e) {
+                char c = e.getKeyChar();
+                if (!Character.isLetter(c) && !Character.isWhitespace(c) && c != KeyEvent.VK_BACK_SPACE) {
+                    e.consume(); // Prevent non-letter characters (allowing spaces between names)
+                }
+            }
+        });
+
+        // Add KeyListener to ensure doctor's name fields only allow letters
+        doctorNameField.addKeyListener(new KeyAdapter() {
+            public void keyTyped(KeyEvent e) {
+                char c = e.getKeyChar();
+                if (!Character.isLetter(c) && !Character.isWhitespace(c) && c != KeyEvent.VK_BACK_SPACE) {
+                    e.consume(); // Prevent non-letter characters (allowing spaces between names)
+                }
+            }
+        });
+
         setVisible(true);
     }
 
     // Handle save changes
     private void handleSaveChanges() {
+        // the next 3 lines are taken from ChatGPT - not properly referenced as <6 lines
         if (nameField.getText().trim().isEmpty() ||
                 emailField.getText().trim().isEmpty() ||
                 passwordField.getPassword().length == 0) {
@@ -308,6 +348,7 @@ public class Profile extends BaseUI {
     private String safeValue(String value, String defaultValue) {
         return value != null && !value.isEmpty() ? value : defaultValue;
     }
+    /* reference - inspo for syntax & logic taken from https://stackoverflow.com/questions/1215436/get-the-return-value-of-joptionpane */
     private void handleLogout() {
         int result = JOptionPane.showConfirmDialog(this, "Are you sure you want to log out?", "Logout", JOptionPane.YES_NO_OPTION);
         if (result == JOptionPane.YES_OPTION) {
@@ -319,4 +360,5 @@ public class Profile extends BaseUI {
             new Login(); // Open the login screen (you should have a Login class)
         }
     }
+    /* end of reference*/
 }

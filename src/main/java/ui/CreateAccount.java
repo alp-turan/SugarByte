@@ -115,6 +115,7 @@ public class CreateAccount extends BaseUI {
 
         // ===== Validation for Name Fields =====
         // Restrict name field to accept only letters and spaces
+        // AI was used for the syntax of the if loop
         nameField.addKeyListener(new KeyAdapter() {
             @Override
             public void keyTyped(KeyEvent e) {
@@ -125,6 +126,7 @@ public class CreateAccount extends BaseUI {
         });
 
         // Restrict doctor's name field to accept only letters and spaces
+        // AI was used for the syntax of the if loop
         doctorNameField.addKeyListener(new KeyAdapter() {
             @Override
             public void keyTyped(KeyEvent e) {
@@ -323,6 +325,8 @@ public class CreateAccount extends BaseUI {
  *
  * @param email The email address to validate.
  * @return True if the email matches the pattern, false otherwise.
+ * -- AI (ChatGPT) was used for this block as we didn't know how to validate emails ourselves, but as it's less
+ *  than 6 lines, it hasn't been referenced properly --
  */
         private boolean isValidEmail (String email){
             String emailRegex = "^[A-Za-z0-9+_.-]+@(.+)$"; // Regular expression for basic email validation
@@ -336,6 +340,7 @@ public class CreateAccount extends BaseUI {
  * @param password The password to validate.
  * @return True if the password meets the criteria, false otherwise.
  */
+/* reference - inspiration for this entire block was taken from https://stackoverflow.com/questions/24924321/how-can-i-perform-validation-on-a-secure-password-regular-expressions-on-a-char */
         private boolean isValidPassword (String password){
             if (password.length() < 8) return false; // Ensure the password is at least 8 characters long
             boolean hasLetter = false; // Flag for presence of letters
@@ -353,5 +358,6 @@ public class CreateAccount extends BaseUI {
             }
             return false; // Return false if either condition is not met
         }
+        /* end of reference */
 
     }

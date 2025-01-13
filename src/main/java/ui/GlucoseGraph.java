@@ -1,9 +1,11 @@
 package ui;
-
+/**
+* -- AI (ChatGPT) was used to add all of the required imports below --
+ */
 import model.LogEntry;
 import model.User;
 import service.LogService;
-
+/* reference - AI (ChatGPT) was used to add all of the required imports below */
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -14,6 +16,7 @@ import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.data.xy.DefaultXYDataset;
 import org.jfree.data.xy.XYDataset;
+/* end of reference*/
 
 import javax.imageio.ImageIO;
 import java.util.ArrayList;
@@ -208,6 +211,7 @@ public class GlucoseGraph extends BaseUI {
     /**
      * Updates the chart panel with a new glucose graph based on the selected date range.
      */
+    /* reference - this block was taken from ChatGPT*/
     private void updateGraph() {
         // Build the dataset for the selected date range
         XYDataset dataset = buildDatasetForRange();
@@ -223,6 +227,7 @@ public class GlucoseGraph extends BaseUI {
                 false,  // No tooltips
                 false   // No URLs
         );
+        /* end of reference*/
 
         // Customize the plot
         XYPlot plot = chart.getXYPlot();
@@ -254,6 +259,7 @@ public class GlucoseGraph extends BaseUI {
      *
      * @return An XYDataset containing blood glucose levels over the specified date range.
      */
+    /* reference - the entire logic & syntax for building this dataset was taken from ChatGPT*/
     private XYDataset buildDatasetForRange() {
         DefaultXYDataset dataset = new DefaultXYDataset();  // Dataset to store the series
         int numDays = (int) (endDate.toEpochDay() - startDate.toEpochDay() + 1);  // Calculate the number of days in the range
@@ -284,6 +290,7 @@ public class GlucoseGraph extends BaseUI {
         }
 
         dataset.addSeries("BG Trend", new double[][]{xValues, yValues});  // Add the series to the dataset
+        /* end of reference */
 
         // Notify the user of missing dates
         if (!missingDates.isEmpty()) {
@@ -368,6 +375,8 @@ public class GlucoseGraph extends BaseUI {
 
     /**
      * Sends the glucose graph to the user's doctor via email.
+     *  -- AI (ChatGPT) was a significant contributor to this section of the code, similarly to the (almost) identical email section in Alarm Service --
+     *  ChatGPT wasn't properly referenced here as it has been referenced in the AlarmService class and the code here was copy and pasted from that class
      */
     private void sendDataToDoctor() {
         final String fromEmail = "sugarbyte.app@gmail.com";  // Sender's email

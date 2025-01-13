@@ -193,6 +193,7 @@ public class IntensiveLogbook extends BaseUI {
 
         /**
          Setting up the boxes which correspond to each factor (eg blood glucose) for each time of day (eg "Pre Dinner") below
+         * -- AI (ChatGPT) was used for the scrollable pane at the bottom of the screen --
          */
 
         // Creating the data rows for inputs
@@ -230,7 +231,7 @@ public class IntensiveLogbook extends BaseUI {
             exerciseFields[i] = new JTextArea(2, 10); // Creating a JTextArea with 2 rows and 10 columns for exercise notes
             exerciseFields[i].setLineWrap(true);     // Enabling line wrapping to prevent horizontal scrolling
             exerciseFields[i].setWrapStyleWord(true); // Wrapping at word boundaries to improve readability
-            JScrollPane exerciseScrollPane = new JScrollPane(exerciseFields[i]); // Wrapping the JTextArea in a JScrollPane for scrollability
+            JScrollPane exerciseScrollPane = new JScrollPane(exerciseFields[i]); // Wrapping the JTextArea in a JScrollPane for scrollability - taken from ChatGPT
             exerciseScrollPane.setPreferredSize(new Dimension(100, 40)); // Setting a fixed size for the scroll pane
             centerPanel.add(exerciseScrollPane, gbc); // Adding the scroll pane to the center panel at the specified grid position
 
@@ -268,29 +269,31 @@ public class IntensiveLogbook extends BaseUI {
         );
 
 // Making the JScrollPane and its viewport transparent
+        // ChatGPT helped us with the syntax to make the viewport transparent, but it's not >6 lines so not properly referenced
         scrollPane.setOpaque(false); // Allowing the main panel's background to show through
         scrollPane.getViewport().setOpaque(false); // Making the viewport (the area showing the centerPanel) transparent
         scrollPane.setBackground(new Color(0, 0, 0, 0)); // Setting a fully transparent background color
         scrollPane.getViewport().setBackground(new Color(0, 0, 0, 0)); // Setting the viewport's background to transparent
 
-// Removing any borders from the JScrollPane
+// Removing any borders from the JScrollPanel
         scrollPane.setBorder(null); // Removing the default border around the scroll pane
 
 // Adding the scroll pane to the main panel
         mainPanel.add(scrollPane, BorderLayout.CENTER); // Placing the scroll pane in the center of the main panel
 
-// Setting a custom layout for the JScrollPane
+// Setting a custom layout for the JScrollPanel
+        /* reference - taken from ChatGPT*/
         scrollPane.setLayout(new ScrollPaneLayout() {
             @Override
             public void layoutContainer(Container parent) {
-                super.layoutContainer(parent); // Calling the default layout behavior
+                super.layoutContainer(parent); // Calling the default layout behavior from the parent class
 
                 // Moving the horizontal scrollbar to the top of the scroll pane
                 JScrollPane pane = (JScrollPane) parent;
                 if (pane.getHorizontalScrollBar() != null) {
                     Rectangle bounds = pane.getHorizontalScrollBar().getBounds(); // Getting the scrollbar's current bounds
                     bounds.y = 420; // Moving it to the top by setting the Y-coordinate
-                    pane.getHorizontalScrollBar().setBounds(bounds); // Applying the new bounds
+                    pane.getHorizontalScrollBar().setBounds(bounds); // Applying the new bounds defined above
 
                     // Adjusting the viewport bounds to prevent overlap with the scrollbar
                     JViewport viewport = pane.getViewport();
@@ -301,6 +304,7 @@ public class IntensiveLogbook extends BaseUI {
                 }
             }
         });
+        /* end of reference*/
 
 // Setting additional transparency and border properties for the scroll pane
         scrollPane.setOpaque(false); // Making the scroll pane itself transparent
@@ -348,6 +352,7 @@ public class IntensiveLogbook extends BaseUI {
  * Restricting a text field to accept only numeric input.
  * This enhances user experience by preventing invalid entries directly at the input stage.
  */
+/* reference - different aspects & lines of this code were collected together from https://stackoverflow.com/questions/1313390/is-there-any-way-to-accept-only-numeric-values-in-a-jtextfield*/
         private void addNumericInputRestriction (JTextField textField){
             // Attaching a KeyListener to monitor and process every key typed in the field.
             textField.addKeyListener(new KeyAdapter() {
@@ -360,10 +365,12 @@ public class IntensiveLogbook extends BaseUI {
                 }
             });
         }
+        /* end of reference*/
 
 /**
  * Applying a restriction for alphabetic input in a text field.
  * This is particularly useful for fields where numerical or special characters are irrelevant.
+ * -- AI (ChatGPT) was used for the if loop --
  */
         private void addAlphabeticInputRestriction (JTextField textField){
             // Utilizing a KeyListener to filter out unwanted characters at the typing stage.
@@ -448,7 +455,7 @@ public class IntensiveLogbook extends BaseUI {
             int hours = 0;
             if (ROW_LABELS[i].endsWith("Pre")) {
                 hours = parseIntSafe(hoursSinceMealFields[preIndex].getText());
-                preIndex++;
+                preIndex++; //goes through every pre row label
             }
 
             // Only save if something is entered and the input is valis

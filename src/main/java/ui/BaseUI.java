@@ -20,6 +20,8 @@ import java.util.Locale;
  * BaseUI serves as the foundational class for creating graphical user interfaces (GUIs) in the application.
  * It extends JFrame to provide a custom window frame and includes utility methods for UI components like
  * custom fonts, gradient panels, and rounded panels.
+ * -- Throughout this class, all the methods/lines involving creating shadows around buttons were done using ChatGPT,
+ *           especially the syntax of creating shadows --
  */
 public class BaseUI extends JFrame {
     public YearMonth currentYearMonth = YearMonth.now(); // Current year and month, defaulting to now
@@ -148,7 +150,7 @@ public class BaseUI extends JFrame {
             this.shadowColor = new Color(2, 2, 2, 3); // A semi-transparent black shadow
             setOpaque(false); // Ensuring the background remains transparent
         }
-
+        /* Reference - taken from ChatGPT*/
         @Override
         protected void paintComponent(Graphics g) {
             Graphics2D g2 = (Graphics2D) g.create(); // Creating a Graphics2D instance
@@ -162,6 +164,7 @@ public class BaseUI extends JFrame {
                 // Iteratively drawing slightly smaller rectangles for a fading shadow
                 g2.fillRoundRect(i, i + shadowSize / 2, getWidth() - i * 2, getHeight() - i * 2 - shadowSize / 2, arc, arc);
             }
+            /* end of reference*/
 
             // Drawing the rounded panel
             g2.setColor(getBackground()); // Setting the color to the panel's background
@@ -175,6 +178,9 @@ public class BaseUI extends JFrame {
      *
      * @param path The path to the image file in the resources folder.
      * @return A scaled ImageIcon object or null if the image is not found or an error occurs.
+     * -- Oracle (https://docs.oracle.com/javase/7/docs/api/java/awt/Graphics2D.html) was used for the
+     *          2D graphics object's built-in functions --
+     *          But, not entire 6 lines of code were taken from Oracle, just the built-in functions
      */
     protected ImageIcon loadScaledIcon(String path) {
         try (InputStream is = getClass().getResourceAsStream(path)) {
@@ -219,7 +225,7 @@ public class BaseUI extends JFrame {
         JButton button = new JButton(icon); // Creates a new JButton with the provided icon
         button.setToolTipText(altText); // Sets the tooltip text for the button
         button.setFocusPainted(false); // Disables the focus highlight around the button
-        button.setBorderPainted(false); // Removes the button's border
+        button.setBorderPainted(false); // Sets the button border to false - removing the button's border
         button.setContentAreaFilled(false); // Makes the button's background transparent
         return button; // Returns the customized JButton
     }
@@ -252,7 +258,7 @@ public class BaseUI extends JFrame {
         JButton graphButton = createIconButton(graphIcon, "Graph"); // "Graph" button
         JButton profileButton = createIconButton(profileIcon, "Profile"); // "Profile" button
 
-        // Adds ActionListeners to each button for navigation
+        // Adds ActionListeners to each button for navigation - AI (ChatGPT) was used to aid in the process of adding the action listeners
         homeButton.addActionListener(e -> navigateTo("Home", currentScreen, currentUser));
         calendarButton.addActionListener(e -> navigateTo("Calendar", currentScreen, currentUser));
         graphButton.addActionListener(e -> navigateTo("GlucoseGraph", currentScreen, currentUser));
@@ -386,6 +392,7 @@ public class BaseUI extends JFrame {
         rightArrow.setToolTipText("Next Month"); // Adding a tooltip for the button
 
         // Adding an ActionListener to the left arrow for decrementing the month
+        // AI (ChatGPT) was used for the syntax of this block but its not 6 lines so we haven't referenced it properly
         leftArrow.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -395,6 +402,7 @@ public class BaseUI extends JFrame {
         });
 
         // Adding an ActionListener to the right arrow for incrementing the month
+        // AI (ChatGPT) was used for the syntax of this block
         rightArrow.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -448,7 +456,7 @@ public class BaseUI extends JFrame {
             dayInitialsPanel.add(label); // Adding the label to the day initials panel
         }
 
-        // Creating a grid for the days of the month
+        // Creating a grid for the days of the month - AI was used for these 2 lines
         JPanel daysGrid = new JPanel(new GridLayout(6, 7, 10, 10)); // Grid layout for days (6 rows, 7 columns)
         daysGrid.setOpaque(false); // Transparent background for the grid
 
@@ -535,6 +543,7 @@ public class BaseUI extends JFrame {
     /**
      * Custom JLabel subclass for rendering day numbers as circles with configurable colors.
      */
+    /* Reference - taken from ChatGPT*/
     class DayCircle extends JLabel {
         private Color circleColor; // The background color of the circular representation
 
@@ -549,6 +558,7 @@ public class BaseUI extends JFrame {
             setPreferredSize(new Dimension(40, 40)); // Setting a fixed size for the circle
             setOpaque(false); // Ensuring the label's background remains transparent
         }
+        /* end of reference*/
 
         /**
          * Sets the color of the circle's background.
@@ -683,7 +693,7 @@ public class BaseUI extends JFrame {
         roundedPanel.setLayout(new BorderLayout()); // Layout for placing the input field in the center
 
         // Adding an input field based on the label text
-        if (labelText.equalsIgnoreCase("Username")) {
+        if (labelText.equalsIgnoreCase("Username (email)")) {
             usernameField = new JTextField(); // Creating a text field for the username
             usernameField.setBorder(BorderFactory.createEmptyBorder(5, 15, 5, 10)); // Adds padding inside the field
             usernameField.setBackground(new Color(240, 240, 240)); // Matches the rounded panel's background color
@@ -703,6 +713,7 @@ public class BaseUI extends JFrame {
         containerPanel.add(roundedPanel); // Adding the rounded panel to the container panel
 
         // Adding a "Remember Me" checkbox if the label is for the password field
+        /* Reference - the proposition of using JCheckBox, as well as the syntax of this block of code, was taken from ChatGPT*/
         if (labelText.equalsIgnoreCase("Password")) {
             rememberMeCheckBox = new JCheckBox("Remember Me"); // Checkbox for saving user credentials
             rememberMeCheckBox.setOpaque(false); // Transparent background for the checkbox
@@ -711,6 +722,7 @@ public class BaseUI extends JFrame {
             containerPanel.add(rememberMeCheckBox); // Adding the checkbox to the container panel
             loadCredentials(); // Loads saved credentials if available
         }
+        /* end of reference*/
 
         return containerPanel; // Returning the fully constructed container panel
     }

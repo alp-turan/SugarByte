@@ -82,6 +82,7 @@ public class AlarmService {
      * @param bloodSugar   The blood sugar value triggering the alarm.
      * @param hoursSinceMeal The number of hours since the user's last meal.
      */
+    /* Reference - all of the logic & syntax, such as the object type properties and the key-value pairs for gmail, were taken from ChatGPT*/
     private static void sendEmailAlarm(String doctorName, String doctorEmail, String userName, double bloodSugar, int hoursSinceMeal) {
         // SugarByte's Gmail credentials:
         final String fromEmail = "sugarbyte.app@gmail.com"; // SugarByte's email address
@@ -124,6 +125,7 @@ public class AlarmService {
             // Sends the email
             Transport.send(message);
             System.out.println("Alarm email sent to " + userName + "'s doctor's email " + doctorEmail);
+            /* end of reference*/
 
             // Shows a pop-up notification on the app to confirm the sending of the alarm (centred in the centre as there is no parent component assigned)
             String notificationMessage = String.format(
@@ -138,6 +140,25 @@ public class AlarmService {
             // Shows a pop-up notification on the app to indicate an error occurred with sending the email.
             JOptionPane.showMessageDialog(null, "Failed to notify the doctor. Please try again.", "Error", JOptionPane.ERROR_MESSAGE);
         }
+    }
+
+    /**
+     * This section is necessary for the unit testing to work
+     */
+    public static Set<String> getNotifiedMeals() {
+        return notifiedMeals;
+    }
+
+    public static double getMinThreshold() {
+        return MIN_THRESHOLD;
+    }
+
+    public static double getMaxThresholdPostMeal() {
+        return MAX_THRESHOLD_POST_MEAL;
+    }
+
+    public static double getMaxThresholdFasting() {
+        return MAX_THRESHOLD_FASTING;
     }
 
 }
