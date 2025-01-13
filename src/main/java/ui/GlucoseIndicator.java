@@ -12,119 +12,143 @@ import javax.swing.Timer;
  * - Red: Dangerous levels requiring immediate action
  */
 public class GlucoseIndicator extends JPanel {
-    // Define colors for different states
-    private static final Color SAFE_COLOR = new Color(46, 204, 113);    // A clear green for good levels
-    private static final Color WARNING_COLOR = new Color(243, 156, 18); // A visible orange for warning levels
-    private static final Color DANGER_COLOR = new Color(231, 76, 60);   // A strong red for dangerous levels
+    // Defining colors for different glucose level states
+    private static final Color SAFE_COLOR = new Color(46, 204, 113);    // A green shade representing safe levels
+    private static final Color WARNING_COLOR = new Color(243, 156, 18); // An orange shade representing warning levels
+    private static final Color DANGER_COLOR = new Color(231, 76, 60);   // A red shade representing danger levels
 
-    // Medical thresholds for blood glucose (in mmol/L)
-    private static final double HYPO_THRESHOLD = 3.3;    // Dangerously low
-    private static final double LOW_WARNING = 4.0;       // Lower bound of target range
-    private static final double HIGH_WARNING = 7.0;      // Upper bound of target range
-    private static final double HYPER_THRESHOLD = 11.0;  // Dangerously high
+    // Defining medical thresholds for blood glucose levels in mmol/L
+    private static final double HYPO_THRESHOLD = 3.3;    // Threshold for dangerously low levels
+    private static final double LOW_WARNING = 4.0;       // Lower bound of the target range
+    private static final double HIGH_WARNING = 7.0;      // Upper bound of the target range
+    private static final double HYPER_THRESHOLD = 11.0;  // Threshold for dangerously high levels
 
-    // Current glucose level and animation state
-    private double glucoseLevel;
-    private Timer warningTimer;
-    private boolean isFlashing = false;
+    // Declaring variables to store the current glucose level and animation state
+    private double glucoseLevel;       // Current blood glucose level
+    private Timer warningTimer;        // Timer controlling the flashing animation
+    private boolean isFlashing = false; // Boolean flag to indicate if flashing is active
 
+    /**
+     * Constructing the GlucoseIndicator panel.
+     * Setting up its appearance and initializing the warning animation timer.
+     */
     public GlucoseIndicator() {
-        // Set up the panel's size and appearance
+        // Setting the preferred size of the panel
         setPreferredSize(new Dimension(150, 35));
+
+        // Making the panel transparent
         setOpaque(false);
 
-        // Create a timer for the warning flash animation (twice per second)
+        // Initializing a Timer for creating a flashing effect during warning/danger states
         warningTimer = new Timer(500, e -> {
-            isFlashing = !isFlashing;  // Toggle flashing state
-            repaint();                 // Trigger redraw
+            // Toggling the flashing state on each timer tick
+            isFlashing = !isFlashing;
+
+            // Requesting a repaint to update the UI with the flashing effect
+            repaint();
         });
     }
 
     /**
-     * Update the displayed glucose level and manage warning animations.
+     * Updating the displayed glucose level and managing warning animations.
+     * @param level The new blood glucose level to display.
      */
     public void updateGlucoseLevel(double level) {
+        // Storing the provided glucose level
         this.glucoseLevel = level;
 
-        // Start flashing animation for dangerous levels
+        // Starting the flashing animation if the level is dangerously high or low
         if (level < HYPO_THRESHOLD || level > HYPER_THRESHOLD) {
             if (!warningTimer.isRunning()) {
+                // Starting the warning timer if it is not already running
                 warningTimer.start();
             }
         } else {
+            // Stopping the flashing animation for safe levels
             warningTimer.stop();
-            isFlashing = false;
+            isFlashing = false; // Ensuring the flashing state is reset
         }
 
+        // Requesting a repaint to update the indicator with the new glucose level
         repaint();
     }
 
+    /**
+     * Overriding the paintComponent method to draw the glucose indicator.
+     * This method customizes the appearance of the panel.
+     * @param g The Graphics object used for drawing.
+     */
     @Override
     protected void paintComponent(Graphics g) {
+        // Calling the superclass method to ensure the panel is drawn correctly
         super.paintComponent(g);
+
+        // Creating a Graphics2D object for advanced rendering
         Graphics2D g2 = (Graphics2D) g.create();
-        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-                RenderingHints.VALUE_ANTIALIAS_ON);
 
-        // Calculate dimensions for the indicator
-        int height = getHeight() - 4;
-        int width = getWidth() - 4;
+        // Enabling anti-aliasing to make edges smoother
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-        // Determine indicator color and warning message based on glucose level
+        // Calculating the dimensions for the indicator
+        int height = getHeight() - 4;  // Subtracting 4 to leave padding around the edges
+        int width = getWidth() - 4;   // Subtracting 4 for padding
+
+        // Determining the color and warning message based on the current glucose level
         Color indicatorColor;
-        String warningMessage = "";
+        String warningMessage = "";  // Initializing with no message
 
+        // Checking the glucose level and setting the appropriate color and message
         if (glucoseLevel < HYPO_THRESHOLD) {
-            // Dangerous low level
-            indicatorColor = isFlashing ? DANGER_COLOR : DANGER_COLOR.brighter();
+            // Indicating a dangerously low level
+            indicatorColor = isFlashing ? DANGER_COLOR : DANGER_COLOR.brighter(); // Flashing effect
             warningMessage = "LOW - Take fast-acting carbs";
         } else if (glucoseLevel > HYPER_THRESHOLD) {
-            // Dangerous high level
-            indicatorColor = isFlashing ? DANGER_COLOR : DANGER_COLOR.brighter();
+            // Indicating a dangerously high level
+            indicatorColor = isFlashing ? DANGER_COLOR : DANGER_COLOR.brighter(); // Flashing effect
             warningMessage = "HIGH - Check ketones";
         } else if (glucoseLevel < LOW_WARNING) {
-            // Approaching low
+            // Indicating a level approaching low
             indicatorColor = WARNING_COLOR;
             warningMessage = "Monitor - Trending Low";
         } else if (glucoseLevel > HIGH_WARNING) {
-            // Approaching high
+            // Indicating a level approaching high
             indicatorColor = WARNING_COLOR;
             warningMessage = "Monitor - Trending High";
         } else {
-            // Target range
+            // Indicating a safe level
             indicatorColor = SAFE_COLOR;
             warningMessage = "In Target Range";
         }
 
-        // Draw the rounded rectangle background
+        // Drawing a rounded rectangle as the background for the indicator
         g2.setColor(indicatorColor);
-        g2.fillRoundRect(2, 2, width, height, 20, 20);
+        g2.fillRoundRect(2, 2, width, height, 20, 20); // Rounded corners with radius 20
 
-        // Draw the glucose level
-        g2.setColor(Color.WHITE);
-        g2.setFont(new Font("SansSerif", Font.BOLD, 14));
-        String glucoseText = String.format("%.1f mmol/L", glucoseLevel);
+        // Drawing the glucose level text
+        g2.setColor(Color.WHITE); // Using white text for better contrast
+        g2.setFont(new Font("SansSerif", Font.BOLD, 14)); // Bold font for emphasis
+        String glucoseText = String.format("%.1f mmol/L", glucoseLevel); // Formatting the level
 
-        // Center the text
+        // Centering the glucose level text horizontally
         FontMetrics fm = g2.getFontMetrics();
         int textX = (width - fm.stringWidth(glucoseText)) / 2 + 2;
-        int textY = height / 2 ;  // Adjust for warning text below
-
+        int textY = height / 2;  // Adjusting the vertical position
         g2.drawString(glucoseText, textX, textY);
 
-        // Draw the warning message in smaller text
-        g2.setFont(new Font("SansSerif", Font.PLAIN, 10));
-        fm = g2.getFontMetrics();
-        textX = (width - fm.stringWidth(warningMessage)) / 2 + 2;
-        textY = height / 2 + 10;  // Position below glucose level
-
+        // Drawing the warning message below the glucose level text
+        g2.setFont(new Font("SansSerif", Font.PLAIN, 10)); // Smaller font for warning message
+        fm = g2.getFontMetrics(); // Recalculating font metrics
+        textX = (width - fm.stringWidth(warningMessage)) / 2 + 2; // Centering the message
+        textY = height / 2 + 10; // Positioning below the glucose level
         g2.drawString(warningMessage, textX, textY);
 
+        // Releasing the Graphics2D resources
         g2.dispose();
     }
 
     /**
-     * Override the tooltip to provide detailed range information
+     * Overriding the getToolTipText method to provide detailed information about glucose ranges.
+     * @return A string containing HTML-formatted tooltip text.
      */
     @Override
     public String getToolTipText() {

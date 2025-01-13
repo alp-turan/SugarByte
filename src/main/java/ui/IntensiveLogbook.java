@@ -25,7 +25,7 @@ import java.util.Map;
  *   - Hours Since Last Meal (for Pre rows)
  * Also triggers alarms via LogService (like the Simple version).
  *
- * Now scrollable if needed via JScrollPane.
+ * The scrollable feature is implemented using JScrollPane
  */
 public class IntensiveLogbook extends BaseUI {
 
@@ -33,7 +33,7 @@ public class IntensiveLogbook extends BaseUI {
     protected String targetDate;
 
     // 7 standard rows
-    private static final String[] ROW_LABELS = {
+    private static final String[] ROW_LABELS = { // the labels of all the rows on the Intensive Logbook page
             "Breakfast Pre",
             "Breakfast Post",
             "Lunch Pre",
@@ -44,7 +44,7 @@ public class IntensiveLogbook extends BaseUI {
     };
 
     // Arrays for each column
-    protected JTextField[] bloodSugarFields  = new JTextField[7];
+    protected JTextField[] bloodSugarFields  = new JTextField[7]; // the value in JTextField indicates the number of rows the column has
     protected JTextField[] carbsFields       = new JTextField[7];
     protected JTextField[] insulinDoseFields = new JTextField[7];
     protected JTextArea[] exerciseFields = new JTextArea[7];
@@ -65,50 +65,54 @@ public class IntensiveLogbook extends BaseUI {
     }
 
     /**
-     * Build the "Intensive" UI with columns:
-     * Time of Day | Blood Glucose | Carbs Eaten | Exercise | Insulin | Food | Other | Hours Since Last Meal
-     * and place in a JScrollPane.
+     * Building the "Intensive" UI layout with columns for detailed data entry.
+     * Placing the content inside a scrollable JScrollPane for accessibility.
      */
     protected void buildUIIntensive() {
+        // Creating the main panel with a gradient background
         JPanel mainPanel = createGradientPanel(Color.WHITE, Color.WHITE);
-        mainPanel.setLayout(new BorderLayout());
-        setContentPane(mainPanel);
+        mainPanel.setLayout(new BorderLayout()); // Using BorderLayout for the main layout
+        setContentPane(mainPanel); // Setting the main panel as the content pane for this JFrame
 
-        // ==== TOP ====
-        JPanel topPanel = new JPanel();
-        topPanel.setOpaque(false);
-        topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.Y_AXIS));
-        topPanel.setBorder(BorderFactory.createEmptyBorder(65, 0, 20, 0));
+        // ==== TOP PANEL ====
+        JPanel topPanel = new JPanel(); // Creating a top panel for the title and date
+        topPanel.setOpaque(false); // Making the panel transparent to show the background gradient
+        topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.Y_AXIS)); // Stacking components vertically
+        topPanel.setBorder(BorderFactory.createEmptyBorder(65, 0, 20, 0)); // Adding padding around the top panel
 
-        JLabel titleLabel = createTitleLabel("SugarByte", lobsterFont, Color.BLACK);
-        titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        topPanel.add(titleLabel);
+        // Creating and adding the title label
+        JLabel titleLabel = createTitleLabel("SugarByte", lobsterFont, Color.BLACK); // Title with custom font
+        titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT); // Centering the label horizontally
+        topPanel.add(titleLabel); // Adding the title label to the top panel
 
-        String logbookType = getLogbookType(currentUser);
-        String formattedDate = formatDate(targetDate);
+        // Formatting and displaying the logbook type and date
+        String logbookType = getLogbookType(currentUser); // Retrieving the logbook type from the user object
+        String formattedDate = formatDate(targetDate); // Formatting the target date for display
+        JLabel dateLabel = new JLabel(logbookType + " logbook for " + formattedDate, SwingConstants.CENTER); // Creating the date label
+        dateLabel.setFont(new Font("SansSerif", Font.PLAIN, 16)); // Setting font for the date label
+        dateLabel.setForeground(Color.BLACK); // Setting text color to black
+        dateLabel.setBorder(BorderFactory.createEmptyBorder(5, 0, 5, 0)); // Adding padding around the date label
+        dateLabel.setAlignmentX(Component.CENTER_ALIGNMENT); // Centering the label horizontally
+        topPanel.add(dateLabel); // Adding the date label to the top panel
 
-        JLabel dateLabel = new JLabel(logbookType + " logbook for " + formattedDate, SwingConstants.CENTER);        dateLabel.setFont(new Font("SansSerif", Font.PLAIN, 16));
-        dateLabel.setForeground(Color.BLACK);
-        dateLabel.setBorder(BorderFactory.createEmptyBorder(5, 0, 5, 0));
-        dateLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        topPanel.add(dateLabel);
-
+        // Adding the top panel to the main panel at the north position
         mainPanel.add(topPanel, BorderLayout.NORTH);
 
-        // ==== CENTER (GridBag) ====
-        JPanel centerPanel = new JPanel(new GridBagLayout());
-        centerPanel.setOpaque(false);
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(5, 5, 0, 5);
-        gbc.fill = GridBagConstraints.HORIZONTAL;
+        // ==== CENTER PANEL ====
+        JPanel centerPanel = new JPanel(new GridBagLayout()); // Creating a center panel with GridBagLayout
+        centerPanel.setOpaque(false); // Making the center panel transparent to show the background
+        GridBagConstraints gbc = new GridBagConstraints(); // Setting up constraints for GridBagLayout
+        gbc.insets = new Insets(5, 5, 0, 5); // Adding padding between components
+        gbc.fill = GridBagConstraints.HORIZONTAL; // Allowing components to fill horizontally within their cells
 
-        // First line of headers
-        gbc.gridy = 0;
-        gbc.gridx = 0;
-        JLabel timeHeader1 = new JLabel("Time");
-        timeHeader1.setFont(new Font("SansSerif", Font.BOLD, 12));
-        centerPanel.add(timeHeader1, gbc);
+        // Adding headers for the first line
+        gbc.gridy = 0; // Setting the row index
+        gbc.gridx = 0; // Setting the column index for the first header
+        JLabel timeHeader1 = new JLabel("Time"); // Creating the "Time" column header
+        timeHeader1.setFont(new Font("SansSerif", Font.BOLD, 12)); // Setting a bold font for emphasis
+        centerPanel.add(timeHeader1, gbc); // Adding the header to the center panel
 
+        // - Same method for all the following texts as that explained in comments above -
         gbc.gridx = 1;
         JLabel bloodHeader1 = new JLabel("Blood");
         bloodHeader1.setFont(new Font("SansSerif", Font.BOLD, 12));
@@ -145,8 +149,8 @@ public class IntensiveLogbook extends BaseUI {
         centerPanel.add(otherHeader1, gbc);
 
 
-        // Second line of headers
-        gbc.gridy = 1;
+        // Second line of headers - still the same method as that explained for the initial 'Time' header @ the 0th x value of the grid -
+        gbc.gridy = 1; // shifts all of the following headers down by 1 y-value (so these words all lie below those assigned to gbc.gridy=0 above
         gbc.gridx = 0;
         JLabel timeHeader2 = new JLabel("of day");
         timeHeader2.setFont(new Font("SansSerif", Font.BOLD, 12));
@@ -187,16 +191,16 @@ public class IntensiveLogbook extends BaseUI {
         otherHeader2.setFont(new Font("SansSerif", Font.BOLD, 12));
         centerPanel.add(otherHeader2, gbc);
 
+        /**
+         Setting up the boxes which correspond to each factor (eg blood glucose) for each time of day (eg "Pre Dinner") below
+         */
 
-        gbc.gridy = 2;
+        // Creating the data rows for inputs
+        int preIndex = 0; // tracks "Pre" rows for hours - based on method in 'Home' class
+        for (int i = 0; i < ROW_LABELS.length; i++) { // adds an input box for each data row of time (Pre breakfast... etc)
+            gbc.gridy = i + 2; // ensures the first input box is placed below the headings (as the headings occupy y=0 and y=1)
 
-
-        // Data rows
-        int preIndex = 0; // track "Pre" rows for hours
-        for (int i = 0; i < ROW_LABELS.length; i++) {
-            gbc.gridy = i + 2;
-
-            // Time-of-day
+            // Time-of-day - not input boxes, just labels to represent the time of day
             gbc.gridx = 0;
             JLabel rowLabel = new JLabel(ROW_LABELS[i] + ":");
             rowLabel.setFont(new Font("SansSerif", Font.BOLD, 12));
@@ -221,176 +225,198 @@ public class IntensiveLogbook extends BaseUI {
             addNumericInputRestriction(carbsFields[i]);
             centerPanel.add(carbsFields[i], gbc);
 
-            // Exercise Type (Multiline JTextArea)
-            gbc.gridx = 4;
-            exerciseFields[i] = new JTextArea(2, 10); // 2 rows, 10 columns
-            exerciseFields[i].setLineWrap(true);     // Enable line wrapping
-            exerciseFields[i].setWrapStyleWord(true);// Wrap at word boundaries
-            JScrollPane exerciseScrollPane = new JScrollPane(exerciseFields[i]);
-            exerciseScrollPane.setPreferredSize(new Dimension(100, 40));
-            centerPanel.add(exerciseScrollPane, gbc);
+            // Adding the Exercise Type field (a multiline JTextArea) to the grid
+            gbc.gridx = 4; // Setting the column index to 4 for Exercise Type
+            exerciseFields[i] = new JTextArea(2, 10); // Creating a JTextArea with 2 rows and 10 columns for exercise notes
+            exerciseFields[i].setLineWrap(true);     // Enabling line wrapping to prevent horizontal scrolling
+            exerciseFields[i].setWrapStyleWord(true); // Wrapping at word boundaries to improve readability
+            JScrollPane exerciseScrollPane = new JScrollPane(exerciseFields[i]); // Wrapping the JTextArea in a JScrollPane for scrollability
+            exerciseScrollPane.setPreferredSize(new Dimension(100, 40)); // Setting a fixed size for the scroll pane
+            centerPanel.add(exerciseScrollPane, gbc); // Adding the scroll pane to the center panel at the specified grid position
 
-            // Insulin Dose
-            gbc.gridx = 5;
-            insulinDoseFields[i] = new JTextField(5);
-            addNumericInputRestriction(insulinDoseFields[i]);
-            centerPanel.add(insulinDoseFields[i], gbc);
+// Adding the Insulin Dose field (a single-line JTextField)
+            gbc.gridx = 5; // Setting the column index to 5 for Insulin Dose
+            insulinDoseFields[i] = new JTextField(5); // Creating a JTextField with a width of 5 columns for numeric input
+            addNumericInputRestriction(insulinDoseFields[i]); // Restricting input to numeric values using a custom method
+            centerPanel.add(insulinDoseFields[i], gbc); // Adding the JTextField to the center panel at the specified grid position
 
-            // Food Diary (Multiline JTextArea)
-            gbc.gridx = 6;
-            foodDiaryFields[i] = new JTextArea(2, 10); // 2 rows, 10 columns
-            foodDiaryFields[i].setLineWrap(true);
-            foodDiaryFields[i].setWrapStyleWord(true);
-            JScrollPane foodScrollPane = new JScrollPane(foodDiaryFields[i]);
-            foodScrollPane.setPreferredSize(new Dimension(100, 40));
-            centerPanel.add(foodScrollPane, gbc);
+// Adding the Food Diary field (a multiline JTextArea)
+            gbc.gridx = 6; // Setting the column index to 6 for Food Diary
+            foodDiaryFields[i] = new JTextArea(2, 10); // Creating a JTextArea with 2 rows and 10 columns for food diary entries
+            foodDiaryFields[i].setLineWrap(true); // Enabling line wrapping for better usability
+            foodDiaryFields[i].setWrapStyleWord(true); // Wrapping at word boundaries for clean text display
+            JScrollPane foodScrollPane = new JScrollPane(foodDiaryFields[i]); // Wrapping the JTextArea in a JScrollPane
+            foodScrollPane.setPreferredSize(new Dimension(100, 40)); // Setting a fixed size for the scroll pane
+            centerPanel.add(foodScrollPane, gbc); // Adding the scroll pane to the center panel at the specified grid position
 
-            // Other Events (Multiline JTextArea)
-            gbc.gridx = 7;
-            otherEventsFields[i] = new JTextArea(2, 10); // 2 rows, 10 columns
-            otherEventsFields[i].setLineWrap(true);
-            otherEventsFields[i].setWrapStyleWord(true);
-            JScrollPane otherScrollPane = new JScrollPane(otherEventsFields[i]);
-            otherScrollPane.setPreferredSize(new Dimension(100, 40));
-            centerPanel.add(otherScrollPane, gbc);
+// Adding the Other Events field (a multiline JTextArea)
+            gbc.gridx = 7; // Setting the column index to 7 for Other Events
+            otherEventsFields[i] = new JTextArea(2, 10); // Creating a JTextArea with 2 rows and 10 columns for other events
+            otherEventsFields[i].setLineWrap(true); // Enabling line wrapping for readability
+            otherEventsFields[i].setWrapStyleWord(true); // Wrapping at word boundaries
+            JScrollPane otherScrollPane = new JScrollPane(otherEventsFields[i]); // Wrapping the JTextArea in a JScrollPane
+            otherScrollPane.setPreferredSize(new Dimension(100, 40)); // Setting a fixed size for the scroll pane
+            centerPanel.add(otherScrollPane, gbc);// Adding the scroll pane to the center panel at the specified grid position
 
         }
 
-
-        // Wrap centerPanel in a JScrollPane
+// Wrapping the centerPanel in a JScrollPane to enable scrolling if content exceeds the visible area
         JScrollPane scrollPane = new JScrollPane(
-                centerPanel,
-                JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
-                JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED
+                centerPanel, // The panel to be scrolled
+                JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, // Show vertical scrollbar only when needed
+                JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED // Show horizontal scrollbar only when needed
         );
-// Create the scroll pane with the centerPanel
 
-// Make the scroll pane and its viewport transparent
-        scrollPane.setOpaque(false);  // Make the JScrollPane transparent
-        scrollPane.getViewport().setOpaque(false);  // Make the viewport transparent
-        scrollPane.setBackground(new Color(0, 0, 0, 0));  // Transparent background for the scroll pane
-        scrollPane.getViewport().setBackground(new Color(0, 0, 0, 0));  // Transparent background for the viewport
+// Making the JScrollPane and its viewport transparent
+        scrollPane.setOpaque(false); // Allowing the main panel's background to show through
+        scrollPane.getViewport().setOpaque(false); // Making the viewport (the area showing the centerPanel) transparent
+        scrollPane.setBackground(new Color(0, 0, 0, 0)); // Setting a fully transparent background color
+        scrollPane.getViewport().setBackground(new Color(0, 0, 0, 0)); // Setting the viewport's background to transparent
 
-// Remove borders from the scroll pane
-        scrollPane.setBorder(null);  // Remove the border around the scroll pane
+// Removing any borders from the JScrollPane
+        scrollPane.setBorder(null); // Removing the default border around the scroll pane
 
-// Add the scroll pane to the main panel
-        mainPanel.add(scrollPane, BorderLayout.CENTER);
+// Adding the scroll pane to the main panel
+        mainPanel.add(scrollPane, BorderLayout.CENTER); // Placing the scroll pane in the center of the main panel
 
-// Set a custom layout for the JScrollPane
+// Setting a custom layout for the JScrollPane
         scrollPane.setLayout(new ScrollPaneLayout() {
             @Override
             public void layoutContainer(Container parent) {
-                super.layoutContainer(parent);
+                super.layoutContainer(parent); // Calling the default layout behavior
 
-                // Move the horizontal scrollbar to the top
+                // Moving the horizontal scrollbar to the top of the scroll pane
                 JScrollPane pane = (JScrollPane) parent;
                 if (pane.getHorizontalScrollBar() != null) {
-                    Rectangle bounds = pane.getHorizontalScrollBar().getBounds();
-                    bounds.y = 420; // Place at the top
-                    pane.getHorizontalScrollBar().setBounds(bounds);
+                    Rectangle bounds = pane.getHorizontalScrollBar().getBounds(); // Getting the scrollbar's current bounds
+                    bounds.y = 420; // Moving it to the top by setting the Y-coordinate
+                    pane.getHorizontalScrollBar().setBounds(bounds); // Applying the new bounds
 
-                    // Adjust viewport bounds to avoid overlap
+                    // Adjusting the viewport bounds to prevent overlap with the scrollbar
                     JViewport viewport = pane.getViewport();
-                    Rectangle viewportBounds = viewport.getBounds();
-                    viewportBounds.y = bounds.height; // Shift the viewport down
-                    viewportBounds.height -= bounds.height; // Reduce height
-                    viewport.setBounds(viewportBounds);
+                    Rectangle viewportBounds = viewport.getBounds(); // Getting the current viewport bounds
+                    viewportBounds.y = bounds.height; // Shifting the viewport down to make space for the scrollbar
+                    viewportBounds.height -= bounds.height; // Reducing the viewport's height to account for the scrollbar
+                    viewport.setBounds(viewportBounds); // Applying the new bounds
                 }
             }
         });
-        scrollPane.setOpaque(false);
-        scrollPane.setBackground(Color.WHITE); // Set the background color of the JScrollPane
-        scrollPane.getViewport().setBackground(Color.WHITE); // Set the background color of the viewport
-        scrollPane.setBorder(null);
-        scrollPane.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 20)); // Top, Left, Bottom, Right
-        scrollPane.setViewportBorder(null); // Top, Left, Bottom, Right
 
-        //centerPanel.setBorder(BorderFactory.createEmptyBorder(0, 3, 0, 3)); // Top, Left, Bottom, Right
+// Setting additional transparency and border properties for the scroll pane
+        scrollPane.setOpaque(false); // Making the scroll pane itself transparent
+        scrollPane.setBackground(Color.WHITE); // Setting a white background color
+        scrollPane.getViewport().setBackground(Color.WHITE); // Setting the viewport's background to white
+        scrollPane.setBorder(null); // Removing any borders from the scroll pane
+        scrollPane.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 20)); // Adding padding around the content
 
-
+// Adding the scroll pane to the main panel again to ensure it's displayed
         mainPanel.add(scrollPane, BorderLayout.CENTER);
 
+// ==== BOTTOM PANEL (Save + Navigation) ====
+        JPanel bottomPanel = new JPanel(); // Creating a panel for the bottom buttons
+        bottomPanel.setOpaque(false); // Making the bottom panel transparent
+        RoundedButtonLogin saveAllBtn = new RoundedButtonLogin("Save all", new Color(237, 165, 170)); // Creating a custom button for saving all data
+        saveAllBtn.setFont(new Font("SansSerif", Font.BOLD, 16)); // Setting the font for the button text
+        saveAllBtn.setForeground(Color.BLACK); // Setting the text color to black
+        saveAllBtn.addActionListener(e -> handleSaveAllIntensive()); // Adding an event listener to handle the save action
+        bottomPanel.add(saveAllBtn); // Adding the save button to the bottom panel
 
-        // ==== BOTTOM (Save + Nav) ====
-        JPanel bottomPanel = new JPanel();
-        bottomPanel.setOpaque(false);
-        RoundedButtonLogin saveAllBtn = new RoundedButtonLogin("Save all", new Color(237, 165, 170));
-        saveAllBtn.setPreferredSize(new Dimension(96, 40));
-        saveAllBtn.setFont(new Font("SansSerif", Font.BOLD, 16));
-        saveAllBtn.setForeground(Color.BLACK);
-        saveAllBtn.addActionListener(e -> handleSaveAllIntensive());
-        bottomPanel.add(saveAllBtn);
+        // Setting up the navigation bar, highlighting the "Logbook" icon to indicate the current screen.
+// The navBar dynamically adapts based on the `currentUser` and paths provided for icons.
+        JPanel navBar = createBottomNavBar(
+                "Logbook",               // Identifying the active screen
+                currentUser,             // User-specific data for navigation logic
+                "/Icons/home.png",       // Path for the "Home" icon
+                "/Icons/logbookfull.png",// Path for the "Logbook" icon (active state)
+                "/Icons/graph.png",      // Path for the "Graph" icon
+                "/Icons/profile.png"     // Path for the "Profile" icon
+        );
 
-        JPanel navBar = createBottomNavBar("Logbook", currentUser,
-                "/Icons/home.png", "/Icons/logbookfull.png", "/Icons/graph.png", "/Icons/profile.png");
-
+// Encasing the bottom panel and nav bar into a single wrapper panel for structural alignment.
+// Using `BorderLayout` allows flexibility to place components in specific positions like NORTH and SOUTH.
         JPanel wrapperPanel = new JPanel(new BorderLayout());
-        wrapperPanel.setOpaque(false);
-        wrapperPanel.add(bottomPanel, BorderLayout.NORTH);
-        wrapperPanel.add(navBar, BorderLayout.SOUTH);
+        wrapperPanel.setOpaque(false); // Ensuring a transparent background to blend seamlessly with the design.
+        wrapperPanel.add(bottomPanel, BorderLayout.NORTH); // Placing the save button panel at the top of the wrapper.
+        wrapperPanel.add(navBar, BorderLayout.SOUTH); // Placing the navigation bar at the bottom of the wrapper.
 
+// Adding the wrapper panel to the main panel, ensuring it occupies the bottom section of the layout.
+// This addition finalizes the UI structure for the bottom portion of the interface.
         mainPanel.add(wrapperPanel, BorderLayout.SOUTH);
     }
 
-    /**
-     * Add numeric input restriction to a field.
-     */
-    private void addNumericInputRestriction(JTextField textField) {
-        textField.addKeyListener(new KeyAdapter() {
-            public void keyTyped(KeyEvent e) {
-                char c = e.getKeyChar();
-                if (!Character.isDigit(c) && c != '.' && c != KeyEvent.VK_BACK_SPACE) {
-                    e.consume();
+/**
+ * Restricting a text field to accept only numeric input.
+ * This enhances user experience by preventing invalid entries directly at the input stage.
+ */
+        private void addNumericInputRestriction (JTextField textField){
+            // Attaching a KeyListener to monitor and process every key typed in the field.
+            textField.addKeyListener(new KeyAdapter() {
+                public void keyTyped(KeyEvent e) {
+                    char c = e.getKeyChar(); // Capturing the character typed by the user.
+                    // Rejecting any input that is not a digit, a decimal point, or the backspace key.
+                    if (!Character.isDigit(c) && c != '.' && c != KeyEvent.VK_BACK_SPACE) {
+                        e.consume(); // Consuming the event prevents invalid characters from appearing.
+                    }
                 }
-            }
-        });
-    }
-
-    /**
-     * Add alphabetic input restriction to a field.
-     */
-    private void addAlphabeticInputRestriction(JTextField textField) {
-        textField.addKeyListener(new KeyAdapter() {
-            public void keyTyped(KeyEvent e) {
-                char c = e.getKeyChar();
-                if (!Character.isLetter(c) && c != ' ' && c != KeyEvent.VK_BACK_SPACE) {
-                    e.consume();
-                }
-            }
-        });
-    }
-
-    /**
-     * Load data for "Intensive" logbook, including hoursSinceMeal.
-     */
-    protected void loadLogEntriesIntensive() {
-                List<LogEntry> entries = LogService.getEntriesForDate(currentUser.getId(), targetDate);
-        Map<String, LogEntry> entryMap = new HashMap<>();
-        for (LogEntry e : entries) {
-            entryMap.put(e.getTimeOfDay(), e);
+            });
         }
 
-        int preIndex = 0;
-        for (int i = 0; i < ROW_LABELS.length; i++) {
-            LogEntry e = entryMap.get(ROW_LABELS[i]);
-            if (e != null) {
-                bloodSugarFields[i].setText(String.valueOf(e.getBloodSugar()));
-                carbsFields[i].setText(String.valueOf(e.getCarbsEaten()));
-                exerciseFields[i].setText(e.getExerciseType() == null ? "" : e.getExerciseType());
-                insulinDoseFields[i].setText(String.valueOf(e.getInsulinDose()));
-                foodDiaryFields[i].setText(e.getFoodDetails() == null ? "" : e.getFoodDetails());
-                otherEventsFields[i].setText(e.getOtherMedications() == null ? "" : e.getOtherMedications());
+/**
+ * Applying a restriction for alphabetic input in a text field.
+ * This is particularly useful for fields where numerical or special characters are irrelevant.
+ */
+        private void addAlphabeticInputRestriction (JTextField textField){
+            // Utilizing a KeyListener to filter out unwanted characters at the typing stage.
+            textField.addKeyListener(new KeyAdapter() {
+                public void keyTyped(KeyEvent e) {
+                    char c = e.getKeyChar(); // Identifying the character entered by the user.
+                    // Permitting only alphabetic characters, spaces, and backspace.
+                    if (!Character.isLetter(c) && c != ' ' && c != KeyEvent.VK_BACK_SPACE) {
+                        e.consume(); // Ignoring invalid keystrokes by consuming the event.
+                    }
+                }
+            });
+        }
 
-                if (ROW_LABELS[i].endsWith("Pre")) {
-                    hoursSinceMealFields[preIndex].setText(String.valueOf(e.getHoursSinceMeal()));
-                    preIndex++;
+/**
+ * Loading log entries for the "Intensive" logbook view, including data like hours since last meal.
+ * This method retrieves data from the database and populates the corresponding UI fields.
+ */
+        protected void loadLogEntriesIntensive () {
+            // Fetching all log entries for the current user and the target date.
+            List<LogEntry> entries = LogService.getEntriesForDate(currentUser.getId(), targetDate);
+
+            // Creating a map to associate each log entry with its respective time of day.
+            Map<String, LogEntry> entryMap = new HashMap<>();
+            for (LogEntry e : entries) {
+                entryMap.put(e.getTimeOfDay(), e); // Mapping entries using the time of day as the key.
+            }
+
+            int preIndex = 0; // Tracking "Pre" row indices for handling hoursSinceMeal fields.
+            for (int i = 0; i < ROW_LABELS.length; i++) {
+                LogEntry e = entryMap.get(ROW_LABELS[i]); // Retrieving the log entry for the current row label.
+                if (e != null) {
+                    // Filling in the corresponding UI fields with data from the log entry.
+                    bloodSugarFields[i].setText(String.valueOf(e.getBloodSugar())); // Populating blood sugar data.
+                    carbsFields[i].setText(String.valueOf(e.getCarbsEaten())); // Adding carbohydrate consumption.
+                    exerciseFields[i].setText(e.getExerciseType() == null ? "" : e.getExerciseType()); // Setting exercise details.
+                    insulinDoseFields[i].setText(String.valueOf(e.getInsulinDose())); // Displaying insulin dose.
+                    foodDiaryFields[i].setText(e.getFoodDetails() == null ? "" : e.getFoodDetails()); // Filling in the food diary field.
+                    otherEventsFields[i].setText(e.getOtherMedications() == null ? "" : e.getOtherMedications()); // Adding other events or medications.
+
+                    // Handling the "Pre" rows that include hours since the last meal.
+                    if (ROW_LABELS[i].endsWith("Pre")) {
+                        hoursSinceMealFields[preIndex].setText(String.valueOf(e.getHoursSinceMeal()));
+                        preIndex++; // Incrementing the index to move to the next "Pre" row.
+                    }
                 }
             }
         }
-    }
 
-    private String getLogbookType(User user) {
+
+
+
+        private String getLogbookType(User user) {
         String logbookType = user.getLogbookType(); // Assuming `User` has a `getLogbookType()` method
         return logbookType != null ? logbookType : "Intensive";
     }
@@ -425,7 +451,7 @@ public class IntensiveLogbook extends BaseUI {
                 preIndex++;
             }
 
-            // Only save if something is entered
+            // Only save if something is entered and the input is valis
             if (bg > 0 || carbs > 0 || !exercise.isEmpty() || insulin > 0
                     || !food.isEmpty() || !other.isEmpty() || hours > 0) {
                 LogEntry entry = new LogEntry();
@@ -451,19 +477,45 @@ public class IntensiveLogbook extends BaseUI {
                 JOptionPane.INFORMATION_MESSAGE);
     }
 
+    /**
+     * Safely parsing a string to a double, handling invalid input gracefully.
+     *
+     * @param text The string to be parsed into a double.
+     *             This value can represent numbers entered by the user.
+     * @return The parsed double value if the string contains valid numerical content;
+     *         otherwise, returns 0.0 if the input is invalid or unparsable.
+     */
     private double parseDoubleSafe(String text) {
         try {
+            // Attempting to convert the string into a double using the built-in Double.parseDouble method.
+            // If the input is a valid numerical string (e.g., "3.14"), this will return its double value.
             return Double.parseDouble(text);
         } catch (NumberFormatException e) {
+            // Handling cases where the input string is not a valid double (e.g., "abc" or null).
+            // Returning 0.0 ensures the application doesn't crash and provides a default value for invalid input.
             return 0.0;
         }
     }
 
+    /**
+     * Safely parsing a string to an integer, ensuring the application doesn't crash on invalid input.
+     *
+     * @param text The string to be parsed into an integer.
+     *             Typically, this string represents whole numbers entered by the user.
+     * @return The parsed integer value if the input is valid;
+     *         otherwise, returns 0 if the input is invalid or unparsable.
+     */
     private int parseIntSafe(String text) {
         try {
+            // Converting the string to an integer using the Integer.parseInt method.
+            // For valid inputs (e.g., "42"), this will return the integer representation.
             return Integer.parseInt(text);
         } catch (NumberFormatException e) {
+            // Managing invalid inputs gracefully, such as non-numeric strings or null values.
+            // Returning 0 ensures functionality is maintained without throwing exceptions.
             return 0;
         }
     }
+
 }
+
