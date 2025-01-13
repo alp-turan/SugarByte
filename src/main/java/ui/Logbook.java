@@ -291,6 +291,7 @@ public class Logbook extends BaseUI {
     /**
      * Add numeric input restriction to a field and ensure no negative numbers are allowed.
      */
+    // reference: https://stackoverflow.com/questions/33942862/keylistener-wish-to-input-only-number-but-it-let-me-input-a-letter
     private void addNumericInputRestriction(JTextField textField) {
         textField.addKeyListener(new KeyAdapter() {
             public void keyTyped(KeyEvent e) {
