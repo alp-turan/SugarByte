@@ -2,7 +2,8 @@ package ui;
 
 import database.UserDAO;
 import model.User;
-
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -45,7 +46,7 @@ public class Profile extends BaseUI {
         setContentPane(mainPanel);
 
         // Fonts
-        Font lobsterFont = loadCustomFont(38f); // though these are used throughout the classes/code, inspo for them was taken from ChatGPT
+        Font lobsterFont = loadCustomFont(38f); // though these are used throughout the classes/code, inspo for them was taken from ChatGPT.
         Font poppinsBold = new Font("SansSerif", Font.BOLD, 16);
 
         // Title
@@ -263,6 +264,45 @@ public class Profile extends BaseUI {
         );
         mainPanel.add(navBar, BorderLayout.SOUTH);
 
+        phoneField.addKeyListener(new KeyAdapter() {
+            public void keyTyped(KeyEvent e) {
+                char c = e.getKeyChar();
+                if (!Character.isDigit(c) && c != KeyEvent.VK_BACK_SPACE) {
+                    e.consume(); // Prevent non-digit characters
+                }
+            }
+        });
+
+        // Add KeyListener to ensure emergency phone fields only allow digits
+        doctorEmergencyField.addKeyListener(new KeyAdapter() {
+            public void keyTyped(KeyEvent e) {
+                char c = e.getKeyChar();
+                if (!Character.isDigit(c) && c != KeyEvent.VK_BACK_SPACE) {
+                    e.consume(); // Prevent non-digit characters
+                }
+            }
+        });
+
+        // Add KeyListener to ensure name fields only allow letters
+        nameField.addKeyListener(new KeyAdapter() {
+            public void keyTyped(KeyEvent e) {
+                char c = e.getKeyChar();
+                if (!Character.isLetter(c) && !Character.isWhitespace(c) && c != KeyEvent.VK_BACK_SPACE) {
+                    e.consume(); // Prevent non-letter characters (allowing spaces between names)
+                }
+            }
+        });
+
+        // Add KeyListener to ensure doctor's name fields only allow letters
+        doctorNameField.addKeyListener(new KeyAdapter() {
+            public void keyTyped(KeyEvent e) {
+                char c = e.getKeyChar();
+                if (!Character.isLetter(c) && !Character.isWhitespace(c) && c != KeyEvent.VK_BACK_SPACE) {
+                    e.consume(); // Prevent non-letter characters (allowing spaces between names)
+                }
+            }
+        });
+
         setVisible(true);
     }
 
@@ -321,6 +361,6 @@ public class Profile extends BaseUI {
             dispose(); // Close the current screen
             new Login(); // Open the login screen (you should have a Login class)
         }
-        /* end of reference*/
     }
+    /* end of reference*/
 }
