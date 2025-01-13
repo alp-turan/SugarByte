@@ -162,7 +162,7 @@ public class IntensiveLogbook extends BaseUI {
         centerPanel.add(bloodHeader2, gbc);
 
         gbc.gridx = 2;
-        JLabel hoursHeader2 = new JLabel("last meal");
+        JLabel hoursHeader2 = new JLabel("last meal (hr)");
         hoursHeader2.setFont(new Font("SansSerif", Font.BOLD, 12));
         centerPanel.add(hoursHeader2, gbc);
 

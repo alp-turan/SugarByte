@@ -126,7 +126,7 @@ public class Logbook extends BaseUI {
         centerPanel.add(carbsHeaderLine2, gbc);
 
         gbc.gridx = 3;
-        JLabel hoursHeaderLine2 = new JLabel("last meal");
+        JLabel hoursHeaderLine2 = new JLabel("last meal (hr)");
         hoursHeaderLine2.setFont(new Font("SansSerif", Font.BOLD, 12));
         centerPanel.add(hoursHeaderLine2, gbc);
 

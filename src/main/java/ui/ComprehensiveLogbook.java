@@ -158,7 +158,7 @@ public class ComprehensiveLogbook extends BaseUI {
 
         // Column 2: Hours since last meal
         gbc.gridx = 2; // Third column
-        JLabel hoursHeaderLine2 = new JLabel("last meal"); // Secondary header for "Hours since last meal"
+        JLabel hoursHeaderLine2 = new JLabel("last meal (hr)"); // Secondary header for "Hours since last meal"
         hoursHeaderLine2.setFont(new Font("SansSerif", Font.BOLD, 12)); // Bold font for emphasis
         centerPanel.add(hoursHeaderLine2, gbc); // Adding the header to the grid
 
