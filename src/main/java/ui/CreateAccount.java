@@ -10,6 +10,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
+
 public class CreateAccount extends BaseUI {
 
     private JTextField nameField;
@@ -86,7 +87,7 @@ public class CreateAccount extends BaseUI {
         row = addLabelAndField(mainPanel, gbc, row, "Email:", emailField = new JTextField(15)); // Email input field
         row = addLabelAndField(mainPanel, gbc, row, "Phone:", phoneField = new JTextField(15)); // Phone number input field
 
-        row = addLabelAndField(mainPanel, gbc, row, "Doctor's Full Name:", doctorNameField = new JTextField(15)); // Doctor's name input
+        row = addLabelAndField(mainPanel, gbc, row, "Doctor's Name:", doctorNameField = new JTextField(15)); // Doctor's name input
         row = addLabelAndField(mainPanel, gbc, row, "Doctor Email:", doctorEmailField = new JTextField(15)); // Doctor's email input
         row = addLabelAndField(mainPanel, gbc, row, "Doctor Address:", doctorAddressField = new JTextField(15)); // Doctor's address input
         row = addLabelAndField(mainPanel, gbc, row, "Doctor Emergency:", doctorEmergencyField = new JTextField(15)); // Doctor's emergency contact input
@@ -359,5 +360,4 @@ public class CreateAccount extends BaseUI {
             return false; // Return false if either condition is not met
         }
         /* end of reference */
-
     }

@@ -170,7 +170,7 @@ public class Profile extends BaseUI {
         doctorPanel.add(new JLabel("Doctor's Name:"), gbc);
         gbc.gridx = 1;
         doctorNameField = new JTextField(15);
-        doctorNameField.setText(safeValue(currentUser.getDoctorName(), "Doctor Surname"));
+        doctorNameField.setText(safeValue(currentUser.getDoctorName(), "Doctor name"));
         doctorPanel.add(doctorNameField, gbc);
 
         // Next row: Doctor Email

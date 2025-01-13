@@ -343,6 +343,19 @@ public class Home extends BaseUI {
             LogService.createEntry(entryPost, currentUser); // Saving the log entry using LogService.
         }
 
+        // Creating and saving a log entry for "Bedtime" if inputs are provided.
+        double bedtimeBG = parseDoubleSafe(preBloodSugarField.getText()); // Parsing bedtime glucose input.
+        double bedtimeCarbs = parseDoubleSafe(preCarbsField.getText()); // Parsing bedtime carbs input.
+        if (bedtimeBG > 0 || bedtimeCarbs > 0) {
+            LogEntry entryBedtime = new LogEntry();
+            entryBedtime.setUserId(currentUser.getId()); // Associating the log with the current user.
+            entryBedtime.setDate(today.toString()); // Setting the log date.
+            entryBedtime.setTimeOfDay("Bedtime"); // Specifying the log as "Bedtime".
+            entryBedtime.setBloodSugar(bedtimeBG); // Storing the bedtime glucose value.
+            entryBedtime.setCarbsEaten(bedtimeCarbs); // Storing the bedtime carbs value.
+            LogService.createEntry(entryBedtime, currentUser); // Saving the log entry using LogService.
+        }
+
         // Showing a confirmation dialog to indicate successful logging.
         JOptionPane.showMessageDialog(this, "Quick log saved!");
 
@@ -350,6 +363,7 @@ public class Home extends BaseUI {
         double latestGlucose = getLatestGlucoseReading();
         glucoseIndicator.updateGlucoseLevel(latestGlucose); // Refreshing the glucose indicator dynamically.
     }
+
 
     /**
      * Safely parsing a string to a double value.
