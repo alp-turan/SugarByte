@@ -3,6 +3,8 @@ package model;
 /**
  * Represents a single logbook entry for a user.
  * Includes data for blood sugar, carbs, exercise, etc.
+ * Basically no comments have been included as this class has the exact same format as the 'User' class which was commented in more detail
+ * And most of the variable names and getters & setters are self-explanatory.
  */
 public class LogEntry {
     private int id;

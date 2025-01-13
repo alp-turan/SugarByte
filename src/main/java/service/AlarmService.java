@@ -142,6 +142,9 @@ public class AlarmService {
         }
     }
 
+    /**
+    * Included for unit testing purposes.
+     */
     public static Set<String> getNotifiedMeals() {
         return notifiedMeals;
     }

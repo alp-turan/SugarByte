@@ -18,7 +18,6 @@ public class LogService {
      * Create a new log entry, then check for alarms.
      */
     public static LogEntry createEntry(LogEntry entry, User user) {
-        //ADDED:
 
         // 1. Insert the entry in DB
         LogEntry saved = logEntryDAO.createLogEntry(entry);

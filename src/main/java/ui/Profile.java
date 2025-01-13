@@ -21,6 +21,7 @@ public class Profile extends BaseUI {
     // Fields for user’s information
     private JTextField nameField;
     private JTextField emailField;
+    //JComboBox, as gathered from Oracle, displays a drop-down menu, the 'string' ensures it only holds characters of type string
     private JComboBox<String> diabetesCombo;
     private JComboBox<String> insulinTypeCombo;
     private JComboBox<String> insulinAdminCombo;
@@ -207,15 +208,12 @@ public class Profile extends BaseUI {
         JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));  // Center both buttons
         buttonsPanel.setOpaque(false);
 
-// Save Button with RoundedButton (using the same constructor as "Generate graph" button)
+        // Save Button with RoundedButton (using the same constructor as "Generate graph" button)
         RoundedButton saveBtn = new RoundedButton("Save Changes", new Color(237, 165, 170));  // Light Pink Color
         saveBtn.setForeground(Color.BLACK);  // Set text color to black
         saveBtn.setFont(new Font("SansSerif", Font.BOLD, 14));  // Set the font style and size
 
-// Set preferred size for the button
-        //saveBtn.setPreferredSize(new Dimension(140, 35)); // Consistent size for the button
-
-// Add ActionListener to handle save logic
+        // Add ActionListener to handle save logic
         saveBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -223,7 +221,7 @@ public class Profile extends BaseUI {
             }
         });
 
-// Logout Button (using RoundedButton)
+        // Logout Button (using RoundedButton)
         RoundedButton logoutButton = new RoundedButton("Logout", new Color(220, 53, 69)) {
             @Override
             public Dimension getPreferredSize() {
@@ -247,12 +245,12 @@ public class Profile extends BaseUI {
 
         logoutButton.addActionListener(e -> handleLogout());
 
-// Add buttons to the panel with increased spacing
+        // Add buttons to the panel with increased spacing
         buttonsPanel.add(saveBtn);
         buttonsPanel.add(Box.createHorizontalStrut(20));  // Adds more space between buttons
         buttonsPanel.add(logoutButton);
 
-// Add the button panel to the center section of the layout
+        // Add the button panel to the center section of the layout
         centerPanel.add(buttonsPanel);
         centerPanel.add(Box.createVerticalStrut(10));
 
@@ -263,6 +261,12 @@ public class Profile extends BaseUI {
                 "/Icons/home.png", "/Icons/logbook.png", "/Icons/graph.png", "/Icons/profilefull.png"
         );
         mainPanel.add(navBar, BorderLayout.SOUTH);
+
+        /**
+         * Restricting all the inputs to the desired type (numerical or letter character)
+         * Oracle was used to explain many of the in-built functions in KeyListener, but not >6 lines of code were copied
+         * so it's not properly referenced.
+         */
 
         phoneField.addKeyListener(new KeyAdapter() {
             public void keyTyped(KeyEvent e) {
@@ -317,7 +321,7 @@ public class Profile extends BaseUI {
                     "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
-
+        // passing all of the fields (from all of the input boxes on the profile page) to the current user
         currentUser.setName(nameField.getText().trim());
         currentUser.setEmail(emailField.getText().trim());
         currentUser.setDiabetesType((String) diabetesCombo.getSelectedItem());
@@ -334,7 +338,7 @@ public class Profile extends BaseUI {
         currentUser.setLogbookType((String) logbookTypeCombo.getSelectedItem());
 
         try {
-            UserDAO dao = new UserDAO();
+            UserDAO dao = new UserDAO(); // from the UserDAO class in the database package
             dao.updateUser(currentUser);
             JOptionPane.showMessageDialog(this,
                     "Profile updated successfully!",
@@ -350,7 +354,7 @@ public class Profile extends BaseUI {
     private String safeValue(String value, String defaultValue) {
         return value != null && !value.isEmpty() ? value : defaultValue;
     }
-    /* reference - inspo for syntax & logic taken from https://stackoverflow.com/questions/1215436/get-the-return-value-of-joptionpane */
+    /* Reference - inspo for syntax & logic taken from https://stackoverflow.com/questions/1215436/get-the-return-value-of-joptionpane */
     private void handleLogout() {
         int result = JOptionPane.showConfirmDialog(this, "Are you sure you want to log out?", "Logout", JOptionPane.YES_NO_OPTION);
         if (result == JOptionPane.YES_OPTION) {
