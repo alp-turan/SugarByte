@@ -7,6 +7,8 @@ import service.LogService;
 import javax.swing.*;
 import javax.swing.text.*;
 import java.awt.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.text.SimpleDateFormat;
 import java.text.ParseException;
 import java.util.HashMap;
@@ -59,7 +61,7 @@ public class Logbook extends BaseUI {
     protected void buildUI() {
         // A gradient background forming the main panel
         JPanel mainPanel = createGradientPanel(Color.WHITE, Color.WHITE);
-        mainPanel.setLayout(new BorderLayout()); // Layout dividing the panel into regions
+        mainPanel.setLayout(new BorderLayout());// Layout dividing the panel into regions
         setContentPane(mainPanel); // Assigning the panel to the frame
 
         // Header section for title and date
@@ -70,7 +72,7 @@ public class Logbook extends BaseUI {
 
         JLabel titleLabel = createTitleLabel("SugarByte", lobsterFont, Color.BLACK);
         titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT); // Center-aligned text
-        topPanel.add(titleLabel); // Adding title to the header panel
+        topPanel.add(titleLabel);  // Adding title to the header panel
 
         String logbookType = getLogbookType(currentUser); // Fetching the logbook type from user data
         String formattedDate = formatDate(targetDate); // Formatted display of the target date
@@ -95,7 +97,7 @@ public class Logbook extends BaseUI {
         gbc.gridx = 0; // First column
         gbc.gridy = 0; // First row
         JLabel timeOfDayHeaderLine1 = new JLabel("Time");
-        timeOfDayHeaderLine1.setFont(new Font("SansSerif", Font.BOLD, 12)); // Bold for emphasis
+        timeOfDayHeaderLine1.setFont(new Font("SansSerif", Font.BOLD, 12));  // Bold for emphasis
         centerPanel.add(timeOfDayHeaderLine1, gbc); // Adding this JLabel to the center panel
 
         gbc.gridx = 1; // Second column for blood glucose
@@ -137,7 +139,6 @@ public class Logbook extends BaseUI {
 
         // Data rows with labels and input fields
         int preIndex = 0;
-        DocumentFilter numericFilter = new NumericFilter(); // Ensuring fields accept only numeric data
         for (int i = 0; i < ROW_LABELS.length; i++) {
             gbc.gridy = i + 2; // Row positioning based on the label index
 
@@ -146,26 +147,24 @@ public class Logbook extends BaseUI {
             rowLabel.setFont(new Font("SansSerif", Font.BOLD, 12));
             centerPanel.add(rowLabel, gbc);
 
-
             // Column 1 - BloodSugar
             // the process for making the input fields for each row is more or less the same for every feature/column so it hasn't
-            // been commented in detail other than the first block for Blood sugar
-            gbc.gridx = 1;
+            // been commented in detail other than the first block for Blood sugar            gbc.gridx = 1;
             bloodSugarFields[i] = new JTextField(5);
-            ((PlainDocument) bloodSugarFields[i].getDocument()).setDocumentFilter(numericFilter); // Apply filter - this line was taken from ChatGPT as we were unsure of how to set a filter
+            addNumericInputRestriction(bloodSugarFields[i]); // Apply numerical restriction - - this line was taken from ChatGPT as we were unsure of how to set a filter.
             centerPanel.add(bloodSugarFields[i], gbc);
 
             // Column 2 - Carbs
             gbc.gridx = 2;
             carbsFields[i] = new JTextField(5);
-            ((PlainDocument) carbsFields[i].getDocument()).setDocumentFilter(numericFilter); // Apply filter
+            addNumericInputRestriction(carbsFields[i]); // Apply numerical restriction here
             centerPanel.add(carbsFields[i], gbc);
 
             // Column 3 - Hours for Pre
             gbc.gridx = 3;
             if (ROW_LABELS[i].endsWith("Pre")) {
                 hoursSinceMealFields[preIndex] = new JTextField(5);
-                ((PlainDocument) hoursSinceMealFields[preIndex].getDocument()).setDocumentFilter(numericFilter); // Apply filter
+                addNumericInputRestriction(hoursSinceMealFields[preIndex]); // Apply numerical restriction here
                 centerPanel.add(hoursSinceMealFields[preIndex], gbc);
                 preIndex++;
             }
@@ -175,113 +174,112 @@ public class Logbook extends BaseUI {
 
         // Bottom panel with "Save All" Button (moved above nav bar)
         JPanel bottomPanel = new JPanel();
-        bottomPanel.add(Box.createVerticalStrut(60)); // Adjusting the value to control vertical space above the button - taken from ChatGPT
+        bottomPanel.add(Box.createVerticalStrut(60)); // Adjust the value to control vertical space above the button - // Adjusting the value to control vertical space above the button - taken from ChatGPT.
 
         bottomPanel.setOpaque(false);
         bottomPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 20));  // Centering the button
 
         // Creating a button for saving all log entries, setting text and styling
         RoundedButtonLogin saveAllBtn = new RoundedButtonLogin("Save all", new Color(237, 165, 170));
-// Setting the text color of the button to black for better readability
+        // Setting the text color of the button to black for better readability
         saveAllBtn.setForeground(Color.BLACK);
-// Customizing the font by applying a bold style and a size of 14 points
-        saveAllBtn.setFont(new Font("SansSerif", Font.BOLD, 14));
-// Linking the button's action listener to the method handling the save functionality
+        // Customizing the font by applying a bold style and a size of 14 points
+        saveAllBtn.setFont(new Font("SansSerif", Font.BOLD, 14));  // Adjust text size and font
+        // Linking the button's action listener to the method handling the save functionality
         saveAllBtn.addActionListener(e -> handleSaveAll());
-
-// Placing the save button within the bottom panel
+        // Placing the save button within the bottom panel
         bottomPanel.add(saveAllBtn);
 
-// Combining the bottom panel and navigation bar
+        // Combining the bottom panel and navigation bar
         JPanel southPanel = new JPanel();
-// Using BorderLayout to manage the placement of components in the south panel
+        // Using BorderLayout to manage the placement of components in the south panel
         southPanel.setLayout(new BorderLayout());
-// Keeping the south panel transparent to blend seamlessly with the main panel
+        // Keeping the south panel transparent to blend seamlessly with the main panel
         southPanel.setOpaque(false);
-// Positioning the bottom panel at the center of the south panel
+        // Positioning the bottom panel at the center of the south panel
         southPanel.add(bottomPanel, BorderLayout.CENTER);
-// Adding a custom navigation bar at the bottom of the south panel
+        // Adding a custom navigation bar at the bottom of the south panel
         southPanel.add(createBottomNavBar("Logbook", currentUser,
                         "/Icons/home.png", "/Icons/logbookfull.png", "/Icons/graph.png", "/Icons/profile.png"),
                 BorderLayout.SOUTH);
 
-// Integrating the combined south panel into the main panel
+        // Integrating the combined south panel into the main panel
         mainPanel.add(southPanel, BorderLayout.SOUTH);
     }
 
-/**
- * Loading entries into the "simple" logbook.
- */
-        protected void loadLogEntries() {
-            // Retrieving a list of log entries for the current user and target date
-            List<LogEntry> entries = LogService.getEntriesForDate(currentUser.getId(), targetDate);
-            // Storing entries in a map for easy lookup by time of day
-            Map<String, LogEntry> entryMap = new HashMap<>();
-            // Iterating over each log entry and populating the map
-            for (LogEntry entry : entries) {
-                entryMap.put(entry.getTimeOfDay(), entry); // Using the time of day as a key for the map
-            }
-
-            // Initializing an index to track "Pre" rows
-            int preIndex = 0;
-            // Iterating over each row label to populate fields with data
-            for (int i = 0; i < ROW_LABELS.length; i++) {
-                LogEntry e = entryMap.get(ROW_LABELS[i]); // Fetching the log entry for the corresponding time of day
-                if (e != null) {
-                    // Updating the blood sugar field with the value from the log entry
-                    bloodSugarFields[i].setText(String.valueOf(e.getBloodSugar()));
-                    // Updating the carbs field with the value from the log entry
-                    carbsFields[i].setText(String.valueOf(e.getCarbsEaten()));
-                    // Handling "Pre" rows by updating hours since the last meal
-                    if (ROW_LABELS[i].endsWith("Pre")) {
-                        hoursSinceMealFields[preIndex].setText(String.valueOf(e.getHoursSinceMeal()));
-                        preIndex++;
-                    }
-                }
-            }
+    /**
+     * Loading entries into the "simple" logbook.
+     */
+    protected void loadLogEntries() {
+        // Retrieving a list of log entries for the current user and target date
+        List<LogEntry> entries = LogService.getEntriesForDate(currentUser.getId(), targetDate);
+        // Storing entries in a map for easy lookup by time of day
+        Map<String, LogEntry> entryMap = new HashMap<>();
+        // Iterating over each log entry and populating the map
+        for (LogEntry entry : entries) {
+            entryMap.put(entry.getTimeOfDay(), entry); // Using the time of day as a key for the map
         }
 
-/**
- * Saving all entered data from the "simple" logbook.
- */
-        protected void handleSaveAll() {
-            // Index for handling "Pre" rows specifically
-            int preIndex = 0;
-            // Looping through each row to gather and save data
-            for (int i = 0; i < ROW_LABELS.length; i++) {
-                // Parsing the blood sugar field text into a double value
-                double bg = parseDoubleSafe(bloodSugarFields[i].getText());
-                // Parsing the carbs field text into a double value
-                double carbs = parseDoubleSafe(carbsFields[i].getText());
-                int hours = 0;
-
-                // Parsing hours since the last meal for "Pre" rows
+        // Initializing an index to track "Pre" rows
+        int preIndex = 0;
+        // Iterating over each row label to populate fields with data
+        for (int i = 0; i < ROW_LABELS.length; i++) {
+            LogEntry e = entryMap.get(ROW_LABELS[i]); // Fetching the log entry for the corresponding time of day
+            if (e != null) {
+                // Updating the blood sugar field with the value from the log entry
+                bloodSugarFields[i].setText(String.valueOf(e.getBloodSugar()));
+                // Updating the carbs field with the value from the log entry
+                carbsFields[i].setText(String.valueOf(e.getCarbsEaten()));
+                // Handling "Pre" rows by updating hours since the last meal
                 if (ROW_LABELS[i].endsWith("Pre")) {
-                    hours = parseIntSafe(hoursSinceMealFields[preIndex].getText());
+                    hoursSinceMealFields[preIndex].setText(String.valueOf(e.getHoursSinceMeal()));
                     preIndex++;
                 }
+            }
+        }
+    }
 
-                // Proceeding with saving only if at least one field contains valid data
-                if (bg > 0 || carbs > 0 || hours > 0) {
-                    LogEntry entry = new LogEntry();
-                    entry.setUserId(currentUser.getId()); // Associating the entry with the current user
-                    entry.setDate(targetDate); // Setting the date for the entry
-                    entry.setTimeOfDay(ROW_LABELS[i]); // Specifying the time of day for the entry
-                    entry.setBloodSugar(bg); // Adding blood sugar value
-                    entry.setCarbsEaten(carbs); // Adding carbs value
-                    entry.setHoursSinceMeal(hours); // Adding hours since the last meal
+    /**
+     * Saving all entered data from the "simple" logbook.
+     */
+    protected void handleSaveAll() {
+        // Index for handling "Pre" rows specifically
+        int preIndex = 0;
+        // Looping through each row to gather and save data
+        for (int i = 0; i < ROW_LABELS.length; i++) {
+            // Parsing the blood sugar field text into a double value
+            double bg = parseDoubleSafe(bloodSugarFields[i].getText());
+            // Parsing the carbs field text into a double value
+            double carbs = parseDoubleSafe(carbsFields[i].getText());
+            int hours = 0;
 
-                    // Calling the service method to save the log entry and trigger alarms if needed
-                    LogService.createEntry(entry, currentUser);
-                }
+            // Parsing hours since the last meal for "Pre" rows
+            if (ROW_LABELS[i].endsWith("Pre")) {
+                hours = parseIntSafe(hoursSinceMealFields[preIndex].getText());
+                preIndex++;
             }
 
-            // Informing the user that the logbook has been successfully saved
-            JOptionPane.showMessageDialog(this,
-                    "All entered values have been saved.",
-                    "Logbook Saved",
-                    JOptionPane.INFORMATION_MESSAGE);
+            // Proceeding with saving only if at least one field contains valid data
+            if (bg > 0 || carbs > 0 || hours > 0) {
+                LogEntry entry = new LogEntry();
+                entry.setUserId(currentUser.getId()); // Associating the entry with the current user
+                entry.setDate(targetDate); // Setting the date for the entry
+                entry.setTimeOfDay(ROW_LABELS[i]); // Specifying the time of day for the entry
+                entry.setBloodSugar(bg); // Adding blood sugar value
+                entry.setCarbsEaten(carbs); // Adding carbs value
+                entry.setHoursSinceMeal(hours); // Adding hours since the last meal
+
+                // Calling the service method to save the log entry and trigger alarms if needed
+                LogService.createEntry(entry, currentUser);
+            }
         }
+
+        // Informing the user that the logbook has been successfully saved
+        JOptionPane.showMessageDialog(this,
+                "All entered values have been saved.",
+                "Logbook Saved",
+                JOptionPane.INFORMATION_MESSAGE);
+    }
 
     /**
      * Fetching the logbook type for the user or defaulting to "Simple."
@@ -330,29 +328,27 @@ public class Logbook extends BaseUI {
             return 0; // Defaulting to 0 if parsing fails
         }
     }
-}
 
-/**
- * DocumentFilter to restrict input to numeric values only.
- */
-/* reference - this class was taken from ChatGPT*/
-class NumericFilter extends DocumentFilter {
-    @Override
-    public void insertString(FilterBypass fb, int offset, String string, AttributeSet attr) throws BadLocationException {
-        if (isNumeric(string)) {
-            super.insertString(fb, offset, string, attr);
-        }
-    }
+    /**
+     * Restricting field input to positive numbers only.
+     */
+    /* reference - this class was taken from ChatGPT*/
+    private void addNumericInputRestriction(JTextField textField) {
+        textField.addKeyListener(new KeyAdapter() {
+            public void keyTyped(KeyEvent e) {
+                char c = e.getKeyChar();
 
-    @Override
-    public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs) throws BadLocationException {
-        if (isNumeric(text)) {
-            super.replace(fb, offset, length, text, attrs);
-        }
-    }
+                // Prevent non-digit characters, except for decimal point and backspace
+                if (!Character.isDigit(c) && c != '.' && c != KeyEvent.VK_BACK_SPACE) {
+                    e.consume();
+                }
 
-    private boolean isNumeric(String text) {
-        return text.matches("\\d*\\.?\\d*"); // Allows numbers with optional decimals
+                // Prevent entering negative numbers
+                if (c == '-' && (textField.getText().isEmpty() || textField.getText().contains("-"))) {
+                    e.consume();  // If the text is empty or already contains a negative sign, don't allow further negative sign.
+                }
+            }
+        });
     }
     /* end of reference*/
 }

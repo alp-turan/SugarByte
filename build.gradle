@@ -5,42 +5,49 @@ plugins {
     id 'application'
 }
 
-// Basic project metadata
 group = 'com.example'
 version = '1.0-SNAPSHOT'
 
-// Set the Java version you want to use
-// If you want Java 8 compatibility, set sourceCompatibility = '1.8'
-sourceCompatibility = 16
+// Set Java version compatibility
+sourceCompatibility = '16'
 
 repositories {
-    // We'll fetch dependencies from Maven Central
     mavenCentral()
 }
 
 dependencies {
-    // Include the SQLite JDBC library
+    // SQLite JDBC library for DB connection
     implementation 'org.xerial:sqlite-jdbc:3.40.1.0'
+
     // JavaMail dependencies
     implementation 'javax.mail:javax.mail-api:1.6.2'
     implementation 'com.sun.mail:javax.mail:1.6.2'
+
+    // JFreeChart for charts
     implementation 'org.jfree:jfreechart:1.5.3'
     implementation 'org.jfree:jcommon:1.0.24'
-    // If you need other libraries, add them here
-    // e.g., implementation 'com.google.guava:guava:31.1-jre'
+
+    // Testing libraries (JUnit 5, Mockito, and Hamcrest)
+    //testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
+    //testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
+    //testImplementation 'org.mockito:mockito-core:3.11.2'
+    //testImplementation 'org.mockito:mockito-inline:4.8.1'
+    testImplementation 'org.hamcrest:hamcrest-library:2.2'
+
+    testImplementation 'org.mockito:mockito-core:4.5.0'
+    testImplementation 'org.mockito:mockito-inline:4.5.0'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
+    testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
+
+
+}
+
+test {
+    useJUnitPlatform()  // Enable JUnit 5
 }
 
 // Configure the application plugin
 application {
-    // The main class that contains the 'main' method
-    // This should match your package and class name
+    // Main class for your application
     mainClass = 'Main'
-
-    // (Optional) By default, Gradle will build a distribution with scripts
-    // that can run your app. If you want to set a custom app name, do:
-    // applicationName = 'SugarByte'
 }
-
-// (Optional) If you'd like to build a fat/uber jar with all dependencies,
-// you can use something like the 'shadow' plugin. But for a simple example,
-// the above is enough to run 'gradle run' and 'gradle build'.

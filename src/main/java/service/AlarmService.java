@@ -142,4 +142,20 @@ public class AlarmService {
         }
     }
 
+    public static Set<String> getNotifiedMeals() {
+        return notifiedMeals;
+    }
+
+    public static double getMinThreshold() {
+        return MIN_THRESHOLD;
+    }
+
+    public static double getMaxThresholdPostMeal() {
+        return MAX_THRESHOLD_POST_MEAL;
+    }
+
+    public static double getMaxThresholdFasting() {
+        return MAX_THRESHOLD_FASTING;
+    }
+
 }
