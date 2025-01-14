@@ -78,8 +78,4 @@ public class Login extends BaseUI {
             }
         });
     }
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(Login::new);
-    }
 }

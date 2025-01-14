@@ -928,14 +928,5 @@ public class BaseUI extends JFrame {
         }
     }
 
-    /**
-     * The main method to launch the application.
-     * Initializes the `Login` screen using Swing's Event Dispatch Thread.
-     *
-     * @param args Command-line arguments (unused in this context).
-     */
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(Login::new); // Launching the Login screen
-    }
 }
 

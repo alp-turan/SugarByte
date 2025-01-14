@@ -51,10 +51,5 @@ public class OpeningWindow extends BaseUI {
             timer.start(); // Starts the timer
         }
 
-        // Main method as the entry point for the program
-        public static void main(String[] args) {
-            // Ensures the GUI creation runs on the Event Dispatch Thread for thread safety
-            SwingUtilities.invokeLater(OpeningWindow::new); // this was explained to us by Oraclr
-        }
     }
 

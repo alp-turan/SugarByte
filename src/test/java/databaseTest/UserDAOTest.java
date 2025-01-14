@@ -46,7 +46,7 @@ class UserDAOTest {
      * Initializes mocks and sets up the test environment before each test method.
      * Ensures a mock `DatabaseManager` instance returns a mock `Connection`.
      */
-    /* reference 22 - inspriation for this was taken from https://stackoverflow.com/questions/12649020/how-to-force-a-sqlexception-in-junit*/
+    /* reference 22 - inspiration for this was taken from https://stackoverflow.com/questions/12649020/how-to-force-a-sqlexception-in-junit*/
     @BeforeEach
     void setUp() throws SQLException {
         MockitoAnnotations.openMocks(this); // Initializes the mock annotations.
