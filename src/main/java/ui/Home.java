@@ -282,7 +282,7 @@ public class Home extends BaseUI {
         panel.add(postBloodSugarField, gbc);
 
         gbc.gridx = 2;
-        postCarbsField = new JTextField(5); // Input field for post-meal carbs.
+        postCarbsField = new JTextField(5); // Input field for post meal carbs.
         applyNumericFilter(postCarbsField); // Applying a numeric filter to restrict input.
         if ("Bedtime".equalsIgnoreCase(timeOfDay)) {
             postCarbsField.setForeground(Color.WHITE); // Make text color white for Bedtime.
