@@ -218,13 +218,16 @@ public class Home extends BaseUI {
         panel.setBorder(BorderFactory.createTitledBorder("Quick Log")); // Adding a titled border to label the panel.
         panel.setLayout(new GridBagLayout()); // Using GridBagLayout for flexible component placement.
 
+        // Determine the time of day (e.g., Breakfast, Lunch, Bedtime).
+        String timeOfDay = getCurrentMeal(); // Assuming getCurrentMeal() returns the current time of day.
+
         // Configuring constraints for the layout manager.
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(5, 5, 5, 5); // Adding consistent padding between components.
         gbc.fill = GridBagConstraints.HORIZONTAL; // Ensuring components stretch horizontally.
 
         // Adding a label for the current meal (e.g., "Breakfast").
-        JLabel mealLabel = new JLabel("Meal: " + getCurrentMeal()); // Fetching the current meal name.
+        JLabel mealLabel = new JLabel("Meal: " + timeOfDay); // Displaying the current meal name.
         mealLabel.setFont(new Font("SansSerif", Font.BOLD, 16)); // Applying a bold font to the label.
         mealLabel.setForeground(new Color(200, 40, 40)); // Setting the text color to red for emphasis.
 
@@ -247,35 +250,49 @@ public class Home extends BaseUI {
         // Adding input fields for "Pre" glucose and carbs.
         gbc.gridy = 2; // Moving to the third row.
         gbc.gridx = 0;
-        panel.add(new JLabel("Pre:"), gbc); // Label for pre-meal inputs.
+        JLabel preLabel = new JLabel("Pre:");
+        preLabel.setForeground("Bedtime".equalsIgnoreCase(timeOfDay) ? Color.WHITE : Color.BLACK); // White if Bedtime.
+        panel.add(preLabel, gbc);
 
         gbc.gridx = 1;
         preBloodSugarField = new JTextField(5); // Input field for pre-meal glucose.
         applyNumericFilter(preBloodSugarField); // Applying a numeric filter to restrict input.
-        panel.add(preBloodSugarField, gbc); // Adding the input field to the panel.
+        panel.add(preBloodSugarField, gbc);
 
         gbc.gridx = 2;
         preCarbsField = new JTextField(5); // Input field for pre-meal carbs.
         applyNumericFilter(preCarbsField); // Applying a numeric filter to restrict input.
-        panel.add(preCarbsField, gbc); // Adding the input field to the panel.
+        panel.add(preCarbsField, gbc);
 
         // Adding input fields for "Post" glucose and carbs.
         gbc.gridy = 3; // Moving to the fourth row.
         gbc.gridx = 0;
-        panel.add(new JLabel("Post:"), gbc); // Label for post-meal inputs.
+        JLabel postLabel = new JLabel("Post:");
+        postLabel.setForeground("Bedtime".equalsIgnoreCase(timeOfDay) ? Color.WHITE : Color.BLACK); // White if Bedtime.
+        panel.add(postLabel, gbc);
 
         gbc.gridx = 1;
         postBloodSugarField = new JTextField(5); // Input field for post-meal glucose.
         applyNumericFilter(postBloodSugarField); // Applying a numeric filter to restrict input.
-        panel.add(postBloodSugarField, gbc); // Adding the input field to the panel.
+        if ("Bedtime".equalsIgnoreCase(timeOfDay)) {
+            postBloodSugarField.setForeground(Color.WHITE); // Make text color white for Bedtime.
+            postBloodSugarField.setCaretColor(Color.WHITE); // Ensure cursor is visible.
+            postBloodSugarField.setBorder(BorderFactory.createLineBorder(Color.WHITE)); // Set border color to white.
+        }
+        panel.add(postBloodSugarField, gbc);
 
         gbc.gridx = 2;
         postCarbsField = new JTextField(5); // Input field for post-meal carbs.
         applyNumericFilter(postCarbsField); // Applying a numeric filter to restrict input.
-        panel.add(postCarbsField, gbc); // Adding the input field to the panel.
+        if ("Bedtime".equalsIgnoreCase(timeOfDay)) {
+            postCarbsField.setForeground(Color.WHITE); // Make text color white for Bedtime.
+            postCarbsField.setCaretColor(Color.WHITE); // Ensure cursor is visible.
+            postCarbsField.setBorder(BorderFactory.createLineBorder(Color.WHITE)); // Set border color to white.
+        }
+        panel.add(postCarbsField, gbc);
 
         // Adding a save button for logging the inputs.
-        gbc.gridy = 4; // Moving to the fifth row.
+        gbc.gridy = 4; // Moving to the next row.
         gbc.gridx = 1;
         gbc.gridwidth = 2; // Spanning two columns for alignment.
         JButton saveBtn = new RoundedButton("Save log", new Color(237, 165, 170)); // Styled button for saving logs.
@@ -287,6 +304,8 @@ public class Home extends BaseUI {
 
         return panel; // Returning the completed Quick Log panel.
     }
+
+
 
     /**
      * Determining the current meal based on the system's current hour.
