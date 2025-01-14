@@ -150,7 +150,7 @@ public class BaseUI extends JFrame {
             this.shadowColor = new Color(2, 2, 2, 3); // A semi-transparent black shadow
             setOpaque(false); // Ensuring the background remains transparent
         }
-        /* Reference - taken from ChatGPT*/
+        /* Reference 6 - taken from ChatGPT*/
         @Override
         protected void paintComponent(Graphics g) {
             Graphics2D g2 = (Graphics2D) g.create(); // Creating a Graphics2D instance
@@ -164,7 +164,7 @@ public class BaseUI extends JFrame {
                 // Iteratively drawing slightly smaller rectangles for a fading shadow
                 g2.fillRoundRect(i, i + shadowSize / 2, getWidth() - i * 2, getHeight() - i * 2 - shadowSize / 2, arc, arc);
             }
-            /* end of reference*/
+            /* end of reference 6*/
 
             // Drawing the rounded panel
             g2.setColor(getBackground()); // Setting the color to the panel's background
@@ -543,7 +543,7 @@ public class BaseUI extends JFrame {
     /**
      * Custom JLabel subclass for rendering day numbers as circles with configurable colors.
      */
-    /* Reference - taken from ChatGPT*/
+    /* Reference 7 - taken from ChatGPT*/
     class DayCircle extends JLabel {
         private Color circleColor; // The background color of the circular representation
 
@@ -558,7 +558,7 @@ public class BaseUI extends JFrame {
             setPreferredSize(new Dimension(40, 40)); // Setting a fixed size for the circle
             setOpaque(false); // Ensuring the label's background remains transparent
         }
-        /* end of reference*/
+        /* end of reference 7*/
 
         /**
          * Sets the color of the circle's background.
@@ -713,7 +713,7 @@ public class BaseUI extends JFrame {
         containerPanel.add(roundedPanel); // Adding the rounded panel to the container panel
 
         // Adding a "Remember Me" checkbox if the label is for the password field
-        /* Reference - the proposition of using JCheckBox, as well as the syntax of this block of code, was taken from ChatGPT*/
+        /* Reference 8 - the proposition of using JCheckBox, as well as the syntax of this block of code, was taken from ChatGPT*/
         if (labelText.equalsIgnoreCase("Password")) {
             rememberMeCheckBox = new JCheckBox("Remember Me"); // Checkbox for saving user credentials
             rememberMeCheckBox.setOpaque(false); // Transparent background for the checkbox
@@ -722,7 +722,7 @@ public class BaseUI extends JFrame {
             containerPanel.add(rememberMeCheckBox); // Adding the checkbox to the container panel
             loadCredentials(); // Loads saved credentials if available
         }
-        /* end of reference*/
+        /* end of reference 8*/
 
         return containerPanel; // Returning the fully constructed container panel
     }

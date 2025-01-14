@@ -5,7 +5,7 @@ package ui;
 import model.LogEntry;
 import model.User;
 import service.LogService;
-/* reference - AI (ChatGPT) was used to add all of the required imports below */
+/* Reference 11 - AI (ChatGPT) was used to add all of the required imports below */
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -16,7 +16,7 @@ import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.data.xy.DefaultXYDataset;
 import org.jfree.data.xy.XYDataset;
-/* end of reference*/
+/* end of reference 11*/
 
 import javax.imageio.ImageIO;
 import java.util.ArrayList;
@@ -211,7 +211,7 @@ public class GlucoseGraph extends BaseUI {
     /**
      * Updates the chart panel with a new glucose graph based on the selected date range.
      */
-    /* reference - this block was taken from ChatGPT*/
+    /* Reference 12 - this block was taken from ChatGPT*/
     private void updateGraph() {
         // Build the dataset for the selected date range
         XYDataset dataset = buildDatasetForRange();
@@ -227,7 +227,7 @@ public class GlucoseGraph extends BaseUI {
                 false,  // No tooltips
                 false   // No URLs
         );
-        /* end of reference*/
+        /* end of reference 12*/
 
         // Customize the plot
         XYPlot plot = chart.getXYPlot();
@@ -259,7 +259,7 @@ public class GlucoseGraph extends BaseUI {
      *
      * @return An XYDataset containing blood glucose levels over the specified date range.
      */
-    /* reference - the entire logic & syntax for building this dataset was taken from ChatGPT*/
+    /* Reference 13 - the entire logic & syntax for building this dataset was taken from ChatGPT*/
     private XYDataset buildDatasetForRange() {
         DefaultXYDataset dataset = new DefaultXYDataset();  // Dataset to store the series
         int numDays = (int) (endDate.toEpochDay() - startDate.toEpochDay() + 1);  // Calculate the number of days in the range
@@ -290,7 +290,7 @@ public class GlucoseGraph extends BaseUI {
         }
 
         dataset.addSeries("BG Trend", new double[][]{xValues, yValues});  // Add the series to the dataset
-        /* end of reference */
+        /* end of reference 13 */
 
         // Notify the user of missing dates
         if (!missingDates.isEmpty()) {

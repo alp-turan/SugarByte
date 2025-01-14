@@ -80,7 +80,7 @@ public class GlucoseIndicator extends JPanel {
      * This method customizes the appearance of the panel.
      * @param g The Graphics object used for drawing.
      */
-    /* reference -  inspiration & in-built functions were taken from Oracle (https://docs.oracle.com/javase/7/docs/api/java/awt/Graphics2D.html)
+    /* reference 14 -  inspiration & in-built functions were taken from Oracle (https://docs.oracle.com/javase/7/docs/api/java/awt/Graphics2D.html)
      *          albeit entire 6 consecutive lines weren't copied, but cumulatively over 6 lines worth of code came from Oracle*/
     @Override
     protected void paintComponent(Graphics g) {
@@ -149,7 +149,7 @@ public class GlucoseIndicator extends JPanel {
         // Releasing the Graphics2D resources
         g2.dispose();
     }
-    /* end of reference*/
+    /* end of reference 14*/
 
     /**
      * Overriding the getToolTipText method to provide detailed information about glucose ranges.

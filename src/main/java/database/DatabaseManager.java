@@ -81,6 +81,7 @@ public class DatabaseManager {
      *
      * @return Connection The active database connection or null if unavailable
      */
+    /* reference 1 - taken from https://docs.oracle.com/javase/tutorial/jdbc/basics/connecting.html */
     public Connection getConnection() {
         try {
             // VALIDATION check ensures our connection is still valid
@@ -98,6 +99,7 @@ public class DatabaseManager {
                     System.err.println("Reconnection to the database failed.");
                 }
             }
+            /* end of reference 1*/
         } catch (SQLException e) {
             // ERROR handling captures connection problems
             e.printStackTrace();
@@ -113,6 +115,7 @@ public class DatabaseManager {
      * Safely closes the database connection and releases associated resources.
      * Implements proper cleanup procedures for database management.
      */
+    /* reference 2- taken from https://stackoverflow.com/questions/2225221/closing-database-connections-in-java */
     public void closeConnection() {
         // VALIDATION check ensures we have an active connection
         if (connection != null) {

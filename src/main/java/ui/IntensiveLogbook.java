@@ -282,7 +282,7 @@ public class IntensiveLogbook extends BaseUI {
         mainPanel.add(scrollPane, BorderLayout.CENTER); // Placing the scroll pane in the center of the main panel
 
 // Setting a custom layout for the JScrollPanel
-        /* reference - taken from ChatGPT*/
+        /* Reference 16 - taken from ChatGPT*/
         scrollPane.setLayout(new ScrollPaneLayout() {
             @Override
             public void layoutContainer(Container parent) {
@@ -304,7 +304,7 @@ public class IntensiveLogbook extends BaseUI {
                 }
             }
         });
-        /* end of reference*/
+        /* end of reference 16*/
 
 // Setting additional transparency and border properties for the scroll pane
         scrollPane.setOpaque(false); // Making the scroll pane itself transparent
@@ -352,7 +352,7 @@ public class IntensiveLogbook extends BaseUI {
  * Restricting a text field to accept only numeric input.
  * This enhances user experience by preventing invalid entries directly at the input stage.
  */
-/* reference - different aspects & lines of this code were collected together from https://stackoverflow.com/questions/1313390/is-there-any-way-to-accept-only-numeric-values-in-a-jtextfield*/
+/* Reference 17- different aspects & lines of this code were collected together from https://stackoverflow.com/questions/1313390/is-there-any-way-to-accept-only-numeric-values-in-a-jtextfield*/
         private void addNumericInputRestriction (JTextField textField){
             // Attaching a KeyListener to monitor and process every key typed in the field.
             textField.addKeyListener(new KeyAdapter() {
@@ -365,7 +365,7 @@ public class IntensiveLogbook extends BaseUI {
                 }
             });
         }
-        /* end of reference*/
+        /* end of reference 17*/
 
 /**
  * Applying a restriction for alphabetic input in a text field.

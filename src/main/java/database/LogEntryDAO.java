@@ -54,6 +54,7 @@ public class LogEntryDAO {
                     // RETRIEVAL extracts the existing entry's identifier
                     int existingId = rs.getInt("id");
                     // SQL construction builds the update statement with all fields
+                    /* reference 3 - taken from https://stackoverflow.com/questions/9639003/update-statement-in-java */
                     String updateSql = "UPDATE logentry SET bloodSugar = ?, carbsEaten = ?, " +
                             "hoursSinceMeal = ?, foodDetails = ?, exerciseType = ?, " +
                             "exerciseDuration = ?, insulinDose = ?, otherMedications = ? " +
@@ -73,6 +74,7 @@ public class LogEntryDAO {
                         updatePs.setDouble(7, entry.getInsulinDose());
                         updatePs.setString(8, entry.getOtherMedications());
                         updatePs.setInt(9, existingId);
+                        /* end of reference 3*/
 
                         // EXECUTION performs the update operation
                         int rowsUpdated = updatePs.executeUpdate();
@@ -112,6 +114,7 @@ public class LogEntryDAO {
                         // EXECUTION performs the insert operation
                         int rowsInserted = insertPs.executeUpdate();
                         // VERIFICATION confirms successful insertion
+                        /* reference 4 - taken from https://www.baeldung.com/jdbc-returning-generated-keys */
                         if (rowsInserted > 0) {
                             try (
                                     // KEYS retrieval obtains the generated ID
@@ -124,6 +127,7 @@ public class LogEntryDAO {
                                     System.out.println("Successfully created new log entry with ID: " +
                                             entry.getId());
                                 }
+                                /* end of reference 4*/
                             }
                         }
                     }
