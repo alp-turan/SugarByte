@@ -52,6 +52,8 @@ The database of users and log entries was developed using SQL, and all of the UI
      - serviceTest package: the unit testing code for the service classes
         - Class: AlarmServiceTest
         - Class: LogServiceTest
+          
+There are in total 22 references throughout our code. The references are structured in the same order as the code (ie reference 1 is in the Database Manager class, and the references are added chronologically starting from the DatabaseManager class until the final 22nd reference which is in the LogServiceTest class). 
       
 
 ## Contributing to the development
@@ -62,7 +64,7 @@ In order to contribute to our project, please set up your environment as follows
    - If using another IDE which is not IntelliJ, ensure you have set Gradle up manually or with the help of extensions. However, the IntelliJ IDEA is recommended as the steps outlined below for setting up the project locally pertain to the IntelliJ IDEA specifically. 
 
 ### Local development
-- Open the Project in IntelliJ IDEA
+- Open the Project in IntelliJ IDEA.
 - Launch IntelliJ IDEA and select Open from the Welcome screen.
 - Navigate to the cloned repository folder and open it.
 - Import Gradle Project. IntelliJ should automatically detect the Gradle project and prompt you to import it. If not, go to File > Project Structure and manually configure the Gradle settings.
